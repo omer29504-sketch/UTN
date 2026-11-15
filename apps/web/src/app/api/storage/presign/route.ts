@@ -77,11 +77,7 @@ export async function POST(request: Request) {
         ownerId = String(company.id);
       } else {
         if (role !== "candidate") {
-          return apiError(
-            403,
-            "candidate_only",
-            "Only candidates can upload verification media.",
-          );
+          return apiError(403, "candidate_only", "Only candidates can upload verification media.");
         }
         const { data: candidate, error } = await admin
           .from("candidate_profiles")
@@ -157,26 +153,26 @@ export async function POST(request: Request) {
       if (!company) {
         return apiError(403, "company_missing", "Create your company profile first.");
       }
-      const companyId = String(company.id);
 
-      if (bucket === "pitch-videos") {
-        const { data: candidate, error: candidateError } = await admin
-          .from("candidate_profiles")
-          .select("verification_status")
-          .eq("user_id", ownerId)
-          .maybeSingle();
-        if (candidateError) throw candidateError;
-        allowed = candidate?.verification_status === "verified";
-      } else {
-        const { data: unlock, error: unlockError } = await admin
-          .from("company_unlocked_candidates")
-          .select("candidate_id")
-          .eq("company_id", companyId)
-          .eq("candidate_id", ownerId)
-          .maybeSingle();
-        if (unlockError) throw unlockError;
-        allowed = Boolean(unlock);
+      if (bucket === "private-credentials") {
+        // Zero-download policy: employer certificate access must flow through
+        // /api/employer/certificates/[candidateId]/stream so it can be
+        // watermarked, gated and audited. A presigned URL would be downloadable.
+        return apiError(
+          403,
+          "use_secure_viewer",
+          "Candidate certificates can only be opened in the secure certificate viewer.",
+        );
       }
+
+      // Only pitch videos reach this point; certificates returned above.
+      const { data: candidate, error: candidateError } = await admin
+        .from("candidate_profiles")
+        .select("verification_status")
+        .eq("user_id", ownerId)
+        .maybeSingle();
+      if (candidateError) throw candidateError;
+      allowed = candidate?.verification_status === "verified";
     }
 
     if (!allowed) {

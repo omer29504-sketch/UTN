@@ -2,33 +2,26 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeCheck,
-  Building2,
-  Clock3,
-  Lock,
-  Play,
-  ShieldCheck,
-  Sparkles,
-  Unlock,
-  Video,
-} from "lucide-react";
+import { ArrowRight, Lock, Play, Sparkles, Unlock, Video } from "lucide-react";
 import { authFetch, readApiError } from "@/lib/api/client";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { EmployerCandidateCard } from "@utn/shared";
 import { formatPitchDuration } from "@utn/shared";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Alert } from "@/components/ui/alert";
+import {
+  SecureCertificateViewer,
+  type EmployerViewerIdentity,
+} from "@/components/employer/secure-certificate-viewer";
 
 interface Props {
   candidate: EmployerCandidateCard;
   companyId: string;
+  employer: EmployerViewerIdentity;
 }
 
-export function CandidateCard({ candidate, companyId }: Props) {
+export function CandidateCard({ candidate, companyId, employer }: Props) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoLoading, setVideoLoading] = useState(false);
   const [videoError, setVideoError] = useState<string | null>(null);
@@ -38,7 +31,7 @@ export function CandidateCard({ candidate, companyId }: Props) {
   const [unlockError, setUnlockError] = useState<string | null>(null);
 
   const displayName = unlocked
-    ? candidate.full_name ?? candidate.display_name
+    ? (candidate.full_name ?? candidate.display_name)
     : candidate.display_name;
 
   async function loadVideo() {
@@ -105,9 +98,7 @@ export function CandidateCard({ candidate, companyId }: Props) {
     <Card className="flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate font-display text-lg font-bold text-brand-navy">
-            {displayName}
-          </p>
+          <p className="truncate font-display text-lg font-bold text-brand-navy">{displayName}</p>
           {candidate.headline ? (
             <p className="mt-0.5 truncate text-sm text-ink-muted">{candidate.headline}</p>
           ) : null}
@@ -144,12 +135,7 @@ export function CandidateCard({ candidate, companyId }: Props) {
       {candidate.video_r2_key ? (
         <div className="overflow-hidden rounded-xl border border-line bg-studio-obsidian">
           {videoUrl ? (
-            <video
-              src={videoUrl}
-              controls
-              className="aspect-video w-full"
-              preload="metadata"
-            />
+            <video src={videoUrl} controls className="aspect-video w-full" preload="metadata" />
           ) : (
             <button
               type="button"
@@ -170,9 +156,7 @@ export function CandidateCard({ candidate, companyId }: Props) {
               )}
             </button>
           )}
-          {videoError ? (
-            <p className="px-3 py-2 text-xs text-red-300">{videoError}</p>
-          ) : null}
+          {videoError ? <p className="px-3 py-2 text-xs text-red-300">{videoError}</p> : null}
         </div>
       ) : (
         <div className="flex aspect-video items-center justify-center rounded-xl border border-line bg-surface-canvas text-xs text-ink-muted">
@@ -193,7 +177,7 @@ export function CandidateCard({ candidate, companyId }: Props) {
           ) : null}
           {candidate.phone ? <p className="text-ink-muted">{candidate.phone}</p> : null}
           {candidate.certificate_r2_key ? (
-            <CertificateLink storageKey={candidate.certificate_r2_key} />
+            <SecureCertificateViewer candidateId={candidate.candidate_id} employer={employer} />
           ) : null}
           <Link
             href={`/employer/candidates/${candidate.candidate_id}`}
@@ -204,12 +188,12 @@ export function CandidateCard({ candidate, companyId }: Props) {
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          {unlockError ? <Alert tone="error" title="Unlock failed">{unlockError}</Alert> : null}
-          <Button
-            onClick={() => void handleUnlock()}
-            loading={unlocking}
-            className="gap-2"
-          >
+          {unlockError ? (
+            <Alert tone="error" title="Unlock failed">
+              {unlockError}
+            </Alert>
+          ) : null}
+          <Button onClick={() => void handleUnlock()} loading={unlocking} className="gap-2">
             <Unlock className="size-4" aria-hidden />
             Unlock candidate (1 credit)
           </Button>
@@ -221,49 +205,3 @@ export function CandidateCard({ candidate, companyId }: Props) {
     </Card>
   );
 }
-
-function CertificateLink({ storageKey }: { storageKey: string }) {
-  const [url, setUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  async function load() {
-    setLoading(true);
-    try {
-      const res = await authFetch("/api/storage/presign", {
-        method: "POST",
-        body: JSON.stringify({ intent: "download", bucket: "private-credentials", key: storageKey }),
-      });
-      if (res.ok) {
-        const b = (await res.json()) as { url: string };
-        setUrl(b.url);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-  if (url) {
-    return (
-      <a
-        href={url}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center gap-1 text-accent-indigo hover:underline"
-      >
-        <BadgeCheck className="size-3.5" aria-hidden />
-        View certificate
-      </a>
-    );
-  }
-  return (
-    <button
-      type="button"
-      onClick={() => void load()}
-      disabled={loading}
-      className="inline-flex items-center gap-1 text-accent-indigo hover:underline"
-    >
-      <BadgeCheck className="size-3.5" aria-hidden />
-      {loading ? "Preparing…" : "View certificate"}
-    </button>
-  );
-}
-
-

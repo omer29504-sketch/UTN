@@ -56,3 +56,6 @@ uploads/
 *.pdf
 *.mp4
 *.webm
+
+# Generated: pdf.js worker copied from node_modules by scripts/sync-pdfjs-worker.mjs
+apps/web/public/pdfjs/

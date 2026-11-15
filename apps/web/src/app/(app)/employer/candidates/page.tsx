@@ -18,6 +18,7 @@ import { INDUSTRIES, DEGREE_LEVELS } from "@utn/shared";
 import type { EmployerCandidateCard } from "@utn/shared";
 import { Card, CardHeader } from "@/components/ui/card";
 import { CandidateCard } from "@/components/employer/candidate-card";
+import type { EmployerViewerIdentity } from "@/components/employer/secure-certificate-viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,6 +109,21 @@ export default async function EmployerCandidatesPage({
     p_offset: offset,
   });
 
+  // The forensic watermark and the confidentiality gate both need the employer's
+  // identity and current click-through state.
+  const { data: employerProfile } = await supabase
+    .from("profiles")
+    .select("employer_tos_accepted_at")
+    .eq("id", session.user.id)
+    .maybeSingle();
+
+  const employer: EmployerViewerIdentity = {
+    employerId: session.user.id,
+    employerName: company.company_name,
+    employerEmail: session.user.email,
+    tosAcceptedAt: (employerProfile?.employer_tos_accepted_at as string | null | undefined) ?? null,
+  };
+
   const rows = (data ?? []) as EmployerCandidateCard[];
   const totalCount = rows[0]?.total_count ?? 0;
   const totalPages = Math.max(1, Math.ceil(Number(totalCount) / PAGE_SIZE));
@@ -124,8 +140,8 @@ export default async function EmployerCandidatesPage({
               {company.company_name}
             </h1>
             <p className="mt-2 text-sm text-white/60">
-              Browse verified graduates. Pitch videos are free to watch; unlock contact details
-              for 1 credit.
+              Browse verified graduates. Pitch videos are free to watch; unlock contact details for
+              1 credit.
             </p>
           </div>
           <Badge tone={company.is_verified ? "emerald" : "warning"}>
@@ -134,14 +150,15 @@ export default async function EmployerCandidatesPage({
         </div>
       </div>
 
-      <form
-        method="get"
-        className="rounded-2xl border border-line bg-surface-card p-4 shadow-card"
-      >
+      <form method="get" className="rounded-2xl border border-line bg-surface-card p-4 shadow-card">
         <div className="grid gap-3 md:grid-cols-4">
           <div className="md:col-span-2">
             <label className="mb-1 block text-xs font-semibold text-ink-muted">Search</label>
-            <Input name="q" defaultValue={params.q ?? ""} placeholder="Headline, university, industry…" />
+            <Input
+              name="q"
+              defaultValue={params.q ?? ""}
+              placeholder="Headline, university, industry…"
+            />
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-ink-muted">Industry</label>
@@ -167,10 +184,16 @@ export default async function EmployerCandidatesPage({
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-ink-muted">University</label>
-            <Input name="university" defaultValue={params.university ?? ""} placeholder="University name" />
+            <Input
+              name="university"
+              defaultValue={params.university ?? ""}
+              placeholder="University name"
+            />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-ink-muted">Graduation year</label>
+            <label className="mb-1 block text-xs font-semibold text-ink-muted">
+              Graduation year
+            </label>
             <Input
               name="graduationYear"
               type="number"
@@ -179,7 +202,9 @@ export default async function EmployerCandidatesPage({
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-ink-muted">Max experience (yrs)</label>
+            <label className="mb-1 block text-xs font-semibold text-ink-muted">
+              Max experience (yrs)
+            </label>
             <Input
               name="maxExperienceYears"
               type="number"
@@ -230,7 +255,12 @@ export default async function EmployerCandidatesPage({
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {rows.map((c) => (
-            <CandidateCard key={c.candidate_id} candidate={c} companyId={String(company.id)} />
+            <CandidateCard
+              key={c.candidate_id}
+              candidate={c}
+              companyId={String(company.id)}
+              employer={employer}
+            />
           ))}
         </div>
       )}
@@ -271,5 +301,3 @@ export default async function EmployerCandidatesPage({
     </div>
   );
 }
-
-

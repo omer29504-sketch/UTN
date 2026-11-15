@@ -18,7 +18,10 @@ import { formatPitchDuration } from "@utn/shared";
 import type { EmployerCandidateCard } from "@utn/shared";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CertificateDownload } from "@/components/employer/certificate-download";
+import {
+  SecureCertificateViewer,
+  type EmployerViewerIdentity,
+} from "@/components/employer/secure-certificate-viewer";
 import { PitchVideo } from "@/components/employer/pitch-video";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
@@ -110,8 +113,24 @@ export default async function UnlockedCandidatePage({
     await supabase
       .from("candidate_profile_views")
       .insert({ candidate_id: candidateId, viewer_company_id: company.id })
-      .then(() => undefined, () => undefined);
+      .then(
+        () => undefined,
+        () => undefined,
+      );
   }
+
+  const { data: employerProfile } = await supabase
+    .from("profiles")
+    .select("employer_tos_accepted_at")
+    .eq("id", session.user.id)
+    .maybeSingle();
+
+  const employer: EmployerViewerIdentity = {
+    employerId: session.user.id,
+    employerName: company?.company_name ?? "Employer",
+    employerEmail: session.user.email,
+    tosAcceptedAt: (employerProfile?.employer_tos_accepted_at as string | null | undefined) ?? null,
+  };
 
   return (
     <div className="space-y-6">
@@ -158,7 +177,10 @@ export default async function UnlockedCandidatePage({
             <p className="flex items-center gap-2 text-brand-navy">
               <Mail className="size-4 text-accent-indigo" aria-hidden />
               {candidate.email ? (
-                <a className="text-accent-indigo hover:underline" href={`mailto:${candidate.email}`}>
+                <a
+                  className="text-accent-indigo hover:underline"
+                  href={`mailto:${candidate.email}`}
+                >
                   {candidate.email}
                 </a>
               ) : (
@@ -183,8 +205,8 @@ export default async function UnlockedCandidatePage({
             <p>{candidate.experience_years} years experience</p>
             {candidate.industry ? <p>{candidate.industry}</p> : null}
           </div>
-          {candidate.certificate_r2_key ? (
-            <CertificateDownload storageKey={candidate.certificate_r2_key} />
+          {candidate.certificate_r2_key && session.profile.role === "employer" ? (
+            <SecureCertificateViewer candidateId={candidate.candidate_id} employer={employer} />
           ) : null}
         </Card>
 
@@ -218,4 +240,3 @@ export default async function UnlockedCandidatePage({
     </div>
   );
 }
-

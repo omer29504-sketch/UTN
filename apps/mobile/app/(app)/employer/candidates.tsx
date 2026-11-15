@@ -6,6 +6,7 @@ import {
   Lock,
   Play,
   Search,
+  ShieldCheck,
   Sparkles,
   Unlock,
   Video as VideoIcon,
@@ -34,7 +35,12 @@ export default function EmployerCandidatesScreen() {
   const [error, setError] = useState<string | null>(null);
   const [unlocking, setUnlocking] = useState<string | null>(null);
   const [videoUrls, setVideoUrls] = useState<Record<string, string>>({});
-  const [filters, setFilters] = useState({ q: "", industry: "", degreeLevel: "", onlyFeatured: false });
+  const [filters, setFilters] = useState({
+    q: "",
+    industry: "",
+    degreeLevel: "",
+    onlyFeatured: false,
+  });
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -47,7 +53,10 @@ export default function EmployerCandidatesScreen() {
         .eq("owner_id", user.id)
         .maybeSingle();
       setCompany(companyData as { id: string; company_name: string } | null);
-      if (!companyData) { setLoading(false); return; }
+      if (!companyData) {
+        setLoading(false);
+        return;
+      }
 
       const { data: balanceData } = await supabase.rpc("get_my_credit_balance");
       setBalance(Number(balanceData ?? 0));
@@ -75,7 +84,11 @@ export default function EmployerCandidatesScreen() {
     }
   }, [user, filters]);
 
-  useFocusEffect(useCallback(() => { void load(); }, [load]));
+  useFocusEffect(
+    useCallback(() => {
+      void load();
+    }, [load]),
+  );
 
   async function loadVideo(candidateId: string, key: string) {
     try {
@@ -99,7 +112,11 @@ export default function EmployerCandidatesScreen() {
         method: "POST",
         body: JSON.stringify({ companyId: company.id, candidateId }),
       });
-      const body = (await res.json()) as { success?: boolean; creditBalance?: number | null; message?: string };
+      const body = (await res.json()) as {
+        success?: boolean;
+        creditBalance?: number | null;
+        message?: string;
+      };
       if (!res.ok) {
         setError(await readApiError(res));
         return;
@@ -107,9 +124,7 @@ export default function EmployerCandidatesScreen() {
       if (body.success) {
         setBalance(body.creditBalance ?? balance);
         setCandidates((prev) =>
-          prev.map((c) =>
-            c.candidate_id === candidateId ? { ...c, is_unlocked: true } : c,
-          ),
+          prev.map((c) => (c.candidate_id === candidateId ? { ...c, is_unlocked: true } : c)),
         );
       } else {
         setError(body.message ?? "Unlock failed.");
@@ -155,9 +170,7 @@ export default function EmployerCandidatesScreen() {
           <Text className="font-inter-semibold text-[9px] uppercase tracking-[2px] text-indigo-300">
             Discovery
           </Text>
-          <Text className="mt-1 font-jakarta-extrabold text-2xl text-brand-navy">
-            Candidates
-          </Text>
+          <Text className="mt-1 font-jakarta-extrabold text-2xl text-brand-navy">Candidates</Text>
         </View>
         <View className="rounded-xl bg-accent-indigo-soft px-3 py-1.5">
           <Text className="font-inter-semibold text-[11px] text-accent-indigo">
@@ -205,7 +218,7 @@ export default function EmployerCandidatesScreen() {
         contentContainerStyle={{ gap: 12, paddingBottom: 24 }}
         renderItem={({ item }) => {
           const unlocked = item.is_unlocked;
-          const name = unlocked ? item.full_name ?? item.display_name : item.display_name;
+          const name = unlocked ? (item.full_name ?? item.display_name) : item.display_name;
           const videoUrl = videoUrls[item.candidate_id];
           return (
             <Card>
@@ -232,9 +245,15 @@ export default function EmployerCandidatesScreen() {
 
               <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
                 <Text className="font-inter text-[10px] text-ink-muted">{item.degree_level}</Text>
-                <Text className="font-inter text-[10px] text-ink-muted">{item.university_name}</Text>
-                <Text className="font-inter text-[10px] text-ink-muted">Grad {item.graduation_year}</Text>
-                <Text className="font-inter text-[10px] text-ink-muted">{item.experience_years} yrs</Text>
+                <Text className="font-inter text-[10px] text-ink-muted">
+                  {item.university_name}
+                </Text>
+                <Text className="font-inter text-[10px] text-ink-muted">
+                  Grad {item.graduation_year}
+                </Text>
+                <Text className="font-inter text-[10px] text-ink-muted">
+                  {item.experience_years} yrs
+                </Text>
               </View>
 
               {item.video_r2_key ? (
@@ -272,6 +291,15 @@ export default function EmployerCandidatesScreen() {
                   ) : null}
                   {item.phone ? (
                     <Text className="font-inter text-[11px] text-ink-muted">{item.phone}</Text>
+                  ) : null}
+                  {item.certificate_r2_key ? (
+                    <Button
+                      label="View secure certificate"
+                      size="sm"
+                      className="mt-2 self-start"
+                      icon={<ShieldCheck size={13} color="#FFFFFF" />}
+                      onPress={() => router.push(`/employer/certificates/${item.candidate_id}`)}
+                    />
                   ) : null}
                 </View>
               ) : (

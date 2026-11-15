@@ -264,6 +264,8 @@ so the migration is re-runnable.
 | `id` | uuid PK | References `auth.users(id)` on delete cascade |
 | `email` | text not null unique | Normalized by trigger |
 | `role` | `user_role` not null default `candidate` | Assigned at signup or by admin |
+| `employer_tos_accepted_at` | timestamptz | Migration 0004; NULL gates all employer certificate access |
+| `employer_tos_version` | text | Required once acceptance is recorded (check constraint) |
 | `created_at` | timestamptz not null default now() | |
 
 #### `candidate_profiles` — candidate domain data
@@ -363,6 +365,23 @@ Balance is always derived: `SELECT COALESCE(SUM(delta), 0)`.
 | `decision` | `verification_status` not null | Check `verified` or `rejected` |
 | `rejection_reason` | text | |
 | `created_at` | timestamptz not null default now() | |
+
+#### `document_access_logs` — immutable credential audit trail (migration 0004)
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid PK default `gen_random_uuid()` | |
+| `employer_id` | uuid not null | References `auth.users(id)` on delete cascade |
+| `candidate_id` | uuid not null | Deliberately **no FK**, so evidence survives candidate deletion |
+| `event_type` | text not null | Check: `tos_accepted`, `certificate_viewed`, `hourly_reack_completed`, `focus_loss_blur`, `screenshot_attempt`, `print_or_devtools_attempt` |
+| `ip_address` | text | From `x-forwarded-for` / `cf-connecting-ip` / `x-real-ip` |
+| `user_agent` | text | Truncated to 512 characters |
+| `watermark_signature` | text | Employer name, email, short id, UTC timestamp |
+| `created_at` | timestamptz not null default now() | |
+
+RLS allows employers to INSERT only their own rows (`employer_id = auth.uid()` and role
+`employer`) and admins to SELECT all rows. There is no UPDATE or DELETE policy, and a
+BEFORE UPDATE trigger raises `document_access_logs_is_append_only` for every role.
 
 ### 5.3 Indexes and constraints
 
@@ -508,6 +527,8 @@ unchanged in Next.js, React Native, edge functions, and tests.
 - Storage buckets, allowed MIME types, max upload sizes
 - Presign TTLs (upload 10 min, certificate download 5 min, media download 10 min)
 - Credit packs, Priority Pro plan, trial credits, unlock cost
+- Employer confidentiality clause copy/version, mandatory checkbox label, 60-minute
+  acknowledgment TTL, 10-second expiry poll, watermark refresh interval, audit events
 - UI layout tokens, page sizes, app name/tagline
 
 ### 6.2 Zod schemas
@@ -531,6 +552,8 @@ unchanged in Next.js, React Native, edge functions, and tests.
 | `adminVerificationDecisionSchema` | Approve/reject with reason rules |
 | `messageSchema` | 1–4000 character message |
 | `presignUploadSchema`, `presignDownloadSchema`, `presignRequestSchema` | Storage API |
+| `documentAuditEventSchema` | Certificate security event type + candidate id |
+| `employerConfidentialityAckSchema` | Click-through consent with `accepted: z.literal(true)` |
 | `signUpSchema`, `signInSchema`, `signUpMetadataSchema` | Auth |
 
 Notable validations:
@@ -612,7 +635,11 @@ company-logos/<company-uuid>/<uuid>.png
 |---|---|---|---|
 | Admin | Any | Any | Any |
 | Candidate (owner) | Own | Own | — |
-| Employer | Any **verified** candidate | Only **unlocked** candidates | — |
+| Employer | Any **verified** candidate | **Never** — secure stream only | — |
+
+Employer certificate downloads are rejected with `403 use_secure_viewer`. The audited
+`/api/employer/certificates/[candidateId]/stream` endpoint is the only employer path to
+certificate bytes.
 
 Uploads additionally require:
 
@@ -690,6 +717,8 @@ wrong type, or owned by someone else.
 | POST | `/api/verification/finalize` | Bearer candidate | Validate uploads and submit for review |
 | POST | `/api/admin/verification` | Bearer admin | Record a decision + audit row |
 | POST | `/api/employer/unlock` | Bearer employer | Spend a credit atomically |
+| GET | `/api/employer/certificates/[candidateId]/stream` | Bearer employer | Audited zero-download certificate bytes (or `?format=base64`) |
+| POST | `/api/employer/certificates/security-event` | Bearer employer | Record consent + anti-capture telemetry |
 | POST | `/api/stripe/checkout` | Bearer | Create a Checkout session |
 | POST | `/api/webhooks/stripe` | Stripe signature | Grant credits / Priority Pro |
 
@@ -785,7 +814,13 @@ changes are requested.
 
 - Contact email and phone.
 - Degree/university/experience.
-- Certificate button that requests a 5-minute signed URL on demand.
+- Confidential certificate viewer (no download):
+  - click-through confidentiality clause before the first view;
+  - every-open warning plus a 60-minute re-acknowledgment gate (checked every 10 s);
+  - PDF/image painted to `<canvas>` with a burned-in plus SVG forensic watermark;
+  - right-click/selection/drag suppression, window-blur privacy shield, and
+    PrintScreen/Ctrl+P/Ctrl+S/Ctrl+Shift+I kill-switch;
+  - `@media print` hides the viewer.
 - Pitch video player.
 - Realtime chat.
 - Records a `candidate_profile_views` row (best-effort) for Priority Pro analytics.
@@ -885,6 +920,7 @@ The mobile app is an Expo Router client with full feature parity for the planned
 | `/candidate/messages/[companyId]` | Realtime thread |
 | `/employer/company` | Company profile |
 | `/employer/candidates` | Discovery, search, pitch playback, unlock |
+| `/employer/certificates/[candidateId]` | Confidential certificate viewer (screen-capture locked) |
 | `/employer/billing` | Credit balance + checkout |
 | `/employer/chat/[candidateId]` | Realtime chat |
 
@@ -902,6 +938,15 @@ The mobile app is an Expo Router client with full feature parity for the planned
     `maxDuration` 120 seconds, minimum 60 seconds before submission.
   - Pitch playback via `expo-av`.
 - **Auth context** exposes session/user and drives route protection in the `(app)` layout.
+- **Secure certificate viewer**:
+  - `expo-screen-capture` `usePreventScreenCapture()` sets Android `FLAG_SECURE` and
+    blocks iOS recordings for the lifetime of the screen.
+  - `addScreenshotListener` closes the document, shows a violation alert, and posts
+    `screenshot_attempt` to the security-event API.
+  - The same confidentiality gate, every-open warning, 60-minute re-acknowledgment, and
+    repeating forensic watermark as web.
+  - Image certificates render from an in-memory base64 data URI; PDFs show a protected
+    notice because React Native has no PDF canvas renderer.
 - **NativeWind** styling uses the same design tokens as web.
 - **Permissions**: `app.json` declares camera and microphone permissions.
 
@@ -918,6 +963,7 @@ The mobile app is an Expo Router client with full feature parity for the planned
 | Candidate discovery + filters | Yes | Yes |
 | Pitch playback | Yes | Yes |
 | Unlock | Yes | Yes |
+| Confidential certificate viewer | Yes | Yes |
 | Billing / Stripe redirect | Yes | Yes |
 | Priority Pro upgrade | Yes | Yes |
 | Realtime chat (both sides) | Yes | Yes |
@@ -1081,7 +1127,7 @@ Server-only secrets still use dynamic `read()` calls. After restarting the dev s
 - Company logo upload and public marquee logos.
 - Admin certificate/pitch review.
 - Full candidate verification submission.
-- Employer pitch playback and certificate download.
+- Employer pitch playback and secure certificate streaming.
 
 ### 11.4 What is blocked until Stripe is configured
 
@@ -1097,9 +1143,12 @@ Server-only secrets still use dynamic `read()` calls. After restarting the dev s
 | Check | Result |
 |---|---|
 | `pnpm typecheck` across shared, storage, web, mobile | Pass |
+| `pnpm -r --workspace-concurrency=1 typecheck` after Phase 5 | Pass |
 | `pnpm --filter @utn/web typecheck` after env fix | Pass |
 | `pnpm --filter @utn/web build` (Next.js production) | Pass |
+| `pnpm --filter @utn/web build` after Phase 5 (secure viewer routes) | Pass |
 | Expo Android export (`expo export --platform android`) | Pass (`Exported: dist`) |
+| Migration `0004_employer_certificate_confidentiality.sql` | Authored; not yet pushed |
 | Dev server boot | Ready on `:3000` |
 | Landing page / sign-in HTTP 200 | Pass |
 | Browser sign-up against live Supabase | Pass |
@@ -1130,8 +1179,15 @@ Server-only secrets still use dynamic `read()` calls. After restarting the dev s
   participate in authorization.
 - **Service-role isolation:** the service-role key is server-only and never present in the
   browser bundle (verified by scanning static chunks).
-- **Private media:** certificates and pitch videos are never public; access is via
-  short-lived presigned URLs after server-side entitlement checks.
+- **Private media:** certificates and pitch videos are never public. Pitch videos use
+  short-lived presigned URLs after server-side entitlement checks; employer certificate
+  access is streamed server-side with no presigned URL and a mandatory audit row.
+- **Confidentiality gate:** employer certificate access requires a versioned click-through
+  consent (`profiles.employer_tos_accepted_at`), re-verified in the stream API.
+- **Immutable access audit:** `document_access_logs` is append-only (INSERT own / SELECT
+  admin, no UPDATE/DELETE policy, BEFORE UPDATE trigger raises).
+- **Anti-capture:** canvas-only rendering, forensic watermarks, focus-loss shield, print
+  kill-switch, `@media print` hiding, and OS-level screen-capture blocking on mobile.
 - **Signed upload constraints:** content type and length are part of the PUT signature.
 - **Ownership-prefixed keys:** storage keys must sit under the owner's UUID prefix.
 - **Server-side masking:** candidate contact data is masked in the discovery RPC, not in the
@@ -1158,6 +1214,7 @@ Server-only secrets still use dynamic `read()` calls. After restarting the dev s
 | No email notifications | Users miss approvals, rejections, unlocks, messages | Add transactional email (Resend/Postmark/SES) |
 | Orphaned R2 uploads | Abandoned uploads consume storage | Add lifecycle rules or a cleanup job |
 | No malware/AV scan | Uploaded documents are trusted for admin viewing | Scan or sandbox documents before review |
+| External-camera capture | OS/API controls cannot stop a phone photographing the screen | Deterrence is the forensic watermark + audit trail; pursue contractual remedies |
 | No CSP/security headers | Reduced XSS defense in depth | Add CSP, HSTS, frame-ancestors, referrer policy |
 | No audit log for admin role changes | Out-of-band promotion is invisible | Log role changes / use an admin action table |
 | Admin tooling is SQL-only | Company verification and credit adjustments require SQL | Add admin UI for companies, credits, and users |
@@ -1222,8 +1279,8 @@ sign-up form.
 
 ### 14.4 Documentation gaps
 
-- `README.md` has been corrected to describe nine tables plus one view and to reflect that
-  all four phases are complete.
+- `README.md` has been corrected to describe the schema and to reflect that all five
+  phases are complete.
 - The sign-in page still shows a "Local demo accounts" box that does not apply to the cloud
   project. It should be hidden unless an explicit demo flag is set.
 
@@ -1231,11 +1288,15 @@ sign-up form.
 
 ## 15. Runbook and next steps
 
-### 15.1 Run the web app now
+### 15.1 Apply migrations and run the web app now
 
 ```bash
 cd "/home/bannda/Desktop/University Talent Network (UTN)"
 pnpm install
+
+# Apply the employer consent + immutable certificate audit migration.
+npx --yes supabase@latest db push --remote=jecdhhihbtaocbfzlljt
+
 pnpm dev:web
 # http://localhost:3000
 ```

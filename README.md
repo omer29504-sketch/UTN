@@ -20,10 +20,12 @@ Stripe billing.
 | **2** | Auth flows, candidate verification (document upload + 60–120s live pitch), tesseract.js OCR, admin review, mobile verification studio                 | **Complete** |
 | 3     | Employer onboarding, credit ledger, Stripe Checkout/webhooks, candidate discovery/unlock                                                               | **Complete** |
 | 4     | Landing page, unlimited logo marquee, Priority Pro analytics, realtime chat UI                                                                         | **Complete** |
+| 5     | Employer confidentiality consent, immutable document audit log, zero-download certificate streaming, anti-capture web canvas viewer, mobile screen-capture lock | **Complete** (apply migration `0004`) |
 
 Phase 2 ships authentication, candidate onboarding and verification, admin review, and
 the employer company profile. Phases 3–4 add employer discovery, credits, Stripe, the logo
-marquee, Priority Pro analytics, and realtime chat.
+marquee, Priority Pro analytics, and realtime chat. Phase 5 replaces employer certificate
+downloads with an audited, watermarked, in-memory viewer on web and mobile.
 
 ---
 
@@ -43,9 +45,11 @@ marquee, Priority Pro analytics, and realtime chat.
 │   │       │   ├── api/
 │   │       │   │   ├── admin/verification/route.ts
 │   │       │   │   ├── auth/provision/route.ts
+│   │       │   │   ├── employer/certificates/{[candidateId]/stream,security-event}/route.ts
 │   │       │   │   ├── storage/presign/route.ts
 │   │       │   │   └── verification/{finalize,ocr}/route.ts
 │   │       │   ├── auth/callback/route.ts
+│   │       │   ├── legal/employer-confidentiality/page.tsx
 │   │       │   └── page.tsx                       # Phase 2 landing page
 │   │       └── lib/
 │   │           ├── api/                           # Bearer-token fetch helpers
@@ -58,7 +62,7 @@ marquee, Priority Pro analytics, and realtime chat.
 │       │   ├── (app)/
 │       │   │   ├── dashboard.tsx
 │       │   │   ├── candidate/{profile,verification}.tsx
-│       │   │   └── employer/company.tsx
+│       │   │   └── employer/{company,candidates,certificates/[candidateId]}.tsx
 │       │   └── index.tsx                          # Phase 2 landing
 │       ├── components/       # Shared UI, verification studio, app header
 │       ├── lib/              # Supabase client, auth context, bearer API, uploads
@@ -73,8 +77,11 @@ marquee, Priority Pro analytics, and realtime chat.
 │   ├── migrations/
 │   │   ├── 0001_initial_schema.sql
 │   │   ├── 0002_verification_reviews.sql
-│   │   └── 0003_degree_verification_compliance.sql
+│   │   ├── 0003_degree_verification_compliance.sql
+│   │   └── 0004_employer_certificate_confidentiality.sql
 │   └── seed.sql              Local-only demo data with fixed UUIDs
+├── scripts/
+│   └── sync-pdfjs-worker.mjs # Copies the pdf.js worker into apps/web/public/pdfjs
 ├── .env.example
 ├── turbo.json
 └── pnpm-workspace.yaml
@@ -253,12 +260,47 @@ pitch-video buckets public.
 domain is derived from the verified email and is unique, so trial credits cannot be
 farmed. Phase 2 does not expose candidate discovery or spending yet.
 
+### Secure employer certificate viewer
+
+Employers never receive a certificate file, presigned URL, or direct R2 link. Migration
+`0004` adds `profiles.employer_tos_accepted_at` / `employer_tos_version` and the
+append-only `document_access_logs` table.
+
+1. **Click-through consent.** Before the first certificate, the employer must read the
+   `EMPLOYER_CONFIDENTIALITY_CLAUSE` from `@utn/shared` and tick the mandatory
+   acknowledgment. Acceptance is written to `profiles` and logged as `tos_accepted`.
+2. **Zero-download stream.** `GET /api/employer/certificates/[candidateId]/stream`
+   re-checks role, consent, unlock entitlement, and the certificate key, then reads the
+   private R2 object server-side. It returns bytes with `no-store`/`no-cache` headers and
+   writes a `certificate_viewed` audit row (IP, user agent, watermark signature). Mobile
+   requests the same audited payload with `?format=base64`.
+3. **In-memory rendering.** The web viewer paints PDFs (pdf.js) or images onto an HTML5
+   `<canvas>`; no `<img src>`, blob URL, or `<a download>` exists in the DOM.
+4. **Forensic watermark.** A diagonal watermark is burned into canvas pixels and mirrored
+   as a `pointer-events-none` SVG overlay: employer name, email, short id, and UTC time,
+   refreshed every minute.
+5. **Anti-capture.** Right-click, selection, and drag are suppressed. Window blur and tab
+   hiding cover the canvas with a privacy shield and log `focus_loss_blur`.
+   `PrintScreen`, `Ctrl/Cmd+P`, `Ctrl/Cmd+S`, and `Ctrl/Cmd+Shift+I` blank the canvas and
+   log `print_or_devtools_attempt`. `@media print` hides the viewer entirely.
+6. **One-hour re-acknowledgment.** Every open shows the warning modal, and a 10-second
+   interval re-locks the viewer after `CERTIFICATE_ACK_TTL_MS` (60 minutes). Confirming
+   again logs `hourly_reack_completed`.
+7. **Mobile lock.** The Expo screen mounts `usePreventScreenCapture()` (Android
+   `FLAG_SECURE`, iOS recording protection), listens for screenshots, closes the
+   document, warns the user, and logs `screenshot_attempt`. The same consent gate,
+   one-hour gate, and watermark overlay apply.
+
+The canonical legal copy is also published at `/legal/employer-confidentiality`.
+
 ---
 
 ## Storage API
 
 `POST /api/storage/presign` is the only door to R2. It requires a Supabase bearer
-token and derives every ownership decision server-side.
+token and derives every ownership decision server-side. Employer requests for
+`private-credentials` are rejected with `403 use_secure_viewer`; certificates must go
+through the audited stream above.
 
 ### Upload
 
