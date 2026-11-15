@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "University Talent Network",
+    "slug": "university-talent-network",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "utn",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "network.universitytalent.app"
+    },
+    "android": {
+      "package": "network.universitytalent.app",
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "University Talent Network uses your camera to record your live verification pitch.",
+          "microphonePermission": "University Talent Network uses your microphone to record audio with your live verification pitch.",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "University Talent Network uses your microphone to record audio with your live verification pitch."
+        }
+      ]
+    ]
+  }
+}
