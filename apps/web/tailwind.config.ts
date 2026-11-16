@@ -13,7 +13,8 @@ const config: Config = {
       boxShadow: {
         card: "0 1px 2px rgba(15, 23, 42, 0.04), 0 16px 40px -24px rgba(15, 23, 42, 0.24)",
         floating: "0 24px 70px -24px rgba(15, 23, 42, 0.45)",
-        "emerald-glow": "0 0 0 1px rgba(16, 185, 129, 0.2), 0 18px 50px -20px rgba(16, 185, 129, 0.5)",
+        "emerald-glow":
+          "0 0 0 1px rgba(16, 185, 129, 0.2), 0 18px 50px -20px rgba(16, 185, 129, 0.5)",
       },
       keyframes: {
         marquee: {
@@ -32,12 +33,75 @@ const config: Config = {
           "0%, 100%": { opacity: "0.55", transform: "scale(1)" },
           "50%": { opacity: "0.2", transform: "scale(1.06)" },
         },
+        // Graduation-cap hero art: a slow, single toss with a long resting tail.
+        "cap-toss": {
+          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
+          "8%": { transform: "translateY(-2px) rotate(-1deg)" },
+          "20%": { transform: "translateY(-14px) rotate(-3deg)" },
+          "34%": { transform: "translateY(-16px) rotate(1.5deg)" },
+          "50%": { transform: "translateY(-4px) rotate(0.5deg)" },
+          "60%": { transform: "translateY(0) rotate(0deg)" },
+        },
+        "cap-tassel": {
+          "0%, 100%": { transform: "rotate(0deg)" },
+          "18%": { transform: "rotate(7deg)" },
+          "38%": { transform: "rotate(-5deg)" },
+          "58%": { transform: "rotate(3deg)" },
+          "78%": { transform: "rotate(-1.5deg)" },
+        },
+        "aurora-drift": {
+          "0%": { transform: "translate3d(0, 0, 0) scale(1)" },
+          "50%": { transform: "translate3d(24px, -18px, 0) scale(1.08)" },
+          "100%": { transform: "translate3d(-16px, 12px, 0) scale(0.96)" },
+        },
+        "reveal-up": {
+          from: { opacity: "0", transform: "translateY(14px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        sheen: {
+          from: { transform: "translateX(-120%) skewX(-12deg)" },
+          to: { transform: "translateX(220%) skewX(-12deg)" },
+        },
+        shimmer: {
+          from: { backgroundPosition: "200% 0" },
+          to: { backgroundPosition: "-200% 0" },
+        },
+        "check-pop": {
+          "0%": { opacity: "0", transform: "scale(0.6)" },
+          "60%": { opacity: "1", transform: "scale(1.08)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "caret-blink": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
+        },
+        "slide-in": {
+          from: { opacity: "0", transform: "translateY(10px) scale(0.99)" },
+          to: { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
+        "pulse-soft": {
+          "0%, 100%": { opacity: "0.45" },
+          "50%": { opacity: "0.75" },
+        },
       },
       animation: {
         marquee: "marquee 52s linear infinite",
         "float-slow": "float-slow 7s ease-in-out infinite",
         "fade-up": "fade-up 0.6s ease-out both",
         "ring-pulse": "ring-pulse 3.2s ease-in-out infinite",
+        "cap-toss": "cap-toss 8s cubic-bezier(0.45, 0, 0.55, 1) infinite",
+        "cap-tassel": "cap-tassel 6.5s ease-in-out infinite",
+        "aurora-drift": "aurora-drift 20s ease-in-out infinite alternate",
+        "reveal-up": "reveal-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) both",
+        sheen: "sheen 0.9s cubic-bezier(0.16, 1, 0.3, 1)",
+        shimmer: "shimmer 1.8s linear infinite",
+        "check-pop": "check-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "caret-blink": "caret-blink 1.1s steps(2, start) infinite",
+        "slide-in": "slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "pulse-soft": "pulse-soft 5s ease-in-out infinite",
+      },
+      transitionTimingFunction: {
+        "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
       },
       backgroundImage: {
         "hero-grid":

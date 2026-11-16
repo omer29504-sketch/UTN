@@ -12,10 +12,10 @@ export function BrandMark({
   className?: string;
 }) {
   return (
-    <Link href={href} className={cn("flex items-center gap-2.5", className)}>
+    <Link href={href} className={cn("group flex items-center gap-2.5", className)}>
       <span
         className={cn(
-          "grid size-9 place-items-center rounded-xl shadow-sm",
+          "grid size-9 place-items-center rounded-xl shadow-sm transition-transform duration-500 ease-out-expo group-hover:-rotate-6 motion-reduce:group-hover:rotate-0",
           inverted ? "bg-white text-brand-navy" : "bg-brand-navy text-white",
         )}
       >

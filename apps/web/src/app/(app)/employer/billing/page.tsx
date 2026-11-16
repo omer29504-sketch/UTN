@@ -28,7 +28,11 @@ export default async function EmployerBillingPage({
   }
 
   const [{ data: company }, { data: balance }] = await Promise.all([
-    supabase.from("companies").select("id, company_name").eq("owner_id", session.user.id).maybeSingle(),
+    supabase
+      .from("companies")
+      .select("id, company_name")
+      .eq("owner_id", session.user.id)
+      .maybeSingle(),
     supabase.rpc("get_my_credit_balance"),
   ]);
 
@@ -61,15 +65,14 @@ export default async function EmployerBillingPage({
         </Alert>
       ) : null}
 
-      <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
-          Billing
-        </p>
+      <div className="animate-slide-in rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">Billing</p>
         <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
           {company.company_name}
         </h1>
         <p className="mt-2 text-sm text-white/60">
-          Credit balance: <span className="font-bold text-white">{Number(balance ?? 0)}</span> credits
+          Credit balance: <span className="font-bold text-white">{Number(balance ?? 0)}</span>{" "}
+          credits
         </p>
       </div>
 

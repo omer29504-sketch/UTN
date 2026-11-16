@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Alert } from "@/components/ui/alert";
 import { VerificationBadge } from "@/components/verification-badge";
+import { Reveal } from "@/components/motion/reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -130,113 +131,122 @@ export default async function EmployerCandidatesPage({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
-              Candidate discovery
-            </p>
-            <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
-              {company.company_name}
-            </h1>
-            <p className="mt-2 text-sm text-white/60">
-              Browse verified graduates. Pitch videos are free to watch; unlock contact details for
-              1 credit.
-            </p>
+      <Reveal>
+        <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
+                Candidate discovery
+              </p>
+              <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
+                {company.company_name}
+              </h1>
+              <p className="mt-2 text-sm text-white/60">
+                Browse verified graduates. Pitch videos are free to watch; unlock contact details
+                for 1 credit.
+              </p>
+            </div>
+            <Badge tone={company.is_verified ? "emerald" : "warning"}>
+              {company.is_verified ? "Verified employer" : "Unverified employer"}
+            </Badge>
           </div>
-          <Badge tone={company.is_verified ? "emerald" : "warning"}>
-            {company.is_verified ? "Verified employer" : "Unverified employer"}
-          </Badge>
         </div>
-      </div>
+      </Reveal>
 
-      <form method="get" className="rounded-2xl border border-line bg-surface-card p-4 shadow-card">
-        <div className="grid gap-3 md:grid-cols-4">
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-xs font-semibold text-ink-muted">Search</label>
-            <Input
-              name="q"
-              defaultValue={params.q ?? ""}
-              placeholder="Headline, university, industry…"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-ink-muted">Industry</label>
-            <Select name="industry" defaultValue={params.industry ?? ""}>
-              <option value="">All industries</option>
-              {INDUSTRIES.map((i) => (
-                <option key={i} value={i}>
-                  {i}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-ink-muted">Degree level</label>
-            <Select name="degreeLevel" defaultValue={params.degreeLevel ?? ""}>
-              <option value="">All degrees</option>
-              {DEGREE_LEVELS.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-ink-muted">University</label>
-            <Input
-              name="university"
-              defaultValue={params.university ?? ""}
-              placeholder="University name"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-ink-muted">
-              Graduation year
-            </label>
-            <Input
-              name="graduationYear"
-              type="number"
-              defaultValue={params.graduationYear ?? ""}
-              placeholder="e.g. 2024"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-ink-muted">
-              Max experience (yrs)
-            </label>
-            <Input
-              name="maxExperienceYears"
-              type="number"
-              defaultValue={params.maxExperienceYears ?? ""}
-              placeholder="e.g. 2"
-            />
-          </div>
-          <div className="flex items-end">
-            <label className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
-              <input
-                type="checkbox"
-                name="onlyFeatured"
-                value="1"
-                defaultChecked={params.onlyFeatured === "1" || params.onlyFeatured === "true"}
+      <Reveal delay={60}>
+        <form
+          method="get"
+          className="rounded-2xl border border-line bg-surface-card p-4 shadow-card"
+        >
+          <div className="grid gap-3 md:grid-cols-4">
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-xs font-semibold text-ink-muted">Search</label>
+              <Input
+                name="q"
+                defaultValue={params.q ?? ""}
+                placeholder="Headline, university, industry…"
               />
-              Priority Pro only
-            </label>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-ink-muted">Industry</label>
+              <Select name="industry" defaultValue={params.industry ?? ""}>
+                <option value="">All industries</option>
+                {INDUSTRIES.map((i) => (
+                  <option key={i} value={i}>
+                    {i}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                Degree level
+              </label>
+              <Select name="degreeLevel" defaultValue={params.degreeLevel ?? ""}>
+                <option value="">All degrees</option>
+                {DEGREE_LEVELS.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-ink-muted">University</label>
+              <Input
+                name="university"
+                defaultValue={params.university ?? ""}
+                placeholder="University name"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                Graduation year
+              </label>
+              <Input
+                name="graduationYear"
+                type="number"
+                defaultValue={params.graduationYear ?? ""}
+                placeholder="e.g. 2024"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                Max experience (yrs)
+              </label>
+              <Input
+                name="maxExperienceYears"
+                type="number"
+                defaultValue={params.maxExperienceYears ?? ""}
+                placeholder="e.g. 2"
+              />
+            </div>
+            <div className="flex items-end">
+              <label className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
+                <input
+                  type="checkbox"
+                  name="onlyFeatured"
+                  value="1"
+                  defaultChecked={params.onlyFeatured === "1" || params.onlyFeatured === "true"}
+                />
+                Priority Pro only
+              </label>
+            </div>
+            <div className="flex items-end gap-2 md:col-span-4">
+              <Button type="submit" className="gap-2">
+                <Filter className="size-4" aria-hidden />
+                Apply filters
+              </Button>
+              <Link
+                href="/employer/candidates"
+                className="inline-flex items-center rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
+              >
+                Reset
+              </Link>
+            </div>
           </div>
-          <div className="flex items-end gap-2 md:col-span-4">
-            <Button type="submit" className="gap-2">
-              <Filter className="size-4" aria-hidden />
-              Apply filters
-            </Button>
-            <Link
-              href="/employer/candidates"
-              className="inline-flex items-center rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
-            >
-              Reset
-            </Link>
-          </div>
-        </div>
-      </form>
+        </form>
+      </Reveal>
 
       {error ? (
         <Alert tone="error" title="Could not load candidates">
@@ -249,18 +259,27 @@ export default async function EmployerCandidatesPage({
       </p>
 
       {rows.length === 0 ? (
-        <Card>
-          <p className="text-sm text-ink-muted">No candidates match these filters yet.</p>
+        <Card className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+          <span className="grid size-14 animate-float-slow place-items-center rounded-2xl bg-accent-indigo-soft text-accent-indigo motion-reduce:animate-none">
+            <Search className="size-6" aria-hidden />
+          </span>
+          <p className="text-sm font-semibold text-brand-navy">
+            No candidates match these filters yet.
+          </p>
+          <p className="text-xs text-ink-muted">
+            Try widening your search or resetting the filters.
+          </p>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {rows.map((c) => (
-            <CandidateCard
+          {rows.map((c, index) => (
+            <div
               key={c.candidate_id}
-              candidate={c}
-              companyId={String(company.id)}
-              employer={employer}
-            />
+              className="h-full animate-slide-in"
+              style={{ animationDelay: `${Math.min(index * 60, 360)}ms` }}
+            >
+              <CandidateCard candidate={c} companyId={String(company.id)} employer={employer} />
+            </div>
           ))}
         </div>
       )}

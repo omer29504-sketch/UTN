@@ -89,6 +89,124 @@
   .animate-marquee:hover {
     animation-play-state: paused;
   }
+
+  /*
+   * Scroll-triggered reveal.
+   *
+   * Content is only hidden when JavaScript is active (`.js` is set on <html>
+   * before first paint), so the page stays fully readable if the script fails.
+   */
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes sheen {
+    from {
+      transform: translateX(-120%) skewX(-12deg);
+    }
+    to {
+      transform: translateX(220%) skewX(-12deg);
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    will-change: opacity, transform;
+  }
+
+  .js .reveal.is-visible {
+    animation: reveal-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--reveal-delay, 0ms);
+    will-change: auto;
+  }
+
+  /* One-pass light sweep across primary actions. */
+  .sheen {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sheen::after {
+    content: "";
+    position: absolute;
+    inset: -20% -60%;
+    transform: translateX(-120%) skewX(-12deg);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+    pointer-events: none;
+  }
+
+  .sheen:hover::after,
+  .sheen:focus-visible::after {
+    animation: sheen 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Soft elevation for interactive cards. Pair with a shadow utility. */
+  .lift {
+    transition:
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.35s ease;
+  }
+
+  .lift:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Loading placeholder surface. */
+  .shimmer {
+    background-image: linear-gradient(90deg, #eef2f7 25%, #f8fafc 50%, #eef2f7 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s linear infinite;
+  }
+}
+
+/*
+ * Motion is a preference, not a requirement. Anyone who asks the OS for reduced
+ * motion gets a completely still interface, and revealed content stays visible.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .lift:hover {
+    transform: none;
+  }
+
+  .animate-marquee {
+    animation: none;
+  }
 }
 
 /*

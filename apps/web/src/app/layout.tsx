@@ -49,12 +49,25 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${inter.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${plusJakarta.variable} ${inter.variable}`}
+    >
       <body className="min-h-dvh bg-surface-canvas text-ink-primary">
+        {/*
+          Enables motion-only styles before first paint. Without JavaScript the
+          class is never added, so scroll-reveal content renders fully visible.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var d=document.documentElement;d.classList.add('js');" +
+              "setTimeout(function(){if(!d.hasAttribute('data-reveal-ready'))d.classList.remove('js');},8000);})()",
+          }}
+        />
         <a
           href="#main"
           className="sr-only z-[100] rounded-lg bg-brand-navy px-4 py-2 text-sm font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"

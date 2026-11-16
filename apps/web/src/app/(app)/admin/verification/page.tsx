@@ -87,7 +87,7 @@ export default async function AdminVerificationQueuePage() {
 
       {candidates.length === 0 ? (
         <Card className="flex flex-col items-center justify-center py-14 text-center">
-          <span className="grid size-14 place-items-center rounded-2xl bg-verified-emerald-soft text-verified-emerald">
+          <span className="grid size-14 animate-float-slow place-items-center rounded-2xl bg-verified-emerald-soft text-verified-emerald motion-reduce:animate-none">
             <Inbox className="size-7" aria-hidden />
           </span>
           <h2 className="mt-4 font-display text-xl font-bold text-brand-navy">Queue is clear</h2>
@@ -98,7 +98,7 @@ export default async function AdminVerificationQueuePage() {
         </Card>
       ) : (
         <ul className="space-y-3">
-          {candidates.map((candidate) => {
+          {candidates.map((candidate, index) => {
             const media = mediaByCandidate.get(candidate.user_id);
             const initials = candidate.full_name
               .split(" ")
@@ -107,10 +107,14 @@ export default async function AdminVerificationQueuePage() {
               .join("");
 
             return (
-              <li key={candidate.user_id}>
+              <li
+                key={candidate.user_id}
+                className="animate-slide-in"
+                style={{ animationDelay: `${Math.min(index * 60, 360)}ms` }}
+              >
                 <Link
                   href={`/admin/verification/${candidate.user_id}`}
-                  className="group flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-surface-card p-4 shadow-card transition hover:border-accent-indigo/30 hover:shadow-floating sm:p-5"
+                  className="group flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-surface-card p-4 shadow-card transition duration-300 ease-out-expo hover:-translate-y-0.5 hover:border-accent-indigo/30 hover:shadow-floating motion-reduce:hover:translate-y-0 sm:p-5"
                 >
                   <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent-indigo-soft font-display text-sm font-bold text-accent-indigo">
                     {initials || "C"}

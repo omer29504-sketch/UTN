@@ -537,9 +537,9 @@ export function VerificationStudio() {
 
   if (submitted) {
     return (
-      <Card className="border-verified-emerald/30 bg-verified-emerald-soft/40">
+      <Card className="animate-slide-in border-verified-emerald/30 bg-verified-emerald-soft/40">
         <div className="flex items-start gap-4">
-          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-verified-emerald text-white">
+          <span className="grid size-12 shrink-0 animate-check-pop place-items-center rounded-2xl bg-verified-emerald text-white">
             <CheckCircle2 className="size-6" aria-hidden />
           </span>
           <div>
@@ -577,7 +577,7 @@ export function VerificationStudio() {
             <label
               htmlFor="certificate"
               className={cn(
-                "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 text-center transition",
+                "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 text-center transition-colors duration-300",
                 certificate.status === "uploaded"
                   ? "border-verified-emerald/40 bg-verified-emerald-soft/40"
                   : "border-line bg-surface-canvas hover:border-accent-indigo/40 hover:bg-accent-indigo-soft/30",

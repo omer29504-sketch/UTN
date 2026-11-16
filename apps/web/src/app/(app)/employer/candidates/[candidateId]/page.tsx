@@ -142,7 +142,7 @@ export default async function UnlockedCandidatePage({
         Back to candidates
       </Link>
 
-      <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
+      <div className="animate-slide-in rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">

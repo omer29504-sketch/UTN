@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -19,6 +20,8 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { VerificationBadge } from "@/components/verification-badge";
 import { Alert } from "@/components/ui/alert";
+import { CountUp } from "@/components/motion/count-up";
+import { Reveal } from "@/components/motion/reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -27,25 +30,35 @@ function StatCard({
   label,
   value,
   hint,
+  delay = 0,
 }: {
   icon: typeof BadgeCheck;
   label: string;
-  value: string;
+  value: ReactNode;
   hint: string;
+  delay?: number;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface-card p-5 shadow-card">
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
-        <Icon className="size-4 text-accent-indigo" aria-hidden />
-        {label}
+    <Reveal delay={delay} className="h-full">
+      <div className="lift h-full rounded-2xl border border-line bg-surface-card p-5 shadow-card hover:border-accent-indigo/20 hover:shadow-floating">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
+          <Icon className="size-4 text-accent-indigo" aria-hidden />
+          {label}
+        </div>
+        <p className="mt-3 font-display text-2xl font-extrabold text-brand-navy">{value}</p>
+        <p className="mt-1 text-xs text-ink-muted">{hint}</p>
       </div>
-      <p className="mt-3 font-display text-2xl font-extrabold text-brand-navy">{value}</p>
-      <p className="mt-1 text-xs text-ink-muted">{hint}</p>
-    </div>
+    </Reveal>
   );
 }
 
-async function CandidateOverview({ userId, fullName }: { userId: string; fullName: string | null }) {
+async function CandidateOverview({
+  userId,
+  fullName,
+}: {
+  userId: string;
+  fullName: string | null;
+}) {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return (
@@ -57,16 +70,8 @@ async function CandidateOverview({ userId, fullName }: { userId: string; fullNam
 
   const [{ data: profile }, { data: media }, { data: reviews }, { count: viewCount }] =
     await Promise.all([
-      supabase
-        .from("candidate_profiles")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle(),
-      supabase
-        .from("candidate_media")
-        .select("*")
-        .eq("candidate_id", userId)
-        .maybeSingle(),
+      supabase.from("candidate_profiles").select("*").eq("user_id", userId).maybeSingle(),
+      supabase.from("candidate_media").select("*").eq("candidate_id", userId).maybeSingle(),
       supabase
         .from("verification_reviews")
         .select("decision, rejection_reason, created_at")
@@ -81,7 +86,7 @@ async function CandidateOverview({ userId, fullName }: { userId: string; fullNam
 
   if (!profile) {
     return (
-      <Card className="border-accent-indigo/20 bg-gradient-to-br from-white to-accent-indigo-soft/40">
+      <Card className="animate-slide-in border-accent-indigo/20 bg-gradient-to-br from-white to-accent-indigo-soft/40">
         <span className="grid size-12 place-items-center rounded-2xl bg-accent-indigo-soft text-accent-indigo">
           <Sparkles className="size-6" aria-hidden />
         </span>
@@ -142,45 +147,47 @@ async function CandidateOverview({ userId, fullName }: { userId: string; fullNam
 
   return (
     <div className="space-y-6">
-      <div className="overflow-hidden rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
-              Candidate dashboard
-            </p>
-            <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
-              Welcome back, {displayName.split(" ")[0]}
-            </h1>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
-              {status === "verified"
-                ? "Your profile is verified. Employers can watch your pitch and unlock your contact details."
-                : status === "pending"
-                  ? "Your documents are with the review team. We will notify you when a decision is made."
-                  : status === "rejected"
-                    ? "The reviewer asked for changes. Update your documents and resubmit when ready."
-                    : "Complete your verification to become discoverable to employers."}
-            </p>
+      <Reveal>
+        <div className="overflow-hidden rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
+                Candidate dashboard
+              </p>
+              <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
+                Welcome back, {displayName.split(" ")[0]}
+              </h1>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
+                {status === "verified"
+                  ? "Your profile is verified. Employers can watch your pitch and unlock your contact details."
+                  : status === "pending"
+                    ? "Your documents are with the review team. We will notify you when a decision is made."
+                    : status === "rejected"
+                      ? "The reviewer asked for changes. Update your documents and resubmit when ready."
+                      : "Complete your verification to become discoverable to employers."}
+              </p>
+            </div>
+            <VerificationBadge status={status} />
           </div>
-          <VerificationBadge status={status} />
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/candidate/verification"
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-brand-navy transition hover:bg-white/90"
+            >
+              <ScanFace className="size-4" aria-hidden />
+              {status === "unverified" || status === "rejected"
+                ? "Continue verification"
+                : "View verification"}
+            </Link>
+            <Link
+              href="/candidate/profile"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Edit profile
+            </Link>
+          </div>
         </div>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            href="/candidate/verification"
-            className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-brand-navy transition hover:bg-white/90"
-          >
-            <ScanFace className="size-4" aria-hidden />
-            {status === "unverified" || status === "rejected"
-              ? "Continue verification"
-              : "View verification"}
-          </Link>
-          <Link
-            href="/candidate/profile"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
-          >
-            Edit profile
-          </Link>
-        </div>
-      </div>
+      </Reveal>
 
       {status === "rejected" && profile.rejection_reason ? (
         <Alert tone="error" title="Changes requested">
@@ -192,6 +199,7 @@ async function CandidateOverview({ userId, fullName }: { userId: string; fullNam
         <StatCard
           icon={ScanFace}
           label="Verification"
+          delay={0}
           value={
             status === "verified"
               ? "Verified"
@@ -206,6 +214,7 @@ async function CandidateOverview({ userId, fullName }: { userId: string; fullNam
         <StatCard
           icon={Video}
           label="Pitch length"
+          delay={60}
           value={
             media?.video_duration_seconds ? formatPitchDuration(media.video_duration_seconds) : "—"
           }
@@ -214,12 +223,18 @@ async function CandidateOverview({ userId, fullName }: { userId: string; fullNam
         <StatCard
           icon={Sparkles}
           label="Profile views"
+          delay={120}
           value={String(viewCount ?? 0)}
-          hint={profile?.is_featured ? "Priority Pro analytics" : "Upgrade to Priority Pro for analytics"}
+          hint={
+            profile?.is_featured
+              ? "Priority Pro analytics"
+              : "Upgrade to Priority Pro for analytics"
+          }
         />
         <StatCard
           icon={FileText}
           label="Submission"
+          delay={180}
           value={media?.submitted_at ? "Submitted" : "Draft"}
           hint={
             latestReview
@@ -238,12 +253,13 @@ async function CandidateOverview({ userId, fullName }: { userId: string; fullNam
           {checklist.map((item, index) => (
             <li
               key={item.label}
-              className="flex items-center gap-3 rounded-xl border border-line bg-surface-canvas px-4 py-3"
+              className="flex animate-slide-in items-center gap-3 rounded-xl border border-line bg-surface-canvas px-4 py-3"
+              style={{ animationDelay: `${index * 70}ms` }}
             >
               <span
                 className={`grid size-8 shrink-0 place-items-center rounded-full text-xs font-bold ${
                   item.done
-                    ? "bg-verified-emerald text-white"
+                    ? "animate-check-pop bg-verified-emerald text-white"
                     : "bg-white text-ink-muted ring-1 ring-line"
                 }`}
               >
@@ -281,7 +297,7 @@ async function EmployerOverview({ userId }: { userId: string }) {
 
   if (!company) {
     return (
-      <Card className="border-accent-indigo/20 bg-gradient-to-br from-white to-accent-indigo-soft/40">
+      <Card className="animate-slide-in border-accent-indigo/20 bg-gradient-to-br from-white to-accent-indigo-soft/40">
         <span className="grid size-12 place-items-center rounded-2xl bg-accent-indigo-soft text-accent-indigo">
           <Building2 className="size-6" aria-hidden />
         </span>
@@ -305,37 +321,51 @@ async function EmployerOverview({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
-              Employer workspace
-            </p>
-            <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
-              {company.company_name}
-            </h1>
-            <p className="mt-2 text-sm text-white/60">
-              {company.corporate_domain} ·{" "}
-              {company.is_verified ? "Company verified" : "Verification pending"}
-            </p>
+      <Reveal>
+        <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
+                Employer workspace
+              </p>
+              <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
+                {company.company_name}
+              </h1>
+              <p className="mt-2 text-sm text-white/60">
+                {company.corporate_domain} ·{" "}
+                {company.is_verified ? "Company verified" : "Verification pending"}
+              </p>
+            </div>
+            <Badge tone={company.is_verified ? "emerald" : "warning"}>
+              {company.is_verified ? "Verified employer" : "Unverified employer"}
+            </Badge>
           </div>
-          <Badge tone={company.is_verified ? "emerald" : "warning"}>
-            {company.is_verified ? "Verified employer" : "Unverified employer"}
-          </Badge>
         </div>
-      </div>
+      </Reveal>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard
           icon={Sparkles}
           label="Credit balance"
-          value={`${Number(balance ?? 0)} credits`}
+          delay={0}
+          value={
+            <>
+              <CountUp value={Number(balance ?? 0)} /> credits
+            </>
+          }
           hint="Two trial credits are granted at company creation"
         />
-        <StatCard icon={Building2} label="Corporate domain" value={company.corporate_domain} hint="Locked to your work email" />
+        <StatCard
+          icon={Building2}
+          label="Corporate domain"
+          delay={60}
+          value={company.corporate_domain}
+          hint="Locked to your work email"
+        />
         <StatCard
           icon={BadgeCheck}
           label="Logo consent"
+          delay={120}
           value={company.display_logo_consent ? "Opted in" : "Opted out"}
           hint="Controls the public landing-page marquee"
         />
@@ -400,29 +430,33 @@ async function AdminOverview() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
-          Admin workspace
-        </p>
-        <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
-          Verification review
-        </h1>
-        <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
-          Check each candidate&apos;s degree document against their profile and 60–120 second pitch,
-          then record a decision with an audit trail.
-        </p>
-      </div>
+      <Reveal>
+        <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
+            Admin workspace
+          </p>
+          <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
+            Verification review
+          </h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
+            Check each candidate&apos;s degree document against their profile and 60–120 second
+            pitch, then record a decision with an audit trail.
+          </p>
+        </div>
+      </Reveal>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <StatCard
           icon={ClipboardCheck}
           label="Pending reviews"
+          delay={0}
           value={String(pendingCount ?? 0)}
           hint="Candidates waiting for a decision"
         />
         <StatCard
           icon={BadgeCheck}
           label="Recent decisions"
+          delay={60}
           value={String(recentReviews?.length ?? 0)}
           hint="Latest review history entries"
         />
@@ -446,8 +480,12 @@ async function AdminOverview() {
           {(recentReviews ?? []).length === 0 ? (
             <li className="py-4 text-sm text-ink-muted">No decisions recorded yet.</li>
           ) : (
-            (recentReviews ?? []).map((review) => (
-              <li key={review.id} className="flex items-center justify-between gap-3 py-3">
+            (recentReviews ?? []).map((review, index) => (
+              <li
+                key={review.id}
+                className="flex animate-slide-in items-center justify-between gap-3 py-3"
+                style={{ animationDelay: `${index * 60}ms` }}
+              >
                 <div>
                   <p className="text-sm font-semibold capitalize text-brand-navy">
                     {review.decision}

@@ -95,7 +95,7 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
   }
 
   return (
-    <Card className="flex flex-col gap-3">
+    <Card className="lift flex h-full flex-col gap-3 hover:border-accent-indigo/25 hover:shadow-floating">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate font-display text-lg font-bold text-brand-navy">{displayName}</p>

@@ -2,14 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, ClipboardCheck, CreditCard, LayoutDashboard, MessageSquare, ScanFace, Search, UserRound } from "lucide-react";
+import {
+  Building2,
+  ClipboardCheck,
+  CreditCard,
+  LayoutDashboard,
+  MessageSquare,
+  ScanFace,
+  Search,
+  UserRound,
+} from "lucide-react";
 import type { Role } from "@utn/shared";
 import { cn } from "@/lib/utils";
 
-const linksByRole: Record<
-  Role,
-  { href: string; label: string; icon: typeof LayoutDashboard }[]
-> = {
+const linksByRole: Record<Role, { href: string; label: string; icon: typeof LayoutDashboard }[]> = {
   candidate: [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { href: "/candidate/profile", label: "Profile", icon: UserRound },
@@ -33,7 +39,7 @@ export function AppNav({ role }: { role: Role }) {
   const links = linksByRole[role];
 
   return (
-    <nav aria-label="Primary" className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+    <nav aria-label="Primary" className="no-scrollbar flex items-center gap-1 overflow-x-auto">
       {links.map((link) => {
         const active =
           pathname === link.href ||
@@ -43,9 +49,9 @@ export function AppNav({ role }: { role: Role }) {
             key={link.href}
             href={link.href}
             className={cn(
-              "inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition",
+              "inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors duration-300",
               active
-                ? "bg-brand-navy text-white"
+                ? "bg-brand-navy text-white shadow-sm"
                 : "text-ink-muted hover:bg-surface-muted hover:text-brand-navy",
             )}
           >
