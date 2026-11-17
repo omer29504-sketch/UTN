@@ -6,6 +6,7 @@ import {
 } from "@utn/shared";
 import { requireApiCaller } from "@/lib/api/auth";
 import { apiError, methodNotAllowed } from "@/lib/api/http";
+import { RATE_LIMITS } from "@/lib/security/rate-limit";
 import { requestFingerprint } from "@/lib/security/request-context";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -20,7 +21,7 @@ export const dynamic = "force-dynamic";
  * watermark signature, so a client cannot forge an audit entry.
  */
 export async function POST(request: Request) {
-  const auth = await requireApiCaller(request);
+  const auth = await requireApiCaller(request, { rateLimit: RATE_LIMITS.certificateEvent });
   if (!auth.ok) return auth.response;
 
   if (auth.caller.role !== "employer") {

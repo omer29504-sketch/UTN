@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { env } from "@/lib/env";
+import { securityLog } from "@/lib/security/log";
+import { RATE_LIMITS, enforceRateLimit } from "@/lib/security/rate-limit";
+import { requestIp } from "@/lib/security/request-context";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,9 +26,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "stripe_not_configured" }, { status: 503 });
   }
 
+  // Signature verification is cheap but not free. Cap floods by source IP so
+  // forged deliveries cannot burn CPU; Stripe retries legitimate events.
+  const limited = await enforceRateLimit(requestIp(request) ?? "unknown-ip", RATE_LIMITS.webhook);
+  if (limited) {
+    securityLog("stripe_webhook_rate_limited", { ip: requestIp(request) });
+    return limited;
+  }
+
   const signature = request.headers.get("stripe-signature");
   if (!signature) {
     return NextResponse.json({ error: "missing_signature" }, { status: 400 });
+  }
+
+  // Stripe events are small; refuse oversized deliveries before buffering.
+  const declaredLength = Number(request.headers.get("content-length") ?? "0");
+  if (Number.isFinite(declaredLength) && declaredLength > 512 * 1024) {
+    return NextResponse.json({ error: "payload_too_large" }, { status: 413 });
   }
 
   const rawBody = await request.text();

@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { isPrivateCredentialKey } from "@utn/shared";
+import { MAX_UPLOAD_BYTES, isPrivateCredentialKey, sniffContentType } from "@utn/shared";
 import { headStorageObject, readStorageObject } from "@utn/storage";
 import { requireApiCaller } from "@/lib/api/auth";
 import { apiError, methodNotAllowed } from "@/lib/api/http";
+import { RATE_LIMITS } from "@/lib/security/rate-limit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -13,6 +14,15 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 const MAX_OCR_CHARACTERS = 20_000;
+const OCR_ACCEPTED_TYPES = new Set<string>(["application/pdf", "image/jpeg", "image/png"]);
+
+/**
+ * Per-instance concurrency cap. Tesseract spawns a WASM worker per request;
+ * without a ceiling a single account could exhaust CPU and memory. The
+ * distributed rate limit above caps the same account across instances.
+ */
+const OCR_CONCURRENCY_LIMIT = 2;
+let activeOcrJobs = 0;
 
 type AdminClient = NonNullable<ReturnType<typeof createSupabaseAdminClient>>;
 
@@ -28,10 +38,7 @@ async function persistOcrText(
 ): Promise<void> {
   const { error } = await admin
     .from("candidate_media")
-    .upsert(
-      { candidate_id: userId, ocr_extracted_text: text },
-      { onConflict: "candidate_id" },
-    );
+    .upsert({ candidate_id: userId, ocr_extracted_text: text }, { onConflict: "candidate_id" });
 
   if (error) throw error;
 }
@@ -50,7 +57,7 @@ function looksLikePdf(contentType: string | null, key: string): boolean {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireApiCaller(request);
+  const auth = await requireApiCaller(request, { rateLimit: RATE_LIMITS.ocr });
   if (!auth.ok) return auth.response;
 
   if (auth.caller.role !== "candidate") {
@@ -79,6 +86,17 @@ export async function POST(request: Request) {
     return apiError(400, "invalid_certificate_key", "The certificate key is not yours.");
   }
 
+  if (activeOcrJobs >= OCR_CONCURRENCY_LIMIT) {
+    return apiError(
+      429,
+      "ocr_busy",
+      "Automatic reading is busy right now. Try again in a moment.",
+      undefined,
+      { "Retry-After": "15" },
+    );
+  }
+
+  activeOcrJobs += 1;
   try {
     const { data: candidate, error: candidateError } = await admin
       .from("candidate_profiles")
@@ -125,9 +143,24 @@ export async function POST(request: Request) {
 
     const object = await readStorageObject({ bucket: "private-credentials", key });
 
+    if (object.bytes.byteLength > MAX_UPLOAD_BYTES["private-credentials"]) {
+      return apiError(
+        413,
+        "certificate_too_large",
+        "The certificate exceeds the 10 MB upload limit.",
+      );
+    }
+
+    // Validate the bytes themselves, not the declared upload type, before the
+    // buffer reaches the WASM worker.
+    const detected = sniffContentType(object.bytes);
+    if (!detected || !OCR_ACCEPTED_TYPES.has(detected)) {
+      return apiError(415, "unsupported_document", "Upload a PDF, JPEG, or PNG certificate.");
+    }
+
     // OCR only works on raster images. PDFs stay available for manual admin
     // review; we never imply that an unreadable document was checked.
-    if (looksLikePdf(object.contentType, key)) {
+    if (detected === "application/pdf") {
       await persistOcrText(admin, userId, null);
 
       return NextResponse.json({
@@ -181,6 +214,8 @@ export async function POST(request: Request) {
       "ocr_failed",
       "We could not read the document automatically. You can still submit it for manual review.",
     );
+  } finally {
+    activeOcrJobs -= 1;
   }
 }
 

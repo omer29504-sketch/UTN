@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { unlockCandidateSchema } from "@utn/shared";
 import { requireApiCaller } from "@/lib/api/auth";
 import { apiError, methodNotAllowed } from "@/lib/api/http";
+import { RATE_LIMITS } from "@/lib/security/rate-limit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@supabase/supabase-js";
 import { env } from "@/lib/env";
@@ -10,7 +11,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const auth = await requireApiCaller(request);
+  const auth = await requireApiCaller(request, { rateLimit: RATE_LIMITS.unlock });
   if (!auth.ok) return auth.response;
 
   if (auth.caller.role !== "employer") {
@@ -38,7 +39,10 @@ export async function POST(request: Request) {
     return apiError(503, "supabase_not_configured", "Authentication is not configured.");
   }
 
-  const bearer = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim();
+  const bearer = request.headers
+    .get("authorization")
+    ?.replace(/^Bearer\s+/i, "")
+    .trim();
   if (!bearer) {
     return apiError(401, "missing_token", "Sign in to continue.");
   }

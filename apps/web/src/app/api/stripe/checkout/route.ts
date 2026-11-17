@@ -10,6 +10,7 @@ import {
 } from "@utn/shared";
 import { requireApiCaller } from "@/lib/api/auth";
 import { apiError, methodNotAllowed } from "@/lib/api/http";
+import { RATE_LIMITS } from "@/lib/security/rate-limit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { env } from "@/lib/env";
 
@@ -21,7 +22,7 @@ function priceIdForEnvKey(key: string): string {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireApiCaller(request);
+  const auth = await requireApiCaller(request, { rateLimit: RATE_LIMITS.checkout });
   if (!auth.ok) return auth.response;
 
   if (!env.stripeSecretKey) {
@@ -103,7 +104,11 @@ export async function POST(request: Request) {
 
     const priceId = priceIdForEnvKey(CANDIDATE_PRO_PLAN.priceEnvKey);
     if (!priceId) {
-      return apiError(503, "price_not_configured", "Stripe price for Priority Pro is not configured.");
+      return apiError(
+        503,
+        "price_not_configured",
+        "Stripe price for Priority Pro is not configured.",
+      );
     }
 
     const { data: profile } = await admin

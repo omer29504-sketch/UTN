@@ -6,8 +6,9 @@ export function apiError(
   error: string,
   message: string,
   details?: unknown,
+  headers?: HeadersInit,
 ) {
-  return NextResponse.json<ApiError>({ error, message, details }, { status });
+  return NextResponse.json<ApiError>({ error, message, details }, { status, headers });
 }
 
 export function methodNotAllowed(allow: string) {

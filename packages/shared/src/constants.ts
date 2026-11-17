@@ -10,12 +10,7 @@
 export const ROLES = ["candidate", "employer", "admin"] as const;
 export type Role = (typeof ROLES)[number];
 
-export const VERIFICATION_STATUSES = [
-  "unverified",
-  "pending",
-  "verified",
-  "rejected",
-] as const;
+export const VERIFICATION_STATUSES = ["unverified", "pending", "verified", "rejected"] as const;
 export type VerificationStatus = (typeof VERIFICATION_STATUSES)[number];
 
 export const VERIFICATION_STATUS_LABELS: Record<VerificationStatus, string> = {
@@ -159,7 +154,9 @@ export type StorageBucket = (typeof STORAGE_BUCKET_NAMES)[number];
 export const ALLOWED_UPLOAD_MIME_TYPES = {
   "private-credentials": ["application/pdf", "image/jpeg", "image/png"],
   "pitch-videos": [...PITCH_UPLOAD_MIME_TYPES],
-  "company-logos": ["image/png", "image/jpeg", "image/webp", "image/svg+xml"],
+  // SVG is intentionally excluded: it can carry script and is served from the
+  // public logo bucket, which would give an attacker a same-origin foothold.
+  "company-logos": ["image/png", "image/jpeg", "image/webp"],
 } as const satisfies Record<StorageBucket, readonly string[]>;
 
 export const MAX_UPLOAD_BYTES = {

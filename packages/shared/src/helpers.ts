@@ -193,6 +193,96 @@ export function extensionForMimeType(mimeType: string): string {
   return MIME_EXTENSION_MAP[mimeType.toLowerCase()] ?? "bin";
 }
 
+export type SniffedContentType =
+  | "application/pdf"
+  | "image/jpeg"
+  | "image/png"
+  | "image/webp"
+  | "video/mp4"
+  | "video/quicktime"
+  | "video/webm";
+
+function byteAt(bytes: Uint8Array, index: number): number {
+  return bytes[index] ?? -1;
+}
+
+/**
+ * Detects the real content type from magic bytes.
+ *
+ * Presigned uploads sign the *declared* Content-Type, which stops accidental
+ * mismatches but not a caller that uploads arbitrary bytes. Server-side readers
+ * (OCR, certificate streaming) use this to reject polyglots and mislabeled
+ * files before handing them to a renderer or a WASM worker.
+ */
+export function sniffContentType(bytes: Uint8Array): SniffedContentType | null {
+  if (
+    byteAt(bytes, 0) === 0x25 &&
+    byteAt(bytes, 1) === 0x50 &&
+    byteAt(bytes, 2) === 0x44 &&
+    byteAt(bytes, 3) === 0x46 &&
+    byteAt(bytes, 4) === 0x2d
+  ) {
+    return "application/pdf";
+  }
+
+  if (byteAt(bytes, 0) === 0xff && byteAt(bytes, 1) === 0xd8 && byteAt(bytes, 2) === 0xff) {
+    return "image/jpeg";
+  }
+
+  if (
+    byteAt(bytes, 0) === 0x89 &&
+    byteAt(bytes, 1) === 0x50 &&
+    byteAt(bytes, 2) === 0x4e &&
+    byteAt(bytes, 3) === 0x47 &&
+    byteAt(bytes, 4) === 0x0d &&
+    byteAt(bytes, 5) === 0x0a &&
+    byteAt(bytes, 6) === 0x1a &&
+    byteAt(bytes, 7) === 0x0a
+  ) {
+    return "image/png";
+  }
+
+  const riff =
+    byteAt(bytes, 0) === 0x52 &&
+    byteAt(bytes, 1) === 0x49 &&
+    byteAt(bytes, 2) === 0x46 &&
+    byteAt(bytes, 3) === 0x46;
+
+  if (riff) {
+    if (
+      byteAt(bytes, 8) === 0x57 &&
+      byteAt(bytes, 9) === 0x45 &&
+      byteAt(bytes, 10) === 0x42 &&
+      byteAt(bytes, 11) === 0x50
+    ) {
+      return "image/webp";
+    }
+    if (
+      byteAt(bytes, 8) === 0x57 &&
+      byteAt(bytes, 9) === 0x45 &&
+      byteAt(bytes, 10) === 0x42 &&
+      byteAt(bytes, 11) === 0x4d
+    ) {
+      return "video/webm";
+    }
+  }
+
+  if (
+    byteAt(bytes, 4) === 0x66 &&
+    byteAt(bytes, 5) === 0x74 &&
+    byteAt(bytes, 6) === 0x79 &&
+    byteAt(bytes, 7) === 0x70
+  ) {
+    // `ftypqt` marks QuickTime; other ISO base-media brands are MP4.
+    if (byteAt(bytes, 8) === 0x71 && byteAt(bytes, 9) === 0x74) {
+      return "video/quicktime";
+    }
+    return "video/mp4";
+  }
+
+  return null;
+}
+
 // ── Storage helpers ──────────────────────────────────────────────────────────
 
 export function isStorageBucket(value: string): value is StorageBucket {

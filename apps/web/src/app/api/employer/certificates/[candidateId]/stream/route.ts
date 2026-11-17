@@ -1,7 +1,8 @@
-import { buildWatermarkSignature, uuidSchema } from "@utn/shared";
+import { buildWatermarkSignature, sniffContentType, uuidSchema } from "@utn/shared";
 import { isR2Configured, readStorageObject } from "@utn/storage";
 import { requireApiCaller } from "@/lib/api/auth";
 import { apiError, methodNotAllowed } from "@/lib/api/http";
+import { RATE_LIMITS } from "@/lib/security/rate-limit";
 import { requestFingerprint } from "@/lib/security/request-context";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -22,7 +23,7 @@ export const dynamic = "force-dynamic";
  *   * every successful read writes a 'certificate_viewed' audit row
  */
 
-const ALLOWED_CONTENT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png"]);
+const ALLOWED_CONTENT_TYPES = new Set<string>(["application/pdf", "image/jpeg", "image/png"]);
 
 /** Strict anti-cache headers — the document must never be stored anywhere. */
 const SECURE_HEADERS: Record<string, string> = {
@@ -36,13 +37,8 @@ const SECURE_HEADERS: Record<string, string> = {
   "Cross-Origin-Resource-Policy": "same-origin",
 };
 
-function normalizeContentType(value: string | null): string {
-  const base = (value ?? "").split(";")[0]?.trim().toLowerCase() ?? "";
-  return ALLOWED_CONTENT_TYPES.has(base) ? base : "application/octet-stream";
-}
-
 export async function GET(request: Request, context: { params: Promise<{ candidateId: string }> }) {
-  const auth = await requireApiCaller(request);
+  const auth = await requireApiCaller(request, { rateLimit: RATE_LIMITS.certificateStream });
   if (!auth.ok) return auth.response;
 
   if (auth.caller.role !== "employer") {
@@ -160,7 +156,13 @@ export async function GET(request: Request, context: { params: Promise<{ candida
     }
 
     const { bytes } = object;
-    const contentType = normalizeContentType(object.contentType);
+
+    // Trust the bytes, not the declared Content-Type. A mismatched object is
+    // never handed to the browser's PDF/image renderer.
+    const contentType = sniffContentType(bytes);
+    if (!contentType || !ALLOWED_CONTENT_TYPES.has(contentType)) {
+      return apiError(415, "unsupported_document", "This certificate format cannot be displayed.");
+    }
 
     // The Expo viewer cannot decode binary blobs reliably, so it asks for the
     // same audited bytes as an in-memory base64 payload. No URL is returned.

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireApiCaller } from "@/lib/api/auth";
 import { apiError, methodNotAllowed } from "@/lib/api/http";
+import { RATE_LIMITS } from "@/lib/security/rate-limit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseAuthClient } from "@/lib/supabase/auth";
 import { provisionAccount } from "@/lib/auth/provision";
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
  * available immediately (email confirmation disabled). Safe to call repeatedly.
  */
 export async function POST(request: Request) {
-  const auth = await requireApiCaller(request);
+  const auth = await requireApiCaller(request, { rateLimit: RATE_LIMITS.authProvision });
   if (!auth.ok) return auth.response;
 
   const admin = createSupabaseAdminClient();
@@ -22,7 +23,10 @@ export async function POST(request: Request) {
     return apiError(503, "supabase_not_configured", "Authentication is not configured.");
   }
 
-  const token = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim();
+  const token = request.headers
+    .get("authorization")
+    ?.replace(/^Bearer\s+/i, "")
+    .trim();
   if (!token) {
     return apiError(401, "missing_token", "Sign in to continue.");
   }

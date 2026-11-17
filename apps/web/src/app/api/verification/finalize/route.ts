@@ -7,6 +7,7 @@ import {
 import { headStorageObject } from "@utn/storage";
 import { requireApiCaller } from "@/lib/api/auth";
 import { apiError, methodNotAllowed } from "@/lib/api/http";
+import { RATE_LIMITS } from "@/lib/security/rate-limit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -17,7 +18,7 @@ function normalized(value: string | null | undefined): string {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireApiCaller(request);
+  const auth = await requireApiCaller(request, { rateLimit: RATE_LIMITS.finalize });
   if (!auth.ok) return auth.response;
 
   if (auth.caller.role !== "candidate") {

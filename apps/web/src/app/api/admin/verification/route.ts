@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { adminVerificationDecisionSchema } from "@utn/shared";
 import { requireApiCaller } from "@/lib/api/auth";
 import { apiError, methodNotAllowed } from "@/lib/api/http";
+import { RATE_LIMITS } from "@/lib/security/rate-limit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -12,7 +13,7 @@ export const dynamic = "force-dynamic";
  * decision lives on candidate_profiles; verification_reviews preserves history.
  */
 export async function POST(request: Request) {
-  const auth = await requireApiCaller(request);
+  const auth = await requireApiCaller(request, { rateLimit: RATE_LIMITS.adminDecision });
   if (!auth.ok) return auth.response;
 
   if (auth.caller.role !== "admin") {

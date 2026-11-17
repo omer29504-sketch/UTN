@@ -16,10 +16,13 @@ function cleanIp(value: string | null): string | null {
 
 /** Best-effort client IP from the edge/proxy headers. */
 export function requestIp(request: Request): string | null {
+  // Prefer headers written by the trusted edge proxy. `x-forwarded-for` is
+  // client-appendable when the origin is directly reachable, which would let a
+  // caller rotate their rate-limit key.
   return (
-    cleanIp(request.headers.get("x-forwarded-for")) ??
     cleanIp(request.headers.get("cf-connecting-ip")) ??
-    cleanIp(request.headers.get("x-real-ip"))
+    cleanIp(request.headers.get("x-real-ip")) ??
+    cleanIp(request.headers.get("x-forwarded-for"))
   );
 }
 

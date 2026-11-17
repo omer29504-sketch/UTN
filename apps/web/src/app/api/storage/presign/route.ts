@@ -15,12 +15,16 @@ import {
 } from "@utn/storage";
 import { requireApiCaller } from "@/lib/api/auth";
 import { apiError, methodNotAllowed } from "@/lib/api/http";
+import { RATE_LIMITS } from "@/lib/security/rate-limit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  const auth = await requireApiCaller(request, { rateLimit: RATE_LIMITS.presign });
+  if (!auth.ok) return auth.response;
+
   if (!isR2Configured()) {
     return apiError(503, "storage_not_configured", "Object storage is not configured.");
   }
@@ -45,9 +49,6 @@ export async function POST(request: Request) {
       issues: parsed.error.issues,
     });
   }
-
-  const auth = await requireApiCaller(request);
-  if (!auth.ok) return auth.response;
 
   const { userId, role } = auth.caller;
   const admin = createSupabaseAdminClient();

@@ -12,8 +12,7 @@
 const publicSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? "";
 const publicSupabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? "";
 const publicAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() ?? "";
-const publicStripePublishableKey =
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() ?? "";
+const publicStripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() ?? "";
 
 function read(key: string): string {
   return process.env[key]?.trim() ?? "";
@@ -43,6 +42,26 @@ export const env = {
   },
   get stripePublishableKey() {
     return publicStripePublishableKey;
+  },
+  /** Optional distributed rate-limit backend (Upstash Redis REST API). */
+  get upstashRedisRestUrl() {
+    return read("UPSTASH_REDIS_REST_URL");
+  },
+  get upstashRedisRestToken() {
+    return read("UPSTASH_REDIS_REST_TOKEN");
+  },
+  /**
+   * Extra browser origins allowed to call the API, in addition to the host the
+   * request arrived on. Comma-separated absolute URLs.
+   */
+  get securityAllowedOrigins() {
+    return read("SECURITY_ALLOWED_ORIGINS")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean);
+  },
+  get isProduction() {
+    return process.env.NODE_ENV === "production";
   },
 };
 
