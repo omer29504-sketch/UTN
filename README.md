@@ -14,12 +14,12 @@ Stripe billing.
 
 ## Phase status
 
-| Phase | Scope                                                                                                                                                  | Status       |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| **1** | Monorepo, shared domain package, R2 storage package, complete Supabase schema + seed, secured `/api/storage/presign`, design-system foundation preview | **Complete** |
-| **2** | Auth flows, candidate verification (document upload + 60–120s live pitch), tesseract.js OCR, admin review, mobile verification studio                 | **Complete** |
-| 3     | Employer onboarding, credit ledger, Stripe Checkout/webhooks, candidate discovery/unlock                                                               | **Complete** |
-| 4     | Landing page, unlimited logo marquee, Priority Pro analytics, realtime chat UI                                                                         | **Complete** |
+| Phase | Scope                                                                                                                                                           | Status                                |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| **1** | Monorepo, shared domain package, R2 storage package, complete Supabase schema + seed, secured `/api/storage/presign`, design-system foundation preview          | **Complete**                          |
+| **2** | Auth flows, candidate verification (document upload + 60–120s live pitch), tesseract.js OCR, admin review, mobile verification studio                           | **Complete**                          |
+| 3     | Employer onboarding, credit ledger, Stripe Checkout/webhooks, candidate discovery/unlock                                                                        | **Complete**                          |
+| 4     | Landing page, unlimited logo marquee, Priority Pro analytics, realtime chat UI                                                                                  | **Complete**                          |
 | 5     | Employer confidentiality consent, immutable document audit log, zero-download certificate streaming, anti-capture web canvas viewer, mobile screen-capture lock | **Complete** (apply migration `0004`) |
 
 Phase 2 ships authentication, candidate onboarding and verification, admin review, and
@@ -109,19 +109,12 @@ corepack enable
 pnpm install
 
 cp .env.example apps/web/.env.local
-cp .env.example apps/mobile/.env
 # Fill in Supabase + R2 + Stripe values.
-# Physical devices must point EXPO_PUBLIC_API_URL at your machine's LAN IP,
-# e.g. http://192.168.1.20:3000 instead of localhost.
 
 pnpm typecheck
 pnpm --filter @utn/web build
 
-# Terminal 1 — web
 pnpm dev:web
-
-# Terminal 2 — mobile
-pnpm dev:mobile
 ```
 
 ### Local Supabase
@@ -134,9 +127,8 @@ pnpm db:stop
 
 `supabase/config.toml` disables built-in Storage because all binaries live in R2.
 Copy the local API URL and anon/service-role keys printed by `supabase start` into
-`apps/web/.env.local` and `apps/mobile/.env`. `pnpm db:reset` applies all three migrations
-(`0001_initial_schema.sql`, `0002_verification_reviews.sql`,
-`0003_degree_verification_compliance.sql`) and then the seed.
+`apps/web/.env.local`. `pnpm db:reset` applies every migration in
+`supabase/migrations/` and then the seed.
 
 > Demo passwords are **local only**. Never reuse them in a deployed environment.
 
@@ -160,7 +152,6 @@ upload real objects through the app.
 All variables are documented in [`.env.example`](./.env.example). Highlights:
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
-- `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`
 - `R2_BUCKET_PRIVATE_CREDENTIALS`, `R2_BUCKET_PITCH_VIDEOS`, `R2_BUCKET_COMPANY_LOGOS`
 - `R2_PUBLIC_LOGOS_BASE_URL` (optional, public read domain for logos only)
@@ -411,7 +402,6 @@ Enforced in Postgres, not just the UI:
 | Command                        | Description                                |
 | ------------------------------ | ------------------------------------------ |
 | `pnpm dev:web`                 | Next.js dev server on `:3000`              |
-| `pnpm dev:mobile`              | Expo dev server                            |
 | `pnpm build`                   | Turbo build (Next production build)        |
 | `pnpm typecheck`               | TypeScript across all workspaces           |
 | `pnpm format` / `format:check` | Prettier                                   |

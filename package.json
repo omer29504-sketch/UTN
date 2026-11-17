@@ -10,7 +10,6 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=@utn/web",
-    "dev:mobile": "turbo run dev --filter=@utn/mobile",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write .",
