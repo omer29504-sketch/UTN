@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import {
@@ -25,6 +26,7 @@ import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
 import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Dashboard" };
 
 /** Compact dark stat tile that lives inside the engraved hero banner. */
 function HeroStat({

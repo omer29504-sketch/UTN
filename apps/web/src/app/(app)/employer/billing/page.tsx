@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowLeft, CreditCard, Sparkles } from "lucide-react";
 import { requireRole } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -11,6 +12,7 @@ import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
 import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Billing" };
 
 export default async function EmployerBillingPage({
   searchParams,

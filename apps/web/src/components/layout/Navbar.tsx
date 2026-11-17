@@ -176,7 +176,7 @@ export function Navbar({ role, email, credits }: NavbarProps) {
                         <link.icon
                           className={cn(
                             "size-4 transition-colors duration-300",
-                            active ? "text-accent-emerald-hover" : "text-ink-muted/70",
+                            active ? "text-accent-emerald-hover" : "text-ink-muted",
                           )}
                           aria-hidden
                         />
@@ -324,7 +324,7 @@ export function Navbar({ role, email, credits }: NavbarProps) {
                       <link.icon
                         className={cn(
                           "size-4",
-                          active ? "text-accent-emerald-hover" : "text-ink-muted/70",
+                          active ? "text-accent-emerald-hover" : "text-ink-muted",
                         )}
                         aria-hidden
                       />

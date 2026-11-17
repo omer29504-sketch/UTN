@@ -758,7 +758,7 @@ export function VerificationStudio() {
               </span>
             </div>
 
-            <div className="relative aspect-video w-full bg-[radial-gradient(circle_at_50%_20%,#1E293B_0%,#111827_50%,#090D16_100%)]">
+            <div className="relative aspect-video w-full bg-[radial-gradient(circle_at_50%_20%,#1E2740_0%,#0E1424_50%,#070B16_100%)]">
               {video.url ? (
                 <video
                   src={video.url}
@@ -909,7 +909,7 @@ export function VerificationStudio() {
             <ol className="mt-2 space-y-1.5">
               {TELEPROMPTER_CUES.map((item) => (
                 <li key={item.id} className="flex gap-2 text-[11px] leading-5 text-ink-muted">
-                  <span className="font-mono text-ink-muted/70">
+                  <span className="font-mono text-ink-muted">
                     {formatPitchDuration(item.startSeconds)}
                   </span>
                   <span>

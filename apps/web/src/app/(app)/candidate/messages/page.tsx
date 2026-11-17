@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowRight, MessageSquare } from "lucide-react";
 import { requireRole } from "@/lib/auth/session";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -7,6 +8,7 @@ import { Alert } from "@/components/ui/alert";
 import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Messages" };
 
 interface UnlockRow {
   company_id: string;

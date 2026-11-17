@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { ArrowRight, Building2, Filter, Search } from "lucide-react";
 import { requireSession } from "@/lib/auth/session";
@@ -19,6 +20,7 @@ import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Talent search" };
 
 interface SearchParams {
   q?: string;

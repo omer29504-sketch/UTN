@@ -147,9 +147,7 @@ export default async function AdminVerificationQueuePage() {
                         {candidate.graduation_year}
                       </p>
                       {candidate.headline ? (
-                        <p className="mt-1 truncate text-xs text-ink-muted/80">
-                          {candidate.headline}
-                        </p>
+                        <p className="mt-1 truncate text-xs text-ink-muted">{candidate.headline}</p>
                       ) : null}
                     </div>
 
