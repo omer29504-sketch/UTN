@@ -17,6 +17,16 @@ export default function AppError({
     console.error("Unhandled application error", error);
   }, [error]);
 
+  useEffect(() => {
+    // Client boundaries cannot export metadata, so brand the tab here and put
+    // the previous title back if a reset recovers the route.
+    const previous = document.title;
+    document.title = "Something went wrong · University Talent Network";
+    return () => {
+      document.title = previous;
+    };
+  }, []);
+
   return (
     <main
       id="main"
