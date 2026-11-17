@@ -6,15 +6,15 @@ type Tone = "info" | "success" | "error" | "warning";
 
 const styles: Record<Tone, { wrapper: string; icon: typeof Info }> = {
   info: {
-    wrapper: "border-accent-gold/30 bg-accent-gold-soft text-accent-gold-hover",
+    wrapper: "border-accent-gold/35 bg-accent-gold-soft/80 text-accent-gold-hover",
     icon: Info,
   },
   success: {
-    wrapper: "border-verified-emerald/25 bg-verified-emerald-soft text-emerald-700",
+    wrapper: "border-verified-emerald/30 bg-verified-emerald-soft/80 text-accent-emerald-hover",
     icon: CheckCircle2,
   },
-  error: { wrapper: "border-danger/20 bg-red-50 text-danger", icon: AlertCircle },
-  warning: { wrapper: "border-warning/25 bg-amber-50 text-warning", icon: AlertCircle },
+  error: { wrapper: "border-danger/25 bg-accent-rose-soft/80 text-danger", icon: AlertCircle },
+  warning: { wrapper: "border-warning/25 bg-[#FBF0DA]/80 text-warning", icon: AlertCircle },
 };
 
 export function Alert({

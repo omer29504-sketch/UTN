@@ -110,11 +110,11 @@ export default async function AdminReviewDetailPage({
         Back to queue
       </Link>
 
-      <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+      <section className="border-white/12 relative isolate overflow-hidden rounded-3xl border bg-jewel-ink p-6 text-white shadow-luxe sm:p-8">
         <TopographicHeroBg fadeTo="navy" />
         <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="eyebrow text-accent-gold">Candidate review</p>
+            <p className="eyebrow text-champagne">Candidate review</p>
             <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
               {profile.full_name}
             </h1>
@@ -222,7 +222,7 @@ export default async function AdminReviewDetailPage({
                     href={certificateUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-[11px] font-semibold text-brand-navy"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface-card px-2.5 py-1.5 text-[11px] font-semibold text-ink-primary"
                   >
                     Open
                     <ExternalLink className="size-3" aria-hidden />
@@ -298,7 +298,7 @@ export default async function AdminReviewDetailPage({
                   ? `${formatPitchDuration(media.video_duration_seconds)} · camera-only recording · signed link expires in 10 minutes.`
                   : "Signed link expires in 10 minutes."
               }
-              action={<Video className="size-4 text-accent-emerald" aria-hidden />}
+              action={<Video className="size-4 text-accent-emerald-hover" aria-hidden />}
             />
             <div className="mt-4">
               {videoUrl ? (

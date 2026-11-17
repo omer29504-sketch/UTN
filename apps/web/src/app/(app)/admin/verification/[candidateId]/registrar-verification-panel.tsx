@@ -88,7 +88,7 @@ export function RegistrarVerificationPanel({
                   href={reference}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent-emerald transition hover:text-accent-emerald-hover"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent-emerald-hover transition hover:text-accent-emerald-hover"
                 >
                   Open University Verification Link
                   <ExternalLink className="size-3.5" aria-hidden />
@@ -156,7 +156,7 @@ export function RegistrarVerificationPanel({
                 : "Registrar consent is required before drafting this email"
             }
             className={cn(
-              "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-line bg-white px-3 text-xs font-semibold text-brand-navy shadow-sm transition",
+              "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-line bg-surface-card px-3 text-xs font-semibold text-ink-primary shadow-sm transition",
               registrarConsentGiven
                 ? "hover:border-ink-muted/40 hover:bg-surface-muted"
                 : "pointer-events-none opacity-50",

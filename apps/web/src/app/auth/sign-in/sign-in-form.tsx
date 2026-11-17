@@ -75,7 +75,7 @@ export function SignInForm() {
 
   return (
     <div>
-      <p className="eyebrow text-accent-gold-hover">Welcome back</p>
+      <p className="eyebrow text-champagne-ink">Welcome back</p>
       <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
         Sign in to your account
       </h1>
@@ -141,12 +141,15 @@ export function SignInForm() {
 
       <p className="mt-6 text-center text-sm text-ink-muted">
         New here?{" "}
-        <Link href="/auth/sign-up" className="font-semibold text-accent-emerald hover:underline">
+        <Link
+          href="/auth/sign-up"
+          className="font-semibold text-accent-emerald-hover hover:underline"
+        >
           Create an account
         </Link>
       </p>
 
-      <div className="mt-8 rounded-xl border border-line bg-white p-3.5 text-xs text-ink-muted">
+      <div className="mt-8 rounded-xl border border-line bg-surface-card p-3.5 text-xs text-ink-muted">
         <p className="font-semibold text-brand-navy">Local demo accounts</p>
         <p className="mt-1">
           Candidate <span className="font-mono">amara.okafor@gmail.com</span> · Employer{" "}

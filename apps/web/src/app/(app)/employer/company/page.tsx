@@ -37,11 +37,11 @@ export default async function EmployerCompanyPage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+      <section className="border-white/12 relative isolate overflow-hidden rounded-3xl border bg-jewel-ink p-6 text-white shadow-luxe sm:p-8">
         <TopographicHeroBg fadeTo="navy" />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow text-accent-gold">Employer onboarding</p>
+            <p className="eyebrow text-champagne">Employer onboarding</p>
             <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
               {company ? "Company profile" : "Set up your company"}
             </h1>
@@ -58,21 +58,21 @@ export default async function EmployerCompanyPage() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <SpotlightGlassCard className="p-5">
-          <Building2 className="size-5 text-accent-emerald" aria-hidden />
+          <Building2 className="size-5 text-accent-emerald-hover" aria-hidden />
           <p className="mt-3 font-display text-xl font-extrabold text-brand-navy">
             {company?.company_name ?? "Not set"}
           </p>
           <p className="text-xs text-ink-muted">Company</p>
         </SpotlightGlassCard>
         <SpotlightGlassCard className="p-5">
-          <CreditCard className="size-5 text-accent-emerald" aria-hidden />
+          <CreditCard className="size-5 text-accent-emerald-hover" aria-hidden />
           <p className="mt-3 font-display text-xl font-extrabold text-brand-navy">
             {Number(balance ?? 0)} credits
           </p>
           <p className="text-xs text-ink-muted">Trial balance from the immutable ledger</p>
         </SpotlightGlassCard>
         <SpotlightGlassCard className="p-5">
-          <ShieldCheck className="size-5 text-accent-emerald" aria-hidden />
+          <ShieldCheck className="size-5 text-accent-emerald-hover" aria-hidden />
           <p className="mt-3 font-display text-xl font-extrabold text-brand-navy">
             {company?.corporate_domain ?? "—"}
           </p>

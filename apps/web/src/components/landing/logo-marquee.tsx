@@ -21,12 +21,12 @@ export function LogoMarquee({ logos }: { logos: Logo[] }) {
   const track = [...items, ...items];
 
   return (
-    <div className="relative overflow-hidden py-6 mask-fade-x">
+    <div className="mask-fade-x relative overflow-hidden py-6">
       <div className="flex w-max animate-marquee gap-12">
         {track.map((logo, index) => (
           <div
             key={`${logo.id}-${index}`}
-            className="flex h-14 w-36 shrink-0 items-center justify-center rounded-xl border border-line bg-white px-4 shadow-sm"
+            className="flex h-14 w-36 shrink-0 items-center justify-center rounded-xl border border-line bg-surface-card px-4 shadow-sm"
           >
             {logo.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element

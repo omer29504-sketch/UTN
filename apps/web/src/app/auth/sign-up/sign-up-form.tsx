@@ -132,7 +132,7 @@ export function SignUpForm() {
         </p>
         <Link
           href="/auth/sign-in"
-          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white"
         >
           Go to sign in
           <ArrowRight className="size-4" aria-hidden />
@@ -143,7 +143,7 @@ export function SignUpForm() {
 
   return (
     <div>
-      <p className="eyebrow text-accent-gold-hover">Create an account</p>
+      <p className="eyebrow text-champagne-ink">Create an account</p>
       <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
         Start with the right profile
       </h1>
@@ -168,11 +168,11 @@ export function SignUpForm() {
                 "rounded-xl border p-3.5 text-left transition",
                 active
                   ? "border-accent-emerald bg-accent-emerald-soft ring-2 ring-accent-emerald/20"
-                  : "border-line bg-white hover:border-ink-muted/40",
+                  : "border-line bg-surface-card hover:border-accent-gold/50",
               )}
             >
               <option.icon
-                className={cn("size-5", active ? "text-accent-emerald" : "text-ink-muted")}
+                className={cn("size-5", active ? "text-accent-emerald-hover" : "text-ink-muted")}
                 aria-hidden
               />
               <p className="mt-2 text-sm font-semibold text-brand-navy">{option.label}</p>
@@ -282,7 +282,10 @@ export function SignUpForm() {
 
       <p className="mt-6 text-center text-sm text-ink-muted">
         Already have an account?{" "}
-        <Link href="/auth/sign-in" className="font-semibold text-accent-emerald hover:underline">
+        <Link
+          href="/auth/sign-in"
+          className="font-semibold text-accent-emerald-hover hover:underline"
+        >
           Sign in
         </Link>
       </p>

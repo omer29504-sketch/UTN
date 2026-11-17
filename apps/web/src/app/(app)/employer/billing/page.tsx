@@ -50,7 +50,7 @@ export default async function EmployerBillingPage({
     <div className="space-y-6">
       <Link
         href="/employer/candidates"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald-hover hover:underline"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Back to candidates
@@ -67,11 +67,11 @@ export default async function EmployerBillingPage({
         </Alert>
       ) : null}
 
-      <section className="relative isolate animate-slide-in overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+      <section className="border-white/12 relative isolate animate-slide-in overflow-hidden rounded-3xl border bg-jewel-ink p-6 text-white shadow-luxe sm:p-8">
         <TopographicHeroBg fadeTo="navy" />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow text-accent-gold">Billing</p>
+            <p className="eyebrow text-champagne">Billing</p>
             <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
               {company.company_name}
             </h1>

@@ -39,11 +39,11 @@ export default async function CandidateProfilePage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+      <section className="border-white/12 relative isolate overflow-hidden rounded-3xl border bg-jewel-ink p-6 text-white shadow-luxe sm:p-8">
         <TopographicHeroBg fadeTo="navy" />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow text-accent-gold">Candidate onboarding</p>
+            <p className="eyebrow text-champagne">Candidate onboarding</p>
             <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
               Your profile
             </h1>
@@ -75,7 +75,7 @@ export default async function CandidateProfilePage() {
       <Card className="border-accent-emerald/20 bg-gradient-to-br from-white to-accent-emerald-soft/40">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-start gap-3">
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent-emerald-soft text-accent-emerald">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent-emerald-soft text-accent-emerald-hover">
               <ScanFace className="size-5" aria-hidden />
             </span>
             <div>
@@ -90,7 +90,7 @@ export default async function CandidateProfilePage() {
           </div>
           <Link
             href="/candidate/verification"
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white"
+            className="inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white"
           >
             Open verification
             <ArrowRight className="size-4" aria-hidden />

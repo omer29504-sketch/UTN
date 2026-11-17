@@ -137,7 +137,11 @@ export function Navbar({ role, email, credits }: NavbarProps) {
     <>
       <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
         <div className="mx-auto max-w-6xl">
-          <div className="relative flex h-16 items-center justify-between gap-3 rounded-2xl border border-white/70 border-b-line/60 bg-white/70 px-3 shadow-luxe backdrop-blur-xl sm:px-4">
+          <div className="relative flex h-16 items-center justify-between gap-3 rounded-2xl border border-line/80 bg-surface-card/75 px-3 shadow-luxe backdrop-blur-2xl sm:px-4">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-x-6 top-0 h-px animate-line-sweep bg-gradient-to-r from-transparent via-accent-gold/60 to-transparent bg-[length:200%_100%]"
+            />
             <div className="flex min-w-0 items-center gap-2 sm:gap-5">
               <BrandMark href={role ? "/dashboard" : "/"} />
 
@@ -149,7 +153,7 @@ export function Navbar({ role, email, credits }: NavbarProps) {
                   {indicator ? (
                     <span
                       aria-hidden
-                      className="absolute inset-y-1.5 rounded-xl bg-accent-emerald-soft ring-1 ring-inset ring-accent-emerald/20 transition-[left,width] duration-500 ease-out-expo"
+                      className="absolute inset-y-1.5 rounded-xl bg-gradient-to-r from-accent-emerald/15 via-accent-sapphire/10 to-accent-amethyst/10 ring-1 ring-inset ring-accent-gold/30 transition-[left,width] duration-500 ease-out-expo"
                       style={{ left: indicator.left, width: indicator.width }}
                     />
                   ) : null}
@@ -166,15 +170,13 @@ export function Navbar({ role, email, credits }: NavbarProps) {
                         aria-current={active ? "page" : undefined}
                         className={cn(
                           "relative z-10 inline-flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors duration-300",
-                          active
-                            ? "text-brand-navy"
-                            : "text-ink-muted hover:text-brand-navy",
+                          active ? "text-ink-primary" : "text-ink-muted hover:text-ink-primary",
                         )}
                       >
                         <link.icon
                           className={cn(
                             "size-4 transition-colors duration-300",
-                            active ? "text-accent-emerald" : "text-ink-muted/70",
+                            active ? "text-accent-emerald-hover" : "text-ink-muted/70",
                           )}
                           aria-hidden
                         />
@@ -189,7 +191,7 @@ export function Navbar({ role, email, credits }: NavbarProps) {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="rounded-xl px-3.5 py-2 text-sm font-semibold text-ink-muted transition-colors duration-300 hover:bg-surface-muted hover:text-brand-navy"
+                      className="rounded-xl px-3.5 py-2 text-sm font-semibold text-ink-muted transition-colors duration-300 hover:bg-surface-muted/80 hover:text-ink-primary"
                     >
                       {link.label}
                     </Link>
@@ -202,7 +204,7 @@ export function Navbar({ role, email, credits }: NavbarProps) {
               {role === "employer" && credits != null ? (
                 <Link
                   href="/employer/billing"
-                  className="hidden items-center gap-1.5 rounded-full border border-accent-gold/35 bg-accent-gold-soft px-3 py-1.5 text-[11px] font-semibold text-accent-gold-hover transition-colors hover:border-accent-gold/60 sm:inline-flex"
+                  className="hidden items-center gap-1.5 rounded-full border border-accent-gold/45 bg-jewel-gold px-3 py-1.5 text-[11px] font-semibold text-brand-navy shadow-gold-hairline transition-transform hover:-translate-y-px sm:inline-flex"
                 >
                   <Sparkles className="size-3.5" aria-hidden />
                   {credits} unlock credit{credits === 1 ? "" : "s"}
@@ -212,11 +214,11 @@ export function Navbar({ role, email, credits }: NavbarProps) {
               {role ? (
                 <>
                   <div className="hidden items-center gap-2 md:flex">
-                    <span className="grid size-8 place-items-center rounded-full bg-accent-emerald-soft font-display text-xs font-bold text-accent-emerald ring-1 ring-inset ring-accent-emerald/15">
+                    <span className="grid size-8 place-items-center rounded-full bg-gradient-to-br from-accent-emerald to-accent-sapphire font-display text-xs font-bold text-white ring-1 ring-inset ring-white/25">
                       {(email ?? "?").slice(0, 1).toUpperCase()}
                     </span>
                     <div className="hidden text-right xl:block">
-                      <p className="max-w-[170px] truncate text-xs font-semibold text-brand-navy">
+                      <p className="max-w-[170px] truncate text-xs font-semibold text-ink-primary">
                         {email}
                       </p>
                       <RoleBadge role={role} />
@@ -242,13 +244,13 @@ export function Navbar({ role, email, credits }: NavbarProps) {
                 <>
                   <Link
                     href="/auth/sign-in"
-                    className="hidden rounded-xl px-3.5 py-2 text-sm font-semibold text-brand-navy transition-colors hover:bg-surface-muted sm:inline-flex"
+                    className="hidden rounded-xl px-3.5 py-2 text-sm font-semibold text-ink-primary transition-colors hover:bg-surface-muted/80 sm:inline-flex"
                   >
                     Sign in
                   </Link>
                   <Link
                     href="/auth/sign-up"
-                    className="sheen inline-flex items-center gap-1.5 rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-300 ease-out-expo hover:bg-brand-navy-soft"
+                    className="sheen inline-flex items-center gap-1.5 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white/10 transition duration-300 ease-out-expo hover:-translate-y-px hover:shadow-floating"
                   >
                     Get started
                   </Link>
@@ -272,7 +274,7 @@ export function Navbar({ role, email, credits }: NavbarProps) {
             role="dialog"
             aria-modal="true"
             aria-label="Navigation"
-            className="absolute inset-y-0 right-0 flex w-[88%] max-w-sm animate-slide-in flex-col border-l border-line/80 bg-white/95 shadow-floating backdrop-blur-xl"
+            className="absolute inset-y-0 right-0 flex w-[88%] max-w-sm animate-slide-in flex-col border-l border-line/80 bg-surface-card/95 shadow-floating backdrop-blur-2xl"
           >
             <div className="flex items-center justify-between border-b border-line/70 px-5 py-4">
               <BrandMark href="/dashboard" />
@@ -288,15 +290,15 @@ export function Navbar({ role, email, credits }: NavbarProps) {
             </div>
 
             <div className="flex-1 overflow-y-auto px-4 py-5">
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-line/80 bg-surface-canvas px-4 py-3">
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-line/80 bg-surface-canvas/80 px-4 py-3">
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-semibold text-brand-navy">{email}</p>
+                  <p className="truncate text-xs font-semibold text-ink-primary">{email}</p>
                   <div className="mt-1">
                     <RoleBadge role={role} />
                   </div>
                 </div>
                 {role === "employer" && credits != null ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent-gold/35 bg-accent-gold-soft px-2.5 py-1 text-[11px] font-semibold text-accent-gold-hover">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent-gold/45 bg-jewel-gold px-2.5 py-1 text-[11px] font-semibold text-brand-navy">
                     <Sparkles className="size-3" aria-hidden />
                     {credits}
                   </span>
@@ -315,14 +317,14 @@ export function Navbar({ role, email, credits }: NavbarProps) {
                       className={cn(
                         "flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold transition-colors",
                         active
-                          ? "bg-accent-emerald-soft text-brand-navy ring-1 ring-inset ring-accent-emerald/20"
-                          : "text-ink-muted hover:bg-surface-muted hover:text-brand-navy",
+                          ? "bg-gradient-to-r from-accent-emerald/15 via-accent-sapphire/10 to-accent-amethyst/10 text-ink-primary ring-1 ring-inset ring-accent-gold/30"
+                          : "text-ink-muted hover:bg-surface-muted/80 hover:text-ink-primary",
                       )}
                     >
                       <link.icon
                         className={cn(
                           "size-4",
-                          active ? "text-accent-emerald" : "text-ink-muted/70",
+                          active ? "text-accent-emerald-hover" : "text-ink-muted/70",
                         )}
                         aria-hidden
                       />

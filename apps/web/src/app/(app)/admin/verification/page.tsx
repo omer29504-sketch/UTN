@@ -68,11 +68,11 @@ export default async function AdminVerificationQueuePage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+      <section className="border-white/12 relative isolate overflow-hidden rounded-3xl border bg-jewel-ink p-6 text-white shadow-luxe sm:p-8">
         <TopographicHeroBg fadeTo="navy" />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow text-accent-gold">Admin review</p>
+            <p className="eyebrow text-champagne">Admin review</p>
             <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
               Verification queue
             </h1>
@@ -131,7 +131,7 @@ export default async function AdminVerificationQueuePage() {
                     href={`/admin/verification/${candidate.user_id}`}
                     className="group flex flex-wrap items-center gap-4 p-4 sm:p-5"
                   >
-                    <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent-emerald-soft font-display text-sm font-bold text-accent-emerald">
+                    <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent-emerald-soft font-display text-sm font-bold text-accent-emerald-hover">
                       {initials || "C"}
                     </span>
 
@@ -174,7 +174,7 @@ export default async function AdminVerificationQueuePage() {
                       </span>
                     </div>
 
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-accent-emerald">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-accent-emerald-hover">
                       Review
                       <ArrowRight
                         className="size-4 transition group-hover:translate-x-0.5"

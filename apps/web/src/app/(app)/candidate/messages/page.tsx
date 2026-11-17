@@ -34,10 +34,10 @@ export default async function CandidateMessagesPage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+      <section className="border-white/12 relative isolate overflow-hidden rounded-3xl border bg-jewel-ink p-6 text-white shadow-luxe sm:p-8">
         <TopographicHeroBg fadeTo="navy" />
         <div className="relative">
-          <p className="eyebrow text-accent-gold">Messages</p>
+          <p className="eyebrow text-champagne">Messages</p>
           <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
             Your conversations
           </h1>
@@ -69,7 +69,7 @@ export default async function CandidateMessagesPage() {
             >
               <Card className="transition hover:shadow-card">
                 <div className="flex items-center gap-3">
-                  <span className="grid size-10 place-items-center rounded-xl bg-accent-emerald-soft text-accent-emerald">
+                  <span className="grid size-10 place-items-center rounded-xl bg-accent-emerald-soft text-accent-emerald-hover">
                     <MessageSquare className="size-5" aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">

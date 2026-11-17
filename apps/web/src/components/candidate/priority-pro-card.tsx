@@ -34,13 +34,13 @@ export function PriorityProCard({ isFeatured }: { isFeatured: boolean }) {
 
   if (isFeatured) {
     return (
-      <SpotlightGlassCard className="hairline-gold p-6">
+      <SpotlightGlassCard className="jewel-border hairline-gold relative p-6">
         <div className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-xl border border-accent-gold/30 bg-accent-gold-soft text-accent-gold-hover">
+          <span className="grid size-11 place-items-center rounded-xl border border-accent-gold/40 bg-jewel-gold text-brand-navy shadow-gold-hairline">
             <Sparkles className="size-5" aria-hidden />
           </span>
           <div>
-            <h2 className="font-display text-lg font-bold text-brand-navy">Priority Pro active</h2>
+            <h2 className="font-display text-lg font-bold text-ink-primary">Priority Pro active</h2>
             <p className="text-sm text-ink-muted">
               Your profile is pinned higher in employer search results.
             </p>
@@ -51,15 +51,15 @@ export function PriorityProCard({ isFeatured }: { isFeatured: boolean }) {
   }
 
   return (
-    <SpotlightGlassCard className="p-6">
+    <SpotlightGlassCard className="jewel-border relative p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-accent-gold/30 bg-accent-gold-soft text-accent-gold-hover">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-accent-gold/40 bg-jewel-gold text-brand-navy shadow-gold-hairline">
             <Sparkles className="size-5" aria-hidden />
           </span>
           <div>
             <p className="eyebrow">Prestige placement</p>
-            <h2 className="mt-1.5 font-display text-lg font-bold text-brand-navy">Priority Pro</h2>
+            <h2 className="mt-1.5 font-display text-lg font-bold text-ink-primary">Priority Pro</h2>
             <p className="mt-1 max-w-xl text-sm leading-6 text-ink-muted">
               Pin your profile higher in search results and unlock profile-view analytics.
             </p>
@@ -69,7 +69,8 @@ export function PriorityProCard({ isFeatured }: { isFeatured: boolean }) {
           <Button
             onClick={() => void startCheckout()}
             loading={loading}
-            className="gap-2 bg-brand-navy hover:bg-brand-navy-soft"
+            variant="gold"
+            className="gap-2"
           >
             <Sparkles className="size-4" aria-hidden />
             Upgrade

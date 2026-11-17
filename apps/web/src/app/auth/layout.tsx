@@ -7,6 +7,7 @@ import { GradCap } from "@/components/motion/grad-cap";
 import { Reveal } from "@/components/motion/reveal";
 import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
 import { AuroraRibbons } from "@/components/ui/AuroraRibbons";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Account",
@@ -45,34 +46,53 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             <GradCap className="h-full w-full" />
           </div>
           <Reveal>
-            <p className="eyebrow text-accent-gold">Verified talent. Real potential.</p>
+            <p className="eyebrow text-champagne">Verified talent. Real potential.</p>
           </Reveal>
           <Reveal delay={80}>
             <h1 className="mt-5 font-display text-4xl font-extrabold leading-tight text-white">
-              Prove your degree once. Let your pitch do the talking.
+              Prove your degree once.{" "}
+              <span className="text-champagne">Let your pitch do the talking.</span>
             </h1>
           </Reveal>
           <div className="mt-10 space-y-3">
-            {highlights.map((item, index) => (
-              <Reveal key={item.title} delay={160 + index * 70}>
-                <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-md">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-accent-emerald/25 bg-accent-emerald/10 text-accent-emerald">
-                    <item.icon className="size-5" aria-hidden />
-                  </span>
-                  <div>
-                    <p className="text-sm font-semibold text-white">{item.title}</p>
-                    <p className="mt-0.5 text-xs leading-5 text-white/55">{item.body}</p>
+            {highlights.map((item, index) => {
+              const tones = [
+                "border-accent-emerald/30 bg-accent-emerald/10 text-accent-emerald",
+                "border-accent-sapphire/30 bg-accent-sapphire/10 text-accent-sapphire",
+                "border-accent-gold/30 bg-accent-gold/10 text-accent-gold",
+              ];
+              return (
+                <Reveal key={item.title} delay={160 + index * 70}>
+                  <div className="jewel-border relative flex gap-3 rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur-md">
+                    <span
+                      className={cn(
+                        "grid size-10 shrink-0 place-items-center rounded-xl border",
+                        tones[index % tones.length],
+                      )}
+                    >
+                      <item.icon className="size-5" aria-hidden />
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold text-white">{item.title}</p>
+                      <p className="mt-0.5 text-xs leading-5 text-white/55">{item.body}</p>
+                    </div>
                   </div>
-                </div>
-              </Reveal>
-            ))}
+                </Reveal>
+              );
+            })}
           </div>
         </div>
 
-        <p className="relative text-xs text-white/40">University Talent Network · Phase 2</p>
+        <p className="relative text-xs text-white/60">
+          University Talent Network · Private by design
+        </p>
       </aside>
 
-      <div className="relative flex flex-col bg-surface-canvas">
+      <div className="relative flex flex-col overflow-hidden bg-surface-canvas">
+        <div
+          aria-hidden
+          className="aurora-wash pointer-events-none absolute inset-x-0 top-0 h-[420px]"
+        />
         <div
           className="bg-luxury-grain pointer-events-none absolute inset-0 opacity-60"
           aria-hidden
@@ -82,7 +102,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           <BrandMark href="/" />
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-ink-muted transition hover:bg-white hover:text-brand-navy"
+            className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-ink-muted transition hover:bg-surface-card hover:text-ink-primary"
           >
             <ArrowLeft className="size-3.5" aria-hidden />
             Back to home
@@ -94,7 +114,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           className="relative flex flex-1 items-center justify-center px-5 pb-12 sm:px-8"
         >
           <div className="w-full max-w-md">
-            <SpotlightGlassCard className="p-6 sm:p-8">{children}</SpotlightGlassCard>
+            <SpotlightGlassCard className="jewel-border relative p-6 sm:p-8">
+              {children}
+            </SpotlightGlassCard>
           </div>
         </main>
       </div>

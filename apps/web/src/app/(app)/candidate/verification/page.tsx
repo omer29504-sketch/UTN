@@ -135,12 +135,12 @@ function LockedSubmission({
           <CardHeader title="Private media" description="Short-lived signed links only." />
           <div className="mt-4 space-y-2">
             <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-canvas p-3">
-              <FileCheck2 className="size-4 text-accent-emerald" aria-hidden />
+              <FileCheck2 className="size-4 text-accent-emerald-hover" aria-hidden />
               <span className="flex-1 text-xs font-medium text-brand-navy">Degree certificate</span>
               <Badge tone="emerald">Stored</Badge>
             </div>
             <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-canvas p-3">
-              <Camera className="size-4 text-accent-emerald" aria-hidden />
+              <Camera className="size-4 text-accent-emerald-hover" aria-hidden />
               <span className="flex-1 text-xs font-medium text-brand-navy">
                 Live pitch · {formatPitchDuration(media?.video_duration_seconds ?? 0)}
               </span>
@@ -157,14 +157,14 @@ function LockedSubmission({
       <div className="flex flex-wrap gap-3">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white"
+          className="inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white"
         >
           Back to dashboard
           <ArrowRight className="size-4" aria-hidden />
         </Link>
         <Link
           href="/candidate/profile"
-          className="inline-flex items-center gap-2 rounded-xl border border-line bg-white px-4 py-2.5 text-sm font-semibold text-brand-navy"
+          className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface-card px-4 py-2.5 text-sm font-semibold text-ink-primary"
         >
           View profile
         </Link>
@@ -202,7 +202,7 @@ export default async function CandidateVerificationPage() {
   if (!profile) {
     return (
       <Card className="border-accent-emerald/20 bg-gradient-to-br from-white to-accent-emerald-soft/40">
-        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald">
+        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover">
           <ScanFace className="size-6" aria-hidden />
         </span>
         <h1 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
@@ -214,7 +214,7 @@ export default async function CandidateVerificationPage() {
         </p>
         <Link
           href="/candidate/profile"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white"
         >
           Go to profile
           <ArrowRight className="size-4" aria-hidden />
@@ -227,11 +227,11 @@ export default async function CandidateVerificationPage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+      <section className="border-white/12 relative isolate overflow-hidden rounded-3xl border bg-jewel-ink p-6 text-white shadow-luxe sm:p-8">
         <TopographicHeroBg fadeTo="navy" />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow text-accent-gold">Candidate verification</p>
+            <p className="eyebrow text-champagne">Candidate verification</p>
             <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
               Prove your degree. Pitch live.
             </h1>

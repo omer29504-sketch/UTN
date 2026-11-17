@@ -25,13 +25,13 @@ export default function EmployerConfidentialityPage() {
     <main id="main" className="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-16">
       <Link
         href="/employer/candidates"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald-hover hover:underline"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Back to candidates
       </Link>
 
-      <header className="mt-6 rounded-3xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-10">
+      <header className="border-white/12 mt-6 rounded-3xl border bg-jewel-ink p-6 text-white shadow-card sm:p-10">
         <span className="inline-flex items-center gap-2 rounded-full bg-verified-emerald/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-verified-emerald">
           <ShieldCheck className="size-3.5" aria-hidden />
           Version {EMPLOYER_CONFIDENTIALITY_CLAUSE.version}

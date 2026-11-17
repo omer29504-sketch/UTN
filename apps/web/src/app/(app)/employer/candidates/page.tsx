@@ -69,7 +69,7 @@ export default async function EmployerCandidatesPage({
   if (!company) {
     return (
       <SpotlightGlassCard className="p-6">
-        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald ring-1 ring-inset ring-accent-emerald/15">
+        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15">
           <Building2 className="size-6" aria-hidden />
         </span>
         <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
@@ -80,7 +80,7 @@ export default async function EmployerCandidatesPage({
         </p>
         <Link
           href="/employer/company"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white"
         >
           Create company profile
           <ArrowRight className="size-4" aria-hidden />
@@ -123,11 +123,11 @@ export default async function EmployerCandidatesPage({
   return (
     <div className="space-y-6">
       <Reveal>
-        <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+        <section className="border-white/12 relative isolate overflow-hidden rounded-3xl border bg-jewel-ink p-6 text-white shadow-luxe sm:p-8">
           <TopographicHeroBg fadeTo="navy" />
           <div className="relative flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="eyebrow text-accent-gold">Candidate discovery</p>
+              <p className="eyebrow text-champagne">Candidate discovery</p>
               <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
                 {company.company_name}
               </h1>
@@ -157,7 +157,7 @@ export default async function EmployerCandidatesPage({
       <Reveal delay={60}>
         <SpotlightGlassCard className="p-4 sm:p-5">
           <div className="mb-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
-            <Filter className="size-3.5 text-accent-emerald" aria-hidden />
+            <Filter className="size-3.5 text-accent-emerald-hover" aria-hidden />
             Refine the directory
           </div>
           <form method="get">
@@ -232,7 +232,7 @@ export default async function EmployerCandidatesPage({
                     type="checkbox"
                     name="onlyFeatured"
                     value="1"
-                    className="size-4 accent-[#10B981]"
+                    className="size-4 accent-[#0E9F6E]"
                     defaultChecked={params.onlyFeatured === "1" || params.onlyFeatured === "true"}
                   />
                   Priority Pro only
@@ -288,7 +288,7 @@ export default async function EmployerCandidatesPage({
 
       {rows.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-2 py-12 text-center">
-          <span className="grid size-14 animate-float-slow place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald motion-reduce:animate-none">
+          <span className="grid size-14 animate-float-slow place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover motion-reduce:animate-none">
             <Search className="size-6" aria-hidden />
           </span>
           <p className="text-sm font-semibold text-brand-navy">

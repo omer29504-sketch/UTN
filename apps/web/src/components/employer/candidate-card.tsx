@@ -98,7 +98,7 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
     <SpotlightGlassCard interactive className="flex h-full flex-col gap-3 p-5">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate font-display text-lg font-bold text-brand-navy">{displayName}</p>
+          <p className="truncate font-display text-lg font-bold text-ink-primary">{displayName}</p>
           {candidate.headline ? (
             <p className="mt-0.5 truncate text-sm text-ink-muted">{candidate.headline}</p>
           ) : null}
@@ -167,10 +167,13 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
 
       {unlocked ? (
         <div className="space-y-2 rounded-xl border border-accent-emerald/30 bg-accent-emerald/[0.06] p-3 text-sm">
-          <p className="font-semibold text-brand-navy">{candidate.full_name}</p>
+          <p className="font-semibold text-ink-primary">{candidate.full_name}</p>
           {candidate.email ? (
             <p className="text-ink-muted">
-              <a className="text-accent-emerald hover:underline" href={`mailto:${candidate.email}`}>
+              <a
+                className="text-accent-emerald-hover hover:underline"
+                href={`mailto:${candidate.email}`}
+              >
                 {candidate.email}
               </a>
             </p>
@@ -181,13 +184,13 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
           ) : null}
           <Link
             href={`/employer/candidates/${candidate.candidate_id}`}
-            className="inline-flex items-center gap-1 text-sm font-semibold text-accent-emerald hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-accent-emerald-hover hover:underline"
           >
             Open full profile <ArrowRight className="size-3.5" aria-hidden />
           </Link>
         </div>
       ) : (
-        <div className="mt-auto flex flex-col gap-2 rounded-xl border border-accent-gold/30 bg-white/60 p-3 backdrop-blur-sm">
+        <div className="mt-auto flex flex-col gap-2 rounded-xl border border-accent-gold/30 bg-surface-card/60 p-3 backdrop-blur-sm">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-gold-hover">
             Confidential dossier
           </p>

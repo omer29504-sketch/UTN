@@ -57,9 +57,7 @@ export function ChatThread({ companyId, candidateId, currentUserId, title }: Pro
         (payload) => {
           const row = payload.new as Message;
           if (row.candidate_id !== candidateId) return;
-          setMessages((prev) =>
-            prev.some((m) => m.id === row.id) ? prev : [...prev, row],
-          );
+          setMessages((prev) => (prev.some((m) => m.id === row.id) ? prev : [...prev, row]));
         },
       )
       .subscribe();
@@ -101,7 +99,10 @@ export function ChatThread({ companyId, candidateId, currentUserId, title }: Pro
 
   return (
     <Card>
-      <CardHeader title={title ?? "Direct chat"} description="Realtime messaging for unlocked profiles." />
+      <CardHeader
+        title={title ?? "Direct chat"}
+        description="Realtime messaging for unlocked profiles."
+      />
       <div className="mt-4 flex h-80 flex-col">
         <div className="flex-1 space-y-2 overflow-y-auto rounded-xl border border-line bg-surface-canvas p-3">
           {loading ? (
@@ -112,23 +113,16 @@ export function ChatThread({ companyId, candidateId, currentUserId, title }: Pro
             messages.map((m) => {
               const mine = m.sender_id === currentUserId;
               return (
-                <div
-                  key={m.id}
-                  className={`flex ${mine ? "justify-end" : "justify-start"}`}
-                >
+                <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                   <div
                     className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
                       mine
                         ? "bg-brand-navy text-white"
-                        : "bg-white text-brand-navy ring-1 ring-line"
+                        : "bg-surface-card text-ink-primary ring-1 ring-line"
                     }`}
                   >
                     <p className="whitespace-pre-wrap break-words">{m.body}</p>
-                    <p
-                      className={`mt-1 text-[10px] ${
-                        mine ? "text-white/60" : "text-ink-muted"
-                      }`}
-                    >
+                    <p className={`mt-1 text-[10px] ${mine ? "text-white/60" : "text-ink-muted"}`}>
                       {new Date(m.created_at).toLocaleTimeString()}
                     </p>
                   </div>

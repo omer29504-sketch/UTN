@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0F172A",
+  themeColor: "#070F24",
   colorScheme: "light",
   width: "device-width",
   initialScale: 1,
@@ -70,7 +70,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
         <a
           href="#main"
-          className="sr-only z-[100] rounded-lg bg-brand-navy px-4 py-2 text-sm font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+          className="sr-only z-[100] rounded-lg bg-jewel-ink px-4 py-2 text-sm font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
         >
           Skip to content
         </a>

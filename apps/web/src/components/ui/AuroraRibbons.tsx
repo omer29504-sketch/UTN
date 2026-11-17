@@ -6,9 +6,9 @@ type FadeTo = "navy" | "canvas" | "none";
 type Intensity = "hero" | "ambient";
 
 const VIGNETTE: Record<Tone, string> = {
-  navy: "radial-gradient(125% 105% at 50% 30%, rgba(10,17,40,0) 0%, rgba(10,17,40,0.34) 56%, rgba(10,17,40,0.94) 100%)",
+  navy: "radial-gradient(125% 105% at 50% 30%, rgba(7,15,36,0) 0%, rgba(7,15,36,0.34) 56%, rgba(7,15,36,0.94) 100%)",
   light:
-    "radial-gradient(125% 105% at 50% 30%, rgba(248,250,252,0) 0%, rgba(248,250,252,0.4) 58%, rgba(248,250,252,0.96) 100%)",
+    "radial-gradient(125% 105% at 50% 30%, rgba(247,243,235,0) 0%, rgba(247,243,235,0.4) 58%, rgba(247,243,235,0.96) 100%)",
 };
 
 const FADE: Record<Exclude<FadeTo, "none">, string> = {
@@ -24,23 +24,28 @@ const FADE: Record<Exclude<FadeTo, "none">, string> = {
 const THREADS = [
   {
     d: "M -140 548 C 180 412, 360 664, 706 500 S 1186 296, 1580 402",
-    stroke: "rgba(16, 185, 129, 0.5)",
+    stroke: "rgba(14, 159, 110, 0.55)",
     width: 1.4,
   },
   {
     d: "M -140 300 C 244 196, 428 404, 786 300 S 1224 128, 1580 224",
-    stroke: "rgba(99, 102, 241, 0.46)",
+    stroke: "rgba(59, 91, 255, 0.5)",
     width: 1.1,
   },
   {
     d: "M -140 682 C 322 598, 526 744, 928 578 S 1322 498, 1580 560",
-    stroke: "rgba(34, 211, 238, 0.4)",
+    stroke: "rgba(15, 181, 186, 0.42)",
     width: 1,
   },
   {
     d: "M -140 428 C 300 376, 520 524, 866 430 S 1284 336, 1580 380",
-    stroke: "rgba(197, 160, 89, 0.26)",
+    stroke: "rgba(200, 164, 93, 0.3)",
     width: 0.9,
+  },
+  {
+    d: "M -140 214 C 268 132, 512 300, 842 214 S 1268 84, 1580 152",
+    stroke: "rgba(139, 92, 246, 0.34)",
+    width: 0.8,
   },
 ] as const;
 
@@ -93,6 +98,7 @@ export function AuroraRibbons({
         <span className="aurora-ribbon aurora-ribbon--emerald aurora-ribbon--a" />
         <span className="aurora-ribbon aurora-ribbon--indigo aurora-ribbon--b" />
         <span className="aurora-ribbon aurora-ribbon--cyan aurora-ribbon--c" />
+        <span className="aurora-ribbon aurora-ribbon--amethyst aurora-ribbon--e" />
         <span className="aurora-ribbon aurora-ribbon--gold aurora-ribbon--d" />
       </div>
 

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-white" />}>
+    <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-card" />}>
       <SignInForm />
     </Suspense>
   );

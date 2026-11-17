@@ -5,12 +5,15 @@
 @layer base {
   :root {
     color-scheme: light;
-    --canvas: #f8fafc;
-    --ink: #1e293b;
-    --navy: #0a1128;
-    --navy-soft: #111c38;
-    --emerald: #10b981;
-    --gold: #c5a059;
+    --canvas: #f7f3eb;
+    --ink: #151b2e;
+    --navy: #070f24;
+    --navy-soft: #0e1b3d;
+    --emerald: #0e9f6e;
+    --gold: #c8a45d;
+    --sapphire: #3b5bff;
+    --amethyst: #8b5cf6;
+    --teal: #0fb5ba;
   }
 
   * {
@@ -24,6 +27,17 @@
 
   body {
     @apply bg-surface-canvas font-sans text-ink-primary antialiased;
+    /*
+     * A permanent jewel halo under every page: three low-opacity aurora
+     * blooms on the warm alabaster canvas. It is the same light language as
+     * the dark heroes, just dialled down so long-form content stays readable.
+     */
+    background-image:
+      radial-gradient(58% 42% at 6% -6%, rgba(14, 159, 110, 0.1), transparent 66%),
+      radial-gradient(52% 38% at 56% -10%, rgba(59, 91, 255, 0.09), transparent 68%),
+      radial-gradient(46% 36% at 100% -4%, rgba(139, 92, 246, 0.08), transparent 66%),
+      radial-gradient(60% 34% at 50% 104%, rgba(200, 164, 93, 0.07), transparent 72%);
+    background-attachment: fixed;
     font-feature-settings:
       "cv02" 1,
       "cv03" 1,
@@ -37,16 +51,17 @@
   h4,
   h5,
   h6 {
-    @apply font-display font-bold tracking-tight text-brand-navy;
+    @apply font-display font-bold tracking-tight text-ink-primary;
     text-wrap: balance;
   }
 
   ::selection {
-    @apply bg-accent-emerald text-white;
+    background: rgba(14, 159, 110, 0.22);
+    color: #070f24;
   }
 
   :focus-visible {
-    outline: 2px solid #10b981;
+    outline: 2px solid #0e9f6e;
     outline-offset: 2px;
   }
 }
@@ -64,11 +79,95 @@
 
   /* Frosted navigation, cards, and drawer chrome. */
   .glass {
-    @apply border border-white/70 bg-white/75 backdrop-blur-xl;
+    border: 1px solid rgba(229, 219, 201, 0.9);
+    background: rgba(255, 252, 247, 0.78);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: blur(20px) saturate(140%);
   }
 
   .glass-dark {
-    @apply border border-white/10 bg-white/[0.04] backdrop-blur-xl;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: blur(20px) saturate(140%);
+  }
+
+  /* Warm ivory card with a champagne hairline and a whisper of aurora. */
+  .jewel-card {
+    position: relative;
+    isolation: isolate;
+    border: 1px solid rgba(229, 219, 201, 0.95);
+    border-radius: 1rem;
+    background:
+      radial-gradient(120% 90% at 8% 0%, rgba(14, 159, 110, 0.05), transparent 55%),
+      radial-gradient(110% 80% at 96% 4%, rgba(59, 91, 255, 0.045), transparent 58%),
+      linear-gradient(160deg, rgba(255, 252, 247, 0.98), rgba(255, 252, 247, 0.86));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      0 1px 2px rgba(7, 15, 36, 0.035),
+      0 22px 54px -34px rgba(7, 15, 36, 0.3);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  /*
+   * Gradient hairline border. Painted with a mask so it hugs the radius and
+   * never bleeds into the surface. Pair with `relative` and a radius.
+   */
+  .jewel-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(14, 159, 110, 0.55),
+      rgba(15, 181, 186, 0.35) 26%,
+      rgba(59, 91, 255, 0.42) 52%,
+      rgba(139, 92, 246, 0.34) 74%,
+      rgba(200, 164, 93, 0.55)
+    );
+    background-size: 200% 200%;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0.75;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .jewel-border:hover::before {
+    opacity: 1;
+    animation: gradient-pan 7s ease-in-out infinite;
+  }
+
+  /* One-pixel jewel rule used between sections. */
+  .jewel-line {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(14, 159, 110, 0.45),
+      rgba(59, 91, 255, 0.4),
+      rgba(139, 92, 246, 0.35),
+      rgba(200, 164, 93, 0.45),
+      transparent
+    );
+  }
+
+  /* Soft jewel aura behind floating art. */
+  .jewel-aura {
+    background:
+      radial-gradient(closest-side, rgba(14, 159, 110, 0.22), transparent 72%),
+      radial-gradient(closest-side, rgba(59, 91, 255, 0.16), transparent 76%);
+    filter: blur(38px);
   }
 
   /*
@@ -85,20 +184,26 @@
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    border: 1px solid rgba(226, 232, 240, 0.9);
+    border: 1px solid rgba(229, 219, 201, 0.95);
     border-radius: 1rem;
     background:
       radial-gradient(
-        360px circle at var(--mouse-x) var(--mouse-y),
-        rgba(16, 185, 129, 0.08),
-        transparent 68%
+        380px circle at var(--mouse-x) var(--mouse-y),
+        rgba(14, 159, 110, 0.09),
+        transparent 66%
       ),
-      rgba(255, 255, 255, 0.74);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+      radial-gradient(
+        520px circle at var(--mouse-x) var(--mouse-y),
+        rgba(59, 91, 255, 0.055),
+        transparent 70%
+      ),
+      linear-gradient(160deg, rgba(255, 252, 247, 0.97), rgba(255, 252, 247, 0.84));
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
+    backdrop-filter: blur(16px) saturate(130%);
     box-shadow:
-      0 1px 2px rgba(10, 17, 40, 0.03),
-      0 24px 60px -42px rgba(10, 17, 40, 0.35);
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      0 1px 2px rgba(7, 15, 36, 0.035),
+      0 26px 64px -44px rgba(7, 15, 36, 0.38);
     transition:
       border-color 0.45s ease,
       box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
@@ -113,10 +218,12 @@
     border-radius: inherit;
     padding: 1px;
     background: radial-gradient(
-      260px circle at var(--mouse-x) var(--mouse-y),
-      rgba(16, 185, 129, 0.7),
-      rgba(197, 160, 89, 0.42) 42%,
-      transparent 72%
+      280px circle at var(--mouse-x) var(--mouse-y),
+      rgba(14, 159, 110, 0.8),
+      rgba(59, 91, 255, 0.55) 32%,
+      rgba(139, 92, 246, 0.4) 52%,
+      rgba(200, 164, 93, 0.5) 68%,
+      transparent 82%
     );
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
@@ -132,10 +239,11 @@
   }
 
   .spotlight-card:hover {
-    border-color: rgba(16, 185, 129, 0.24);
+    border-color: rgba(200, 164, 93, 0.5);
     box-shadow:
-      0 1px 2px rgba(10, 17, 40, 0.04),
-      0 32px 80px -40px rgba(10, 17, 40, 0.45);
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 1px 2px rgba(7, 15, 36, 0.04),
+      0 34px 84px -40px rgba(7, 15, 36, 0.46);
   }
 
   .spotlight-card:hover::before {
@@ -144,35 +252,41 @@
 
   /* Dark-hero variant used on dashboard banners and auth dossiers. */
   .spotlight-card-dark {
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
     background:
       radial-gradient(
-        360px circle at var(--mouse-x) var(--mouse-y),
-        rgba(16, 185, 129, 0.14),
-        transparent 68%
+        380px circle at var(--mouse-x) var(--mouse-y),
+        rgba(14, 159, 110, 0.18),
+        transparent 66%
       ),
-      rgba(255, 255, 255, 0.04);
+      radial-gradient(
+        540px circle at var(--mouse-x) var(--mouse-y),
+        rgba(59, 91, 255, 0.12),
+        transparent 72%
+      ),
+      linear-gradient(150deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      0 24px 60px -40px rgba(0, 0, 0, 0.7);
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 26px 64px -40px rgba(0, 0, 0, 0.72);
   }
 
   .spotlight-card-dark:hover {
-    border-color: rgba(197, 160, 89, 0.32);
+    border-color: rgba(200, 164, 93, 0.42);
   }
 
   .spotlight-lift:hover {
     transform: translateY(-3px);
   }
 
-  /* Crisp alabaster surface with an architectural hairline. */
+  /* Crisp ivory surface with a champagne hairline. */
   .surface-card {
-    border: 1px solid rgba(226, 232, 240, 0.9);
+    border: 1px solid rgba(229, 219, 201, 0.95);
     border-radius: 1rem;
-    background-color: #ffffff;
+    background: linear-gradient(160deg, rgba(255, 252, 247, 0.98), rgba(255, 252, 247, 0.88));
     box-shadow:
-      0 1px 2px rgba(10, 17, 40, 0.03),
-      0 16px 40px -30px rgba(10, 17, 40, 0.28);
+      inset 0 1px 0 rgba(255, 255, 255, 0.75),
+      0 1px 2px rgba(7, 15, 36, 0.035),
+      0 18px 46px -32px rgba(7, 15, 36, 0.3);
   }
 
   .eyebrow {
@@ -184,19 +298,54 @@
     letter-spacing: 0.2em;
     line-height: 1;
     text-transform: uppercase;
-    color: #8a6d2f;
+    color: #856527;
   }
 
   .eyebrow::before {
     content: "";
     width: 1.5rem;
     height: 1px;
-    background: currentColor;
-    opacity: 0.55;
+    /* Explicit gold rather than `currentColor`: gradient-clipped eyebrows set
+       `color: transparent`, which would erase this rule. */
+    background: linear-gradient(90deg, rgba(200, 164, 93, 0.9), rgba(200, 164, 93, 0.15));
+    opacity: 0.9;
+  }
+
+  /*
+   * Text treatments live after `.eyebrow` on purpose: both are utilities, so
+   * source order decides which `color` wins when an eyebrow also carries a
+   * champagne accent.
+   */
+
+  /* Jewel gradient type: emerald → teal → sapphire → amethyst. Stops are
+     darkened just enough to hold 3:1 as large display type on ivory. */
+  .text-jewel {
+    background: linear-gradient(100deg, #0b7f58 0%, #0c8f94 30%, #2e4be0 62%, #7a4ae8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Champagne metal type for prestige moments. Tuned for the midnight heroes:
+     even the deepest stop clears 6:1 on `bg-jewel-ink`. */
+  .text-champagne {
+    background: linear-gradient(100deg, #d9b877 0%, #f2dcab 38%, #e3c489 66%, #c9a765 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /*
+   * Solid champagne for small text on light surfaces. The gradient clip above
+   * loses contrast at its lightest stop, so eyebrows and labels use this
+   * instead: 4.8:1 on the alabaster canvas.
+   */
+  .text-champagne-ink {
+    color: #856527;
   }
 
   .hairline-gold {
-    box-shadow: inset 0 0 0 1px rgba(197, 160, 89, 0.28);
+    box-shadow: inset 0 0 0 1px rgba(200, 164, 93, 0.32);
   }
 
   .mask-fade-x {
@@ -313,7 +462,12 @@
 
   /* Loading placeholder surface. */
   .shimmer {
-    background-image: linear-gradient(90deg, #eef2f7 25%, #f8fafc 50%, #eef2f7 75%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(240, 232, 218, 0.9) 25%,
+      rgba(255, 252, 247, 0.95) 50%,
+      rgba(240, 232, 218, 0.9) 75%
+    );
     background-size: 200% 100%;
     animation: shimmer 1.8s linear infinite;
   }
@@ -376,8 +530,8 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(16, 185, 129, 0.85) 32%,
-      rgba(34, 211, 238, 0.6) 62%,
+      rgba(14, 159, 110, 0.9) 30%,
+      rgba(15, 181, 186, 0.62) 62%,
       transparent 100%
     );
   }
@@ -386,8 +540,8 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(99, 102, 241, 0.75) 38%,
-      rgba(139, 92, 246, 0.45) 68%,
+      rgba(59, 91, 255, 0.82) 36%,
+      rgba(139, 92, 246, 0.55) 68%,
       transparent 100%
     );
   }
@@ -396,8 +550,19 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(34, 211, 238, 0.55) 34%,
-      rgba(16, 185, 129, 0.4) 70%,
+      rgba(15, 181, 186, 0.62) 34%,
+      rgba(14, 159, 110, 0.42) 70%,
+      transparent 100%
+    );
+  }
+
+  /* Amethyst: the violet edge of the aurora, kept behind the sapphire. */
+  .aurora-ribbon--amethyst {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(139, 92, 246, 0.6) 40%,
+      rgba(226, 85, 123, 0.28) 72%,
       transparent 100%
     );
   }
@@ -407,8 +572,8 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(197, 160, 89, 0.45) 42%,
-      rgba(197, 160, 89, 0.12) 74%,
+      rgba(200, 164, 93, 0.55) 42%,
+      rgba(233, 207, 150, 0.2) 74%,
       transparent 100%
     );
   }
@@ -456,21 +621,33 @@
     --aurora-delay: -4s;
   }
 
+  .aurora-ribbon--e {
+    top: 18%;
+    left: 34%;
+    width: 78%;
+    height: 26%;
+    --aurora-rotate: -9deg;
+    --aurora-opacity: 0.18;
+    --aurora-duration: 34s;
+    --aurora-delay: -12s;
+  }
+
   /* Silk fibres: one hairline per ribbon, softened by a tiny blur. */
   .aurora-threads {
-    filter: blur(0.4px) drop-shadow(0 0 6px rgba(16, 185, 129, 0.18));
-    opacity: 0.9;
+    filter: blur(0.4px) drop-shadow(0 0 7px rgba(14, 159, 110, 0.24));
+    opacity: 0.92;
   }
 
   /*
    * Ambient aurora wash for light workspace pages. Sits under the content,
-   * fades to nothing, and costs three radial gradients.
+   * fades to nothing, and costs four radial gradients.
    */
   .aurora-wash {
     background:
-      radial-gradient(58% 78% at 12% -6%, rgba(16, 185, 129, 0.12), transparent 70%),
-      radial-gradient(46% 66% at 52% -12%, rgba(99, 102, 241, 0.1), transparent 72%),
-      radial-gradient(42% 58% at 92% -8%, rgba(34, 211, 238, 0.09), transparent 70%);
+      radial-gradient(58% 78% at 10% -6%, rgba(14, 159, 110, 0.16), transparent 70%),
+      radial-gradient(48% 66% at 46% -12%, rgba(59, 91, 255, 0.13), transparent 72%),
+      radial-gradient(44% 60% at 78% -8%, rgba(139, 92, 246, 0.11), transparent 70%),
+      radial-gradient(40% 54% at 98% -2%, rgba(200, 164, 93, 0.12), transparent 70%);
     -webkit-mask-image: linear-gradient(
       to bottom,
       #000 0%,
@@ -487,7 +664,8 @@
       filter: blur(44px) saturate(135%);
     }
 
-    .aurora-ribbon--d {
+    .aurora-ribbon--d,
+    .aurora-ribbon--e {
       display: none;
     }
   }
@@ -522,6 +700,17 @@
 
   .animate-marquee {
     animation: none;
+  }
+
+  .animate-jewel-float,
+  .animate-gradient-pan,
+  .animate-glow-breathe,
+  .animate-line-sweep {
+    animation: none !important;
+  }
+
+  .jewel-border:hover::before {
+    animation: none !important;
   }
 
   .animate-topo-drift,

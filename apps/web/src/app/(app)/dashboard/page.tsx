@@ -40,12 +40,12 @@ function HeroStat({
 }) {
   return (
     <SpotlightGlassCard tone="dark" className="p-4">
-      <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/50">
+      <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/65">
         <Icon className="size-3.5 text-accent-emerald" aria-hidden />
         {label}
       </div>
       <p className="mt-2 font-display text-xl font-extrabold leading-tight text-white">{value}</p>
-      <p className="mt-1 text-[11px] leading-4 text-white/45">{hint}</p>
+      <p className="mt-1 text-[11px] leading-4 text-white/60">{hint}</p>
     </SpotlightGlassCard>
   );
 }
@@ -64,12 +64,12 @@ function HeroShell({
   children: ReactNode;
 }) {
   return (
-    <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+    <section className="border-white/12 relative isolate overflow-hidden rounded-3xl border bg-jewel-ink p-6 text-white shadow-luxe sm:p-8">
       <TopographicHeroBg fadeTo="navy" />
       <div className="relative">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="eyebrow text-accent-gold">{eyebrow}</p>
+            <p className="eyebrow text-champagne">{eyebrow}</p>
             <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
               {title}
             </h1>
@@ -118,7 +118,7 @@ async function CandidateOverview({
   if (!profile) {
     return (
       <SpotlightGlassCard className="animate-slide-in p-6">
-        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald ring-1 ring-inset ring-accent-emerald/15">
+        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15">
           <Sparkles className="size-6" aria-hidden />
         </span>
         <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
@@ -130,7 +130,7 @@ async function CandidateOverview({
         </p>
         <Link
           href="/candidate/profile"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-navy-soft"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-navy-soft"
         >
           Complete profile
           <ArrowRight className="size-4" aria-hidden />
@@ -196,7 +196,7 @@ async function CandidateOverview({
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
               href="/candidate/verification"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-brand-navy transition hover:bg-white/90"
+              className="inline-flex items-center gap-2 rounded-xl bg-jewel-gold bg-[length:200%_200%] px-4 py-2.5 text-sm font-semibold text-brand-navy shadow-gold-hairline transition hover:animate-gradient-pan"
             >
               <ScanFace className="size-4" aria-hidden />
               {status === "unverified" || status === "rejected"
@@ -282,7 +282,7 @@ async function CandidateOverview({
                 className={`grid size-8 shrink-0 place-items-center rounded-full text-xs font-bold ${
                   item.done
                     ? "animate-check-pop bg-verified-emerald text-white"
-                    : "bg-white text-ink-muted ring-1 ring-line"
+                    : "bg-surface-card text-ink-muted ring-1 ring-line"
                 }`}
               >
                 {item.done ? <BadgeCheck className="size-4" aria-hidden /> : index + 1}
@@ -320,7 +320,7 @@ async function EmployerOverview({ userId }: { userId: string }) {
   if (!company) {
     return (
       <SpotlightGlassCard className="animate-slide-in p-6">
-        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald ring-1 ring-inset ring-accent-emerald/15">
+        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15">
           <Building2 className="size-6" aria-hidden />
         </span>
         <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
@@ -332,7 +332,7 @@ async function EmployerOverview({ userId }: { userId: string }) {
         </p>
         <Link
           href="/employer/company"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white"
         >
           Create company profile
           <ArrowRight className="size-4" aria-hidden />
@@ -390,7 +390,7 @@ async function EmployerOverview({ userId }: { userId: string }) {
           action={
             <Link
               href="/employer/candidates"
-              className="inline-flex items-center gap-2 rounded-lg bg-brand-navy px-3 py-2 text-xs font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-lg bg-jewel-ink px-3 py-2 text-xs font-semibold text-white"
             >
               Open search
               <ArrowRight className="size-3.5" aria-hidden />
@@ -400,7 +400,7 @@ async function EmployerOverview({ userId }: { userId: string }) {
         <div className="mt-5 flex flex-wrap gap-3">
           <Link
             href="/employer/candidates"
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white"
+            className="inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white"
           >
             <Search className="size-4" aria-hidden />
             Search candidates
@@ -472,7 +472,7 @@ async function AdminOverview() {
           action={
             <Link
               href="/admin/verification"
-              className="inline-flex items-center gap-2 rounded-lg bg-brand-navy px-3 py-2 text-xs font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-lg bg-jewel-ink px-3 py-2 text-xs font-semibold text-white"
             >
               Open queue
               <ArrowRight className="size-3.5" aria-hidden />

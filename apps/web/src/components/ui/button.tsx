@@ -1,18 +1,19 @@
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger" | "emerald";
+type Variant = "primary" | "secondary" | "ghost" | "danger" | "emerald" | "gold";
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   primary:
-    "sheen bg-brand-navy text-white shadow-sm hover:bg-brand-navy-soft disabled:bg-brand-navy/40",
+    "sheen bg-jewel-ink text-white ring-1 ring-inset ring-white/10 shadow-luxe hover:-translate-y-px hover:shadow-floating disabled:bg-brand-navy/50 disabled:shadow-none",
   secondary:
-    "border border-line bg-white text-brand-navy shadow-sm hover:border-ink-muted/40 hover:bg-surface-muted disabled:opacity-50",
-  ghost: "text-ink-muted hover:bg-surface-muted hover:text-brand-navy disabled:opacity-50",
+    "border border-line bg-surface-card/90 text-ink-primary shadow-sm hover:-translate-y-px hover:border-accent-gold/50 hover:bg-surface-card hover:shadow-card disabled:opacity-50",
+  ghost: "text-ink-muted hover:bg-surface-muted/80 hover:text-ink-primary disabled:opacity-50",
   danger: "bg-danger text-white shadow-sm hover:bg-red-700 disabled:bg-danger/40",
   emerald:
-    "sheen bg-verified-emerald text-white shadow-sm hover:bg-accent-emerald-hover disabled:bg-verified-emerald/40",
+    "sheen bg-jewel-emerald bg-[length:200%_200%] text-white shadow-emerald-glow hover:-translate-y-px hover:animate-gradient-pan disabled:opacity-40 disabled:shadow-none",
+  gold: "sheen bg-jewel-gold bg-[length:200%_200%] text-brand-navy shadow-gold-hairline hover:-translate-y-px hover:animate-gradient-pan",
 };
 
 const sizes: Record<Size, string> = {

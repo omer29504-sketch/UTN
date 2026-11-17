@@ -572,7 +572,7 @@ export function SecureCertificateViewer({
           type="button"
           onClick={() => void acceptConfidentiality()}
           disabled={!tosChecked || accepting}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-navy-soft disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-navy-soft disabled:cursor-not-allowed disabled:opacity-40"
         >
           {accepting ? (
             <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -624,7 +624,7 @@ export function SecureCertificateViewer({
         <button
           type="button"
           onClick={openViewer}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-navy-soft"
+          className="inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-navy-soft"
         >
           <Eye className="size-4" aria-hidden />
           View certificate (secure viewer)
@@ -732,7 +732,7 @@ function ForensicWatermark({ candidateId, signature }: { candidateId: string; si
 
 function PrivacyShield() {
   return (
-    <div className="fixed inset-0 z-40 grid place-items-center bg-brand-navy px-6 text-center">
+    <div className="fixed inset-0 z-40 grid place-items-center bg-jewel-ink px-6 text-center">
       <div className="space-y-2">
         <Lock className="mx-auto size-6 text-verified-emerald" aria-hidden />
         <p className="font-display text-sm font-bold text-white">

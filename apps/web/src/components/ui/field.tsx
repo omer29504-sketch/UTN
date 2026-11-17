@@ -22,7 +22,7 @@ export function Field({
     <div className={cn("space-y-1.5", className)}>
       <label
         htmlFor={htmlFor}
-        className="flex items-center gap-1 text-sm font-semibold text-brand-navy"
+        className="flex items-center gap-1 text-sm font-semibold text-ink-primary"
       >
         {label}
         {required ? (

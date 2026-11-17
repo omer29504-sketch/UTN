@@ -37,7 +37,7 @@ export default async function CandidateThreadPage({
       <div className="space-y-4">
         <Link
           href="/candidate/messages"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald hover:underline"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald-hover hover:underline"
         >
           <ArrowLeft className="size-4" aria-hidden />
           Back to messages
@@ -59,7 +59,7 @@ export default async function CandidateThreadPage({
     <div className="space-y-4">
       <Link
         href="/candidate/messages"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald-hover hover:underline"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Back to messages

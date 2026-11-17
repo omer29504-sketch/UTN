@@ -132,7 +132,7 @@ export function CompanyForm({
             setDisplayLogoConsent(event.target.checked);
             setSaved(false);
           }}
-          className="mt-0.5 size-4 rounded border-line text-accent-emerald focus:ring-accent-emerald"
+          className="mt-0.5 size-4 rounded border-line text-accent-emerald-hover focus:ring-accent-emerald"
         />
         <span>
           <span className="block text-sm font-semibold text-brand-navy">
