@@ -6,7 +6,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { GradCap } from "@/components/motion/grad-cap";
 import { Reveal } from "@/components/motion/reveal";
 import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
-import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
+import { AuroraRibbons } from "@/components/ui/AuroraRibbons";
 
 export const metadata: Metadata = {
   title: "Account",
@@ -34,7 +34,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="grid min-h-dvh lg:grid-cols-[1fr_1.05fr]">
       <aside className="relative hidden overflow-hidden bg-brand-navy p-10 lg:flex lg:flex-col lg:justify-between">
-        <TopographicHeroBg fadeTo="navy" />
+        <AuroraRibbons tone="navy" fadeTo="navy" withTopography intensity="hero" />
 
         <div className="relative">
           <BrandMark inverted />

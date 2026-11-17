@@ -21,7 +21,7 @@ import { LogoMarquee } from "@/components/landing/logo-marquee";
 import { GradCap } from "@/components/motion/grad-cap";
 import { Reveal } from "@/components/motion/reveal";
 import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
-import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
+import { AuroraRibbons } from "@/components/ui/AuroraRibbons";
 
 export const dynamic = "force-dynamic";
 
@@ -67,7 +67,7 @@ export default async function LandingPage() {
       <main id="main">
         {/* Hero — engraved security stock fading into the alabaster workspace. */}
         <section className="relative isolate overflow-hidden bg-brand-navy pb-44 pt-32 text-white sm:pb-52 sm:pt-40">
-          <TopographicHeroBg fadeTo="canvas" />
+          <AuroraRibbons tone="navy" fadeTo="canvas" withTopography intensity="hero" />
 
           <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[1.1fr_0.9fr]">
             <div>
@@ -266,7 +266,7 @@ export default async function LandingPage() {
         {/* CTA */}
         <section className="mx-auto max-w-6xl px-5 pb-20 pt-20 sm:px-8">
           <div className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy px-6 py-14 text-center text-white shadow-luxe sm:px-12 sm:py-16">
-            <TopographicHeroBg fadeTo="navy" />
+            <AuroraRibbons tone="navy" fadeTo="navy" withTopography intensity="ambient" />
             <Reveal className="relative">
               <div className="flex justify-center">
                 <p className="eyebrow text-accent-gold">Begin your file</p>

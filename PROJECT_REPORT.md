@@ -4,10 +4,10 @@
 **Repository:** `/home/bannda/Desktop/University Talent Network (UTN)`
 **Live backend:** Supabase Cloud project `jecdhhihbtaocbfzlljt` (`https://jecdhhihbtaocbfzlljt.supabase.co`)
 **Web dev server:** `http://localhost:3000` (LAN: `http://192.168.70.72:3000`)
-**Current stage:** All four planned phases are implemented across web and mobile. The
-Supabase backend is live and connected. Cloudflare R2 and Stripe are still configuration
-placeholders, so media upload/playback and payments are the only major flows that cannot
-run end to end yet.
+**Current stage:** All four planned phases are implemented in the responsive web app, which
+is the only client (the Expo app was removed; see §9). The Supabase backend is live and
+connected. Cloudflare R2 and Stripe are still configuration placeholders, so media
+upload/playback and payments are the only major flows that cannot run end to end yet.
 
 ---
 
@@ -28,17 +28,17 @@ employers.
 
 At this stage the product is **feature-complete for the planned scope**:
 
-| Area | State |
-|---|---|
-| Monorepo, shared contracts, storage package | Complete |
-| Supabase schema, RLS, triggers, RPCs, audit trail | Complete and applied to the cloud project |
-| Web candidate / employer / admin flows | Complete |
-| Web landing page, marquee, analytics, realtime chat | Complete |
-| Mobile auth, candidate, employer, chat screens | Complete |
-| Live Supabase Auth + database | Connected and smoke-tested |
-| Cloudflare R2 | **Not configured** (placeholder credentials) |
-| Stripe | **Not configured** (placeholder keys and price IDs) |
-| Automated tests | Not present (typecheck + build + export + manual smoke tests only) |
+| Area                                                | State                                                     |
+| --------------------------------------------------- | --------------------------------------------------------- |
+| Monorepo, shared contracts, storage package         | Complete                                                  |
+| Supabase schema, RLS, triggers, RPCs, audit trail   | Complete and applied to the cloud project                 |
+| Web candidate / employer / admin flows              | Complete                                                  |
+| Web landing page, marquee, analytics, realtime chat | Complete                                                  |
+| Responsive layout (phone, tablet, desktop)          | Complete                                                  |
+| Live Supabase Auth + database                       | Connected and smoke-tested                                |
+| Cloudflare R2                                       | **Not configured** (placeholder credentials)              |
+| Stripe                                              | **Not configured** (placeholder keys and price IDs)       |
+| Automated tests                                     | Not present (typecheck + build + manual smoke tests only) |
 
 **Practical readiness:** the application shell, authorization model, and database logic are
 in place. To demo the full product, R2 and Stripe credentials must be supplied. To ship to
@@ -72,27 +72,27 @@ production, the security and operational items in §14 also need attention.
 
 ### 2.4 Monetization constants
 
-| Item | Value | Source |
-|---|---|---|
-| Free trial credits per company | 2 | `FREE_TRIAL_CREDITS` |
-| Cost to unlock one candidate | 1 | `UNLOCK_COST_CREDITS` |
-| Credit packs | Starter 5, Growth 15, Scale 30 | `CREDIT_PACKS` |
-| Candidate upgrade | Priority Pro | `CANDIDATE_PRO_PLAN` |
-| Pitch duration | 60–120 seconds | `MIN_PITCH_SECONDS` / `MAX_PITCH_SECONDS` |
+| Item                           | Value                          | Source                                    |
+| ------------------------------ | ------------------------------ | ----------------------------------------- |
+| Free trial credits per company | 2                              | `FREE_TRIAL_CREDITS`                      |
+| Cost to unlock one candidate   | 1                              | `UNLOCK_COST_CREDITS`                     |
+| Credit packs                   | Starter 5, Growth 15, Scale 30 | `CREDIT_PACKS`                            |
+| Candidate upgrade              | Priority Pro                   | `CANDIDATE_PRO_PLAN`                      |
+| Pitch duration                 | 60–120 seconds                 | `MIN_PITCH_SECONDS` / `MAX_PITCH_SECONDS` |
 
 ---
 
 ## 3. System architecture
 
 ```
-┌──────────────────────────────┐        ┌──────────────────────────────┐
-│  apps/web (Next.js 15)       │        │  apps/mobile (Expo SDK 54)   │
-│  App Router, React 19        │        │  Expo Router, React Native   │
-│  Server Components + Client  │        │  NativeWind, expo-camera     │
-└──────────────┬───────────────┘        └──────────────┬───────────────┘
-               │  @supabase/ssr cookies                │  supabase-js + AsyncStorage
-               │  Bearer tokens for API routes         │  Bearer tokens for API routes
-               ▼                                       ▼
+┌───────────────────────────────────────────────────────────────────────┐
+│  apps/web (Next.js 15) — the only client                              │
+│  App Router, React 19, Tailwind CSS                                   │
+│  Server Components + Client Components, responsive on any device      │
+└───────────────┬───────────────────────────────────────────────────────┘
+                │  @supabase/ssr cookies (SSR pages)
+                │  Bearer tokens for API routes (client fetches)
+                ▼
 ┌───────────────────────────────────────────────────────────────────────┐
 │  Supabase Cloud — project jecdhhihbtaocbfzlljt                        │
 │  PostgreSQL + Auth + Realtime + Row Level Security + RPCs             │
@@ -113,27 +113,20 @@ production, the security and operational items in §14 also need attention.
 
 ### 3.1 Technology stack
 
-| Layer | Technology | Version |
-|---|---|---|
-| Package manager | pnpm | 9.15.4 |
-| Monorepo runner | Turborepo | 2.11.11 |
-| Language | TypeScript | 5.9.x |
-| Runtime | Node.js | >= 20.9 (verified on Node 24) |
-| Web framework | Next.js App Router | 15.5.29 |
-| Web UI | React, Tailwind CSS, Lucide | 19.1.0, 3.4.x, 1.72.x |
-| Web auth | `@supabase/ssr` | 0.12.7 |
-| Supabase client | `@supabase/supabase-js` | 2.119.0 |
-| Payments | Stripe Node SDK | 23.1.0 |
-| OCR | tesseract.js | 7.0.0 |
-| Mobile framework | Expo SDK | ~54.0.38 |
-| Mobile runtime | React Native | 0.81.5 |
-| Mobile routing | Expo Router | 6.0.24 |
-| Mobile styling | NativeWind | 4.2.7 |
-| Mobile camera | expo-camera | 17.0.10 |
-| Mobile video playback | expo-av | 16.0.8 |
-| Mobile files | expo-document-picker / expo-file-system | 14.0.8 / 19.0.24 |
-| Object storage client | `@aws-sdk/client-s3` + presigner | S3-compatible R2 |
-| Database | Supabase PostgreSQL | Cloud |
+| Layer                 | Technology                       | Version                       |
+| --------------------- | -------------------------------- | ----------------------------- |
+| Package manager       | pnpm                             | 9.15.4                        |
+| Monorepo runner       | Turborepo                        | 2.11.11                       |
+| Language              | TypeScript                       | 5.9.x                         |
+| Runtime               | Node.js                          | >= 20.9 (verified on Node 24) |
+| Web framework         | Next.js App Router               | 15.5.29                       |
+| Web UI                | React, Tailwind CSS, Lucide      | 19.1.0, 3.4.x, 1.72.x         |
+| Web auth              | `@supabase/ssr`                  | 0.12.7                        |
+| Supabase client       | `@supabase/supabase-js`          | 2.119.0                       |
+| Payments              | Stripe Node SDK                  | 23.1.0                        |
+| OCR                   | tesseract.js                     | 7.0.0                         |
+| Object storage client | `@aws-sdk/client-s3` + presigner | S3-compatible R2              |
+| Database              | Supabase PostgreSQL              | Cloud                         |
 
 ### 3.2 Architectural decisions
 
@@ -183,17 +176,6 @@ production, the security and operational items in §14 also need attention.
 │   │       │   ├── env.ts
 │   │       │   └── utils.ts
 │   │       └── middleware.ts
-│   └── mobile/                  Expo SDK 54 + Expo Router + NativeWind
-│       ├── app/
-│       │   ├── (auth)/{sign-in,sign-up}.tsx
-│       │   ├── (app)/
-│       │   │   ├── dashboard.tsx
-│       │   │   ├── candidate/{profile,verification,messages}.tsx
-│       │   │   └── employer/{company,candidates,billing,chat/[candidateId]}.tsx
-│       │   ├── index.tsx
-│       │   └── _layout.tsx
-│       ├── components/          Header, shell, UI, verification studio
-│       └── lib/                 Supabase, auth context, API, env
 ├── packages/
 │   ├── shared/                  Zod schemas, types, constants, helpers, tokens
 │   └── storage/                 R2 config, key builder, presigning, object reads
@@ -202,41 +184,44 @@ production, the security and operational items in §14 also need attention.
 │   ├── migrations/
 │   │   ├── 0001_initial_schema.sql
 │   │   ├── 0002_verification_reviews.sql
-│   │   └── 0003_degree_verification_compliance.sql
+│   │   ├── 0003_degree_verification_compliance.sql
+│   │   ├── 0004_employer_certificate_confidentiality.sql
+│   │   └── 0005_security_hardening.sql
 │   └── seed.sql                 Local-only demo data with fixed UUIDs
+├── .github/
+│   ├── workflows/security.yml   Dependency audit, secret scan, typecheck
+│   └── dependabot.yml           Weekly dependency updates
 ├── .env.example
 ├── package.json
 ├── pnpm-workspace.yaml
+├── SECURITY.md                  Controls, external config, IR runbook
 ├── tsconfig.base.json
 └── turbo.json
 ```
 
 Shared and storage packages export TypeScript source directly. Next.js transpiles them via
-`transpilePackages`; Expo consumes them through the workspace. There is no separate package
-build step.
+`transpilePackages`. There is no separate package build step.
 
 ### 4.1 Root scripts
 
-| Command | Purpose |
-|---|---|
-| `pnpm dev` | All workspace dev tasks |
-| `pnpm dev:web` | Next.js dev server on `:3000` |
-| `pnpm dev:mobile` | Expo dev server |
-| `pnpm build` | Turbo build (Next production build) |
-| `pnpm typecheck` | TypeScript across all four workspaces |
-| `pnpm format` / `format:check` | Prettier |
-| `pnpm clean` | Remove build artifacts and `node_modules` |
-| `pnpm db:start` / `db:stop` | Local Supabase stack (requires Docker) |
-| `pnpm db:reset` | Re-apply migrations + seed |
-| `pnpm db:push` | Push migrations to a linked remote project |
+| Command                        | Purpose                                    |
+| ------------------------------ | ------------------------------------------ |
+| `pnpm dev`                     | All workspace dev tasks                    |
+| `pnpm dev:web`                 | Next.js dev server on `:3000`              |
+| `pnpm build`                   | Turbo build (Next production build)        |
+| `pnpm typecheck`               | TypeScript across all three workspaces     |
+| `pnpm format` / `format:check` | Prettier                                   |
+| `pnpm clean`                   | Remove build artifacts and `node_modules`  |
+| `pnpm db:start` / `db:stop`    | Local Supabase stack (requires Docker)     |
+| `pnpm db:reset`                | Re-apply migrations + seed                 |
+| `pnpm db:push`                 | Push migrations to a linked remote project |
 
 ---
 
 ## 5. Database layer
 
-**Location:** `supabase/migrations/0001_initial_schema.sql`,
-`supabase/migrations/0002_verification_reviews.sql`, and
-`supabase/migrations/0003_degree_verification_compliance.sql`
+**Location:** `supabase/migrations/0001_initial_schema.sql` through
+`supabase/migrations/0005_security_hardening.sql` (see §4 for the full list)
 
 **Applied to:** Supabase Cloud project `jecdhhihbtaocbfzlljt` via the Management API and
 dashboard SQL editor.
@@ -259,125 +244,125 @@ so the migration is re-runnable.
 
 #### `profiles` — one row per auth user
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid PK | References `auth.users(id)` on delete cascade |
-| `email` | text not null unique | Normalized by trigger |
-| `role` | `user_role` not null default `candidate` | Assigned at signup or by admin |
-| `employer_tos_accepted_at` | timestamptz | Migration 0004; NULL gates all employer certificate access |
-| `employer_tos_version` | text | Required once acceptance is recorded (check constraint) |
-| `created_at` | timestamptz not null default now() | |
+| Column                     | Type                                     | Notes                                                      |
+| -------------------------- | ---------------------------------------- | ---------------------------------------------------------- |
+| `id`                       | uuid PK                                  | References `auth.users(id)` on delete cascade              |
+| `email`                    | text not null unique                     | Normalized by trigger                                      |
+| `role`                     | `user_role` not null default `candidate` | Assigned at signup or by admin                             |
+| `employer_tos_accepted_at` | timestamptz                              | Migration 0004; NULL gates all employer certificate access |
+| `employer_tos_version`     | text                                     | Required once acceptance is recorded (check constraint)    |
+| `created_at`               | timestamptz not null default now()       |                                                            |
 
 #### `candidate_profiles` — candidate domain data
 
-| Column | Type | Notes |
-|---|---|---|
-| `user_id` | uuid PK | References `profiles(id)` on delete cascade |
-| `full_name` | text not null | Masked for employers before unlock |
-| `headline` | text | 140 characters in the form schema |
-| `industry` | text | One of the shared industry taxonomy |
-| `university_name` | text not null | Matched against the certificate by an admin |
-| `degree_level` | text not null | One of the shared degree taxonomy |
-| `graduation_year` | integer not null | Check 1950–2100 |
-| `experience_years` | integer not null default 0 | Check 0–60 |
-| `phone` | text | Shared only after unlock |
-| `verification_status` | `verification_status` not null default `unverified` | Admin-managed |
-| `rejection_reason` | text | Set when requesting changes |
-| `is_featured` | boolean not null default false | Priority Pro; admin/Stripe only |
-| `created_at` / `updated_at` | timestamptz | `updated_at` maintained by trigger |
+| Column                      | Type                                                | Notes                                       |
+| --------------------------- | --------------------------------------------------- | ------------------------------------------- |
+| `user_id`                   | uuid PK                                             | References `profiles(id)` on delete cascade |
+| `full_name`                 | text not null                                       | Masked for employers before unlock          |
+| `headline`                  | text                                                | 140 characters in the form schema           |
+| `industry`                  | text                                                | One of the shared industry taxonomy         |
+| `university_name`           | text not null                                       | Matched against the certificate by an admin |
+| `degree_level`              | text not null                                       | One of the shared degree taxonomy           |
+| `graduation_year`           | integer not null                                    | Check 1950–2100                             |
+| `experience_years`          | integer not null default 0                          | Check 0–60                                  |
+| `phone`                     | text                                                | Shared only after unlock                    |
+| `verification_status`       | `verification_status` not null default `unverified` | Admin-managed                               |
+| `rejection_reason`          | text                                                | Set when requesting changes                 |
+| `is_featured`               | boolean not null default false                      | Priority Pro; admin/Stripe only             |
+| `created_at` / `updated_at` | timestamptz                                         | `updated_at` maintained by trigger          |
 
 #### `candidate_media` — private verification assets
 
-| Column | Type | Notes |
-|---|---|---|
-| `candidate_id` | uuid PK | References `candidate_profiles(user_id)` on delete cascade |
-| `certificate_r2_key` | text | Private R2 key under the candidate UUID prefix |
-| `video_r2_key` | text | Private R2 key under the candidate UUID prefix |
-| `video_duration_seconds` | integer | Check 60–120 when present |
-| `ocr_extracted_text` | text | Draft/final OCR result, capped in the API |
-| `submitted_at` | timestamptz | Set on finalize |
+| Column                   | Type        | Notes                                                      |
+| ------------------------ | ----------- | ---------------------------------------------------------- |
+| `candidate_id`           | uuid PK     | References `candidate_profiles(user_id)` on delete cascade |
+| `certificate_r2_key`     | text        | Private R2 key under the candidate UUID prefix             |
+| `video_r2_key`           | text        | Private R2 key under the candidate UUID prefix             |
+| `video_duration_seconds` | integer     | Check 60–120 when present                                  |
+| `ocr_extracted_text`     | text        | Draft/final OCR result, capped in the API                  |
+| `submitted_at`           | timestamptz | Set on finalize                                            |
 
 #### `companies` — one per employer owner
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid PK default `gen_random_uuid()` | |
-| `owner_id` | uuid not null unique | References `profiles(id)` on delete cascade |
-| `company_name` | text not null | |
-| `corporate_domain` | text not null unique | Derived from the owner email; prevents trial-credit farming |
-| `logo_r2_key` | text | Public logo bucket key |
-| `is_verified` | boolean not null default false | Admin-managed |
-| `display_logo_consent` | boolean not null default true | Controls marquee inclusion |
-| `created_at` | timestamptz not null default now() | |
+| Column                 | Type                                | Notes                                                       |
+| ---------------------- | ----------------------------------- | ----------------------------------------------------------- |
+| `id`                   | uuid PK default `gen_random_uuid()` |                                                             |
+| `owner_id`             | uuid not null unique                | References `profiles(id)` on delete cascade                 |
+| `company_name`         | text not null                       |                                                             |
+| `corporate_domain`     | text not null unique                | Derived from the owner email; prevents trial-credit farming |
+| `logo_r2_key`          | text                                | Public logo bucket key                                      |
+| `is_verified`          | boolean not null default false      | Admin-managed                                               |
+| `display_logo_consent` | boolean not null default true       | Controls marquee inclusion                                  |
+| `created_at`           | timestamptz not null default now()  |                                                             |
 
 #### `credit_ledger` — append-only credit history
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid PK default `gen_random_uuid()` | |
-| `company_id` | uuid not null | References `companies(id)` on delete cascade |
-| `delta` | integer not null | Check `delta <> 0` |
-| `reason` | text not null | `signup_trial_credits`, `candidate_unlock`, `stripe_credit_pack` |
-| `reference_id` | uuid | Unique per `(company_id, reason, reference_id)` |
-| `created_at` | timestamptz not null default now() | |
+| Column         | Type                                | Notes                                                            |
+| -------------- | ----------------------------------- | ---------------------------------------------------------------- |
+| `id`           | uuid PK default `gen_random_uuid()` |                                                                  |
+| `company_id`   | uuid not null                       | References `companies(id)` on delete cascade                     |
+| `delta`        | integer not null                    | Check `delta <> 0`                                               |
+| `reason`       | text not null                       | `signup_trial_credits`, `candidate_unlock`, `stripe_credit_pack` |
+| `reference_id` | uuid                                | Unique per `(company_id, reason, reference_id)`                  |
+| `created_at`   | timestamptz not null default now()  |                                                                  |
 
 Balance is always derived: `SELECT COALESCE(SUM(delta), 0)`.
 
 #### `company_unlocked_candidates` — paid entitlements
 
-| Column | Type | Notes |
-|---|---|---|
-| `company_id` | uuid not null | References `companies(id)` on delete cascade |
-| `candidate_id` | uuid not null | References `candidate_profiles(user_id)` on delete cascade |
-| `unlocked_at` | timestamptz not null default now() | |
-| Primary key | `(company_id, candidate_id)` | One unlock per pair |
+| Column         | Type                               | Notes                                                      |
+| -------------- | ---------------------------------- | ---------------------------------------------------------- |
+| `company_id`   | uuid not null                      | References `companies(id)` on delete cascade               |
+| `candidate_id` | uuid not null                      | References `candidate_profiles(user_id)` on delete cascade |
+| `unlocked_at`  | timestamptz not null default now() |                                                            |
+| Primary key    | `(company_id, candidate_id)`       | One unlock per pair                                        |
 
 #### `messages` — unlocked direct chat
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid PK default `gen_random_uuid()` | |
-| `company_id` | uuid not null | References `companies(id)` on delete cascade |
-| `candidate_id` | uuid not null | References `candidate_profiles(user_id)` on delete cascade |
-| `sender_id` | uuid not null | References `profiles(id)` on delete cascade |
-| `body` | text not null | Check 1–4000 characters |
-| `created_at` | timestamptz not null default now() | |
+| Column         | Type                                | Notes                                                      |
+| -------------- | ----------------------------------- | ---------------------------------------------------------- |
+| `id`           | uuid PK default `gen_random_uuid()` |                                                            |
+| `company_id`   | uuid not null                       | References `companies(id)` on delete cascade               |
+| `candidate_id` | uuid not null                       | References `candidate_profiles(user_id)` on delete cascade |
+| `sender_id`    | uuid not null                       | References `profiles(id)` on delete cascade                |
+| `body`         | text not null                       | Check 1–4000 characters                                    |
+| `created_at`   | timestamptz not null default now()  |                                                            |
 
 `alter table public.messages replica identity full` enables complete realtime payloads.
 
 #### `candidate_profile_views` — Priority Pro analytics
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid PK default `gen_random_uuid()` | |
-| `candidate_id` | uuid not null | References `candidate_profiles(user_id)` on delete cascade |
-| `viewer_company_id` | uuid not null | References `companies(id)` on delete cascade |
-| `viewed_at` | timestamptz not null default now() | |
+| Column              | Type                                | Notes                                                      |
+| ------------------- | ----------------------------------- | ---------------------------------------------------------- |
+| `id`                | uuid PK default `gen_random_uuid()` |                                                            |
+| `candidate_id`      | uuid not null                       | References `candidate_profiles(user_id)` on delete cascade |
+| `viewer_company_id` | uuid not null                       | References `companies(id)` on delete cascade               |
+| `viewed_at`         | timestamptz not null default now()  |                                                            |
 
 #### `verification_reviews` — immutable audit trail (migration 0002)
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid PK default `gen_random_uuid()` | |
-| `candidate_id` | uuid not null | References `candidate_profiles(user_id)` on delete cascade |
-| `reviewer_id` | uuid | References `profiles(id)` on delete set null |
-| `reviewer_email` | text not null | Snapshot so the trail survives reviewer deletion |
-| `decision` | `verification_status` not null | Check `verified` or `rejected` |
-| `rejection_reason` | text | |
-| `created_at` | timestamptz not null default now() | |
+| Column             | Type                                | Notes                                                      |
+| ------------------ | ----------------------------------- | ---------------------------------------------------------- |
+| `id`               | uuid PK default `gen_random_uuid()` |                                                            |
+| `candidate_id`     | uuid not null                       | References `candidate_profiles(user_id)` on delete cascade |
+| `reviewer_id`      | uuid                                | References `profiles(id)` on delete set null               |
+| `reviewer_email`   | text not null                       | Snapshot so the trail survives reviewer deletion           |
+| `decision`         | `verification_status` not null      | Check `verified` or `rejected`                             |
+| `rejection_reason` | text                                |                                                            |
+| `created_at`       | timestamptz not null default now()  |                                                            |
 
 #### `document_access_logs` — immutable credential audit trail (migration 0004)
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid PK default `gen_random_uuid()` | |
-| `employer_id` | uuid not null | References `auth.users(id)` on delete cascade |
-| `candidate_id` | uuid not null | Deliberately **no FK**, so evidence survives candidate deletion |
-| `event_type` | text not null | Check: `tos_accepted`, `certificate_viewed`, `hourly_reack_completed`, `focus_loss_blur`, `screenshot_attempt`, `print_or_devtools_attempt` |
-| `ip_address` | text | From `x-forwarded-for` / `cf-connecting-ip` / `x-real-ip` |
-| `user_agent` | text | Truncated to 512 characters |
-| `watermark_signature` | text | Employer name, email, short id, UTC timestamp |
-| `created_at` | timestamptz not null default now() | |
+| Column                | Type                                | Notes                                                                                                                                       |
+| --------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | uuid PK default `gen_random_uuid()` |                                                                                                                                             |
+| `employer_id`         | uuid not null                       | References `auth.users(id)` on delete cascade                                                                                               |
+| `candidate_id`        | uuid not null                       | Deliberately **no FK**, so evidence survives candidate deletion                                                                             |
+| `event_type`          | text not null                       | Check: `tos_accepted`, `certificate_viewed`, `hourly_reack_completed`, `focus_loss_blur`, `screenshot_attempt`, `print_or_devtools_attempt` |
+| `ip_address`          | text                                | From `x-forwarded-for` / `cf-connecting-ip` / `x-real-ip`                                                                                   |
+| `user_agent`          | text                                | Truncated to 512 characters                                                                                                                 |
+| `watermark_signature` | text                                | Employer name, email, short id, UTC timestamp                                                                                               |
+| `created_at`          | timestamptz not null default now()  |                                                                                                                                             |
 
 RLS allows employers to INSERT only their own rows (`employer_id = auth.uid()` and role
 `employer`) and admins to SELECT all rows. There is no UPDATE or DELETE policy, and a
@@ -403,33 +388,33 @@ BEFORE UPDATE trigger raises `document_access_logs_is_append_only` for every rol
 
 #### Security helpers
 
-| Function | Purpose |
-|---|---|
-| `is_blocked_consumer_domain(domain)` | Immutable check against the shared blocklist |
-| `is_consumer_email(email)` | Extracts the domain and delegates to the blocklist |
-| `is_admin()` | Security-definer check of the caller's role |
-| `current_user_role()` | Returns the caller's `user_role` |
-| `current_company_id()` | Returns the caller's company id |
-| `is_company_owner(company_id)` | Ownership check |
-| `has_unlocked(company_id, candidate_id)` | Entitlement check used by chat |
-| `company_credit_balance(company_id)` | Derived ledger balance |
-| `get_my_credit_balance()` | Balance for the signed-in employer |
+| Function                                 | Purpose                                            |
+| ---------------------------------------- | -------------------------------------------------- |
+| `is_blocked_consumer_domain(domain)`     | Immutable check against the shared blocklist       |
+| `is_consumer_email(email)`               | Extracts the domain and delegates to the blocklist |
+| `is_admin()`                             | Security-definer check of the caller's role        |
+| `current_user_role()`                    | Returns the caller's `user_role`                   |
+| `current_company_id()`                   | Returns the caller's company id                    |
+| `is_company_owner(company_id)`           | Ownership check                                    |
+| `has_unlocked(company_id, candidate_id)` | Entitlement check used by chat                     |
+| `company_credit_balance(company_id)`     | Derived ledger balance                             |
+| `get_my_credit_balance()`                | Balance for the signed-in employer                 |
 
 #### Trigger functions
 
-| Function | Trigger | Behavior |
-|---|---|---|
-| `set_updated_at()` | `candidate_profiles_updated_at` | Maintains `updated_at` |
-| `normalize_profile_email()` | `profiles_normalize_email` | Lowercases/trims email |
-| `handle_new_user()` | `on_auth_user_created` | Creates a `profiles` row from auth metadata; maps any non-employer role to candidate, so public signup can never mint an admin |
-| `protect_profile_role()` | `profiles_protect_role` | Blocks self-promotion to admin / role changes |
-| `protect_candidate_fields()` | `candidate_profiles_protect_fields` | Controls verification transitions, `is_featured`, and rejection reason |
-| `guard_candidate_media()` | `candidate_media_guard` | Locks media uploads while `pending`/`verified`; enforces key ownership |
-| `sync_candidate_submission()` | `candidate_media_sync_submission` | Promotes `unverified`/`rejected` to `pending` when both assets exist |
-| `validate_company_domain()` | `companies_validate_domain` | Validates domain syntax, blocks consumer domains, requires matching owner email domain |
-| `protect_company_fields()` | `companies_protect_fields` | Prevents employers from self-verifying or changing ownership/domain |
-| `grant_signup_credits()` | `companies_grant_signup_credits` | Grants exactly 2 trial credits once per company |
-| `enforce_message_unlock()` | `messages_enforce_unlock` | Rejects messages unless an unlock exists and the sender is a participant |
+| Function                      | Trigger                             | Behavior                                                                                                                       |
+| ----------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `set_updated_at()`            | `candidate_profiles_updated_at`     | Maintains `updated_at`                                                                                                         |
+| `normalize_profile_email()`   | `profiles_normalize_email`          | Lowercases/trims email                                                                                                         |
+| `handle_new_user()`           | `on_auth_user_created`              | Creates a `profiles` row from auth metadata; maps any non-employer role to candidate, so public signup can never mint an admin |
+| `protect_profile_role()`      | `profiles_protect_role`             | Blocks self-promotion to admin / role changes                                                                                  |
+| `protect_candidate_fields()`  | `candidate_profiles_protect_fields` | Controls verification transitions, `is_featured`, and rejection reason                                                         |
+| `guard_candidate_media()`     | `candidate_media_guard`             | Locks media uploads while `pending`/`verified`; enforces key ownership                                                         |
+| `sync_candidate_submission()` | `candidate_media_sync_submission`   | Promotes `unverified`/`rejected` to `pending` when both assets exist                                                           |
+| `validate_company_domain()`   | `companies_validate_domain`         | Validates domain syntax, blocks consumer domains, requires matching owner email domain                                         |
+| `protect_company_fields()`    | `companies_protect_fields`          | Prevents employers from self-verifying or changing ownership/domain                                                            |
+| `grant_signup_credits()`      | `companies_grant_signup_credits`    | Grants exactly 2 trial credits once per company                                                                                |
+| `enforce_message_unlock()`    | `messages_enforce_unlock`           | Rejects messages unless an unlock exists and the sender is a participant                                                       |
 
 #### `unlock_candidate(p_company_id, p_candidate_id)`
 
@@ -472,17 +457,17 @@ Returns candidate card data plus `total_count`. Key behavior:
 
 RLS is enabled on all 9 tables. Policies (24 total):
 
-| Table | Policies |
-|---|---|
-| `profiles` | select own or admin; insert self with `role <> 'admin'`; update own or admin |
-| `candidate_profiles` | select own or admin; insert self as candidate; update own or admin |
-| `candidate_media` | select own or admin; insert self as candidate; update own or admin |
-| `companies` | select owner or admin; insert employer self; update owner or admin; delete admin |
-| `credit_ledger` | select owner or admin; insert admin only (service role bypasses RLS) |
-| `company_unlocked_candidates` | select participant or admin; insert admin; delete admin |
-| `messages` | select participant or admin; insert unlocked participant |
-| `candidate_profile_views` | select own or admin; insert by the caller's company for a verified candidate |
-| `verification_reviews` | select candidate or admin; insert admin with `reviewer_id = auth.uid()` |
+| Table                         | Policies                                                                         |
+| ----------------------------- | -------------------------------------------------------------------------------- |
+| `profiles`                    | select own or admin; insert self with `role <> 'admin'`; update own or admin     |
+| `candidate_profiles`          | select own or admin; insert self as candidate; update own or admin               |
+| `candidate_media`             | select own or admin; insert self as candidate; update own or admin               |
+| `companies`                   | select owner or admin; insert employer self; update owner or admin; delete admin |
+| `credit_ledger`               | select owner or admin; insert admin only (service role bypasses RLS)             |
+| `company_unlocked_candidates` | select participant or admin; insert admin; delete admin                          |
+| `messages`                    | select participant or admin; insert unlocked participant                         |
+| `candidate_profile_views`     | select own or admin; insert by the caller's company for a verified candidate     |
+| `verification_reviews`        | select candidate or admin; insert admin with `reviewer_id = auth.uid()`          |
 
 Employers never read `candidate_media` directly. The discovery RPC exposes only the video
 key, and the presign API performs the entitlement check.
@@ -533,28 +518,28 @@ unchanged in Next.js, React Native, edge functions, and tests.
 
 ### 6.2 Zod schemas
 
-| Schema | Purpose |
-|---|---|
-| `uuidSchema`, `roleSchema` | Primitives |
-| `corporateEmailSchema` | Validates and blocks consumer domains |
-| `videoDurationSchema` | Coerces and enforces 60–120 seconds |
-| `phoneSchema` | Optional phone validation |
-| `paginationSchema` | Limit/offset |
-| `candidateProfileSchema` | Candidate profile fields |
-| `candidateMediaKeysSchema` | Media key shape |
-| `candidateVerificationSubmissionSchema` | Certificate + video submission |
-| `candidateSearchFiltersSchema` | Search/filter query |
-| `candidateProCheckoutSchema` | Priority Pro checkout |
-| `employerRegistrationSchema` | Employer signup |
-| `companyProfileSchema` | Company name/domain/logo consent |
-| `unlockCandidateSchema` | Company + candidate ids |
-| `creditPackCheckoutSchema`, `checkoutSchema` | Discriminated checkout union |
-| `adminVerificationDecisionSchema` | Approve/reject with reason rules |
-| `messageSchema` | 1–4000 character message |
-| `presignUploadSchema`, `presignDownloadSchema`, `presignRequestSchema` | Storage API |
-| `documentAuditEventSchema` | Certificate security event type + candidate id |
-| `employerConfidentialityAckSchema` | Click-through consent with `accepted: z.literal(true)` |
-| `signUpSchema`, `signInSchema`, `signUpMetadataSchema` | Auth |
+| Schema                                                                 | Purpose                                                |
+| ---------------------------------------------------------------------- | ------------------------------------------------------ |
+| `uuidSchema`, `roleSchema`                                             | Primitives                                             |
+| `corporateEmailSchema`                                                 | Validates and blocks consumer domains                  |
+| `videoDurationSchema`                                                  | Coerces and enforces 60–120 seconds                    |
+| `phoneSchema`                                                          | Optional phone validation                              |
+| `paginationSchema`                                                     | Limit/offset                                           |
+| `candidateProfileSchema`                                               | Candidate profile fields                               |
+| `candidateMediaKeysSchema`                                             | Media key shape                                        |
+| `candidateVerificationSubmissionSchema`                                | Certificate + video submission                         |
+| `candidateSearchFiltersSchema`                                         | Search/filter query                                    |
+| `candidateProCheckoutSchema`                                           | Priority Pro checkout                                  |
+| `employerRegistrationSchema`                                           | Employer signup                                        |
+| `companyProfileSchema`                                                 | Company name/domain/logo consent                       |
+| `unlockCandidateSchema`                                                | Company + candidate ids                                |
+| `creditPackCheckoutSchema`, `checkoutSchema`                           | Discriminated checkout union                           |
+| `adminVerificationDecisionSchema`                                      | Approve/reject with reason rules                       |
+| `messageSchema`                                                        | 1–4000 character message                               |
+| `presignUploadSchema`, `presignDownloadSchema`, `presignRequestSchema` | Storage API                                            |
+| `documentAuditEventSchema`                                             | Certificate security event type + candidate id         |
+| `employerConfidentialityAckSchema`                                     | Click-through consent with `accepted: z.literal(true)` |
+| `signUpSchema`, `signInSchema`, `signUpMetadataSchema`                 | Auth                                                   |
 
 Notable validations:
 
@@ -579,7 +564,7 @@ Notable validations:
 ### 6.4 Design tokens
 
 `packages/shared/design-tokens.cjs` is the single source of truth for colors, fonts, and
-radii, consumed by both Tailwind configs.
+radii, consumed by the shared packages and the web Tailwind config.
 
 Palette — **Executive Slate & Alabaster**:
 
@@ -587,9 +572,18 @@ Palette — **Executive Slate & Alabaster**:
 - Alabaster `#F8FAFC` / `#FFFFFF`
 - Indigo `#4F46E5`
 - Emerald `#10B981`
+- Gold `#C5A059` (accents, hairlines, eyebrows)
 
-Typography: **Plus Jakarta Sans** for headings, **Inter** for body. Web uses `next/font`;
-mobile uses `@expo-google-fonts`, so both render without network access.
+Typography: **Plus Jakarta Sans** for headings, **Inter** for body, both loaded through
+`next/font`, so they render without a network request to Google.
+
+**Aurora / Northern Lights silk ribbons.** Dark surfaces carry a pure-CSS light field:
+four heavily blurred gradient ribbons (emerald, indigo, cyan, faint gold) drifting over
+the navy sky, thin SVG silk threads, the engraved contour print, security grain, and a
+vignette. It lives in `apps/web/src/app/globals.css` (`.aurora-*`) and
+`apps/web/src/components/ui/AuroraRibbons.tsx`. There is no image request and no client
+JavaScript; the global `prefers-reduced-motion` rule freezes the drift, and small screens
+drop the heaviest ribbon. Light workspace pages get a masked `.aurora-wash` instead.
 
 ---
 
@@ -631,11 +625,11 @@ company-logos/<company-uuid>/<uuid>.png
 
 `POST /api/storage/presign` is the only door to R2.
 
-| Caller | Pitch video | Certificate | Company logo |
-|---|---|---|---|
-| Admin | Any | Any | Any |
-| Candidate (owner) | Own | Own | — |
-| Employer | Any **verified** candidate | **Never** — secure stream only | — |
+| Caller            | Pitch video                | Certificate                    | Company logo |
+| ----------------- | -------------------------- | ------------------------------ | ------------ |
+| Admin             | Any                        | Any                            | Any          |
+| Candidate (owner) | Own                        | Own                            | —            |
+| Employer          | Any **verified** candidate | **Never** — secure stream only | —            |
 
 Employer certificate downloads are rejected with `403 use_secure_viewer`. The audited
 `/api/employer/certificates/[candidateId]/stream` endpoint is the only employer path to
@@ -684,43 +678,43 @@ wrong type, or owned by someone else.
 
 #### Public
 
-| Route | Purpose |
-|---|---|
-| `/` | Landing page with hero, value props, how-it-works, trust grid, marquee, CTA |
-| `/auth/sign-in` | Email/password sign-in |
-| `/auth/sign-up` | Role-selecting sign-up |
-| `/auth/callback` | PKCE email-confirmation callback |
+| Route            | Purpose                                                                     |
+| ---------------- | --------------------------------------------------------------------------- |
+| `/`              | Landing page with hero, value props, how-it-works, trust grid, marquee, CTA |
+| `/auth/sign-in`  | Email/password sign-in                                                      |
+| `/auth/sign-up`  | Role-selecting sign-up                                                      |
+| `/auth/callback` | PKCE email-confirmation callback                                            |
 
 #### Session-guarded workspace (`(app)` layout)
 
-| Route | Role | Purpose |
-|---|---|---|
-| `/dashboard` | any | Role-specific overview |
-| `/candidate/profile` | candidate | Create/edit profile, Priority Pro card |
-| `/candidate/verification` | candidate | Upload certificate, record pitch, submit, review history |
-| `/candidate/messages` | candidate | Conversation inbox |
-| `/candidate/messages/[companyId]` | candidate | Realtime thread, gated by unlock |
-| `/employer/company` | employer | Create/edit company and logo consent |
-| `/employer/candidates` | employer | Search/filter verified candidates, watch pitches, unlock |
-| `/employer/candidates/[candidateId]` | employer | Unlocked detail: contact, degree, certificate, pitch, chat |
-| `/employer/billing` | employer | Credit balance, packs, checkout status |
-| `/admin/verification` | admin | Pending review queue |
-| `/admin/verification/[candidateId]` | admin | Review detail, OCR text, certificate, pitch, decision |
+| Route                                | Role      | Purpose                                                    |
+| ------------------------------------ | --------- | ---------------------------------------------------------- |
+| `/dashboard`                         | any       | Role-specific overview                                     |
+| `/candidate/profile`                 | candidate | Create/edit profile, Priority Pro card                     |
+| `/candidate/verification`            | candidate | Upload certificate, record pitch, submit, review history   |
+| `/candidate/messages`                | candidate | Conversation inbox                                         |
+| `/candidate/messages/[companyId]`    | candidate | Realtime thread, gated by unlock                           |
+| `/employer/company`                  | employer  | Create/edit company and logo consent                       |
+| `/employer/candidates`               | employer  | Search/filter verified candidates, watch pitches, unlock   |
+| `/employer/candidates/[candidateId]` | employer  | Unlocked detail: contact, degree, certificate, pitch, chat |
+| `/employer/billing`                  | employer  | Credit balance, packs, checkout status                     |
+| `/admin/verification`                | admin     | Pending review queue                                       |
+| `/admin/verification/[candidateId]`  | admin     | Review detail, OCR text, certificate, pitch, decision      |
 
 #### API routes
 
-| Method | Route | Auth | Purpose |
-|---|---|---|---|
-| POST | `/api/auth/provision` | Bearer | Idempotent post-signup provisioning |
-| POST | `/api/storage/presign` | Bearer | Upload/download presigned URLs |
-| POST | `/api/verification/ocr` | Bearer candidate | OCR a certificate |
-| POST | `/api/verification/finalize` | Bearer candidate | Validate uploads and submit for review |
-| POST | `/api/admin/verification` | Bearer admin | Record a decision + audit row |
-| POST | `/api/employer/unlock` | Bearer employer | Spend a credit atomically |
-| GET | `/api/employer/certificates/[candidateId]/stream` | Bearer employer | Audited zero-download certificate bytes (or `?format=base64`) |
-| POST | `/api/employer/certificates/security-event` | Bearer employer | Record consent + anti-capture telemetry |
-| POST | `/api/stripe/checkout` | Bearer | Create a Checkout session |
-| POST | `/api/webhooks/stripe` | Stripe signature | Grant credits / Priority Pro |
+| Method | Route                                             | Auth             | Purpose                                                       |
+| ------ | ------------------------------------------------- | ---------------- | ------------------------------------------------------------- |
+| POST   | `/api/auth/provision`                             | Bearer           | Idempotent post-signup provisioning                           |
+| POST   | `/api/storage/presign`                            | Bearer           | Upload/download presigned URLs                                |
+| POST   | `/api/verification/ocr`                           | Bearer candidate | OCR a certificate                                             |
+| POST   | `/api/verification/finalize`                      | Bearer candidate | Validate uploads and submit for review                        |
+| POST   | `/api/admin/verification`                         | Bearer admin     | Record a decision + audit row                                 |
+| POST   | `/api/employer/unlock`                            | Bearer employer  | Spend a credit atomically                                     |
+| GET    | `/api/employer/certificates/[candidateId]/stream` | Bearer employer  | Audited zero-download certificate bytes (or `?format=base64`) |
+| POST   | `/api/employer/certificates/security-event`       | Bearer employer  | Record consent + anti-capture telemetry                       |
+| POST   | `/api/stripe/checkout`                            | Bearer           | Create a Checkout session                                     |
+| POST   | `/api/webhooks/stripe`                            | Stripe signature | Grant credits / Priority Pro                                  |
 
 All API routes use `runtime = "nodejs"` and `dynamic = "force-dynamic"`.
 
@@ -854,12 +848,12 @@ changes are requested.
 
 ### 8.6 Landing page
 
-- Hero with primary and secondary CTAs.
+- Aurora silk-ribbon hero with primary and secondary CTAs.
 - "For graduates" and "For employers" value cards.
 - Four-step how-it-works.
 - Trust grid: 60–120s pitch, private credentials, atomic unlocks, realtime chat.
 - "Trusted by" infinite logo marquee.
-- Final CTA.
+- Final CTA on a second aurora panel.
 
 The marquee reads the `company_marquee` view. If no verified/consented companies exist, it
 renders six neutral placeholder tiles. The animation is CSS-based and duplicates the list
@@ -874,7 +868,7 @@ for a seamless loop.
   trigger apply.
 - Deduplicates the sender's own insert against the realtime event.
 - Auto-scrolls to the newest message.
-- Both web and mobile use the same table and rules.
+- Runs entirely in the browser; there is no second client to keep in sync.
 
 ### 8.8 API error convention
 
@@ -902,75 +896,43 @@ Common status codes:
 
 ---
 
-## 9. Mobile application (`apps/mobile`)
+## 9. Responsive web delivery (mobile app removed)
 
-The mobile app is an Expo Router client with full feature parity for the planned screens.
+The Expo client (`apps/mobile`) has been deleted. The responsive web app is the only
+client and covers phones, tablets, laptops, and desktops from one codebase.
 
-### 9.1 Screens
+**Why it was removed:** every product flow already existed on the web, and the pitch
+recorder uses the browser `MediaRecorder` API, which is supported by Safari iOS, Chrome
+Android, and desktop browsers. Keeping a second client doubled the surface area that had
+to be secured, tested, and kept in feature parity.
 
-| Route | Purpose |
-|---|---|
-| `/` | Public landing / entry |
-| `/auth/sign-in` | Email/password sign-in |
-| `/auth/sign-up` | Role-selecting sign-up with corporate-email gate |
-| `/dashboard` | Role-specific overview |
-| `/candidate/profile` | Profile form + Priority Pro upgrade |
-| `/candidate/verification` | Verification studio + review history |
-| `/candidate/messages` | Conversation inbox |
-| `/candidate/messages/[companyId]` | Realtime thread |
-| `/employer/company` | Company profile |
-| `/employer/candidates` | Discovery, search, pitch playback, unlock |
-| `/employer/certificates/[candidateId]` | Confidential certificate viewer (screen-capture locked) |
-| `/employer/billing` | Credit balance + checkout |
-| `/employer/chat/[candidateId]` | Realtime chat |
+**What the web app relies on instead of native modules:**
 
-### 9.2 Mobile-specific implementation
+| Native capability         | Web replacement                                                      |
+| ------------------------- | -------------------------------------------------------------------- |
+| `expo-document-picker`    | `<input type="file">` with a PDF/JPEG/PNG `accept` list              |
+| `expo-file-system` upload | Presigned R2 `PUT` via `fetch`                                       |
+| `expo-camera` recording   | `MediaRecorder` + `getUserMedia`, 1280×720 @ 30 fps                  |
+| `expo-av` playback        | `<video>` element with a presigned GET                               |
+| `expo-screen-capture`     | Canvas-only rendering, focus-loss shield, `@media print` kill-switch |
+| AsyncStorage session      | `@supabase/ssr` cookies + `authFetch` bearer tokens                  |
+| Native push notifications | Not implemented (see §14.2)                                          |
 
-- **Supabase client**: `@supabase/supabase-js` with AsyncStorage persistence, PKCE,
-  `detectSessionInUrl: false`, and `expo-crypto` WebCrypto polyfill for Hermes.
-- **API calls**: `lib/api.ts` attaches the current access token as a Bearer header and
-  targets `EXPO_PUBLIC_API_URL`.
-- **Verification studio**:
-  - Certificate selection via `expo-document-picker`.
-  - Upload via presigned URL using `expo-file-system`.
-  - OCR through the web API.
-  - Camera recording via `expo-camera` `CameraView` / `recordAsync`, front-facing,
-    `maxDuration` 120 seconds, minimum 60 seconds before submission.
-  - Pitch playback via `expo-av`.
-- **Auth context** exposes session/user and drives route protection in the `(app)` layout.
-- **Secure certificate viewer**:
-  - `expo-screen-capture` `usePreventScreenCapture()` sets Android `FLAG_SECURE` and
-    blocks iOS recordings for the lifetime of the screen.
-  - `addScreenshotListener` closes the document, shows a violation alert, and posts
-    `screenshot_attempt` to the security-event API.
-  - The same confidentiality gate, every-open warning, 60-minute re-acknowledgment, and
-    repeating forensic watermark as web.
-  - Image certificates render from an in-memory base64 data URI; PDFs show a protected
-    notice because React Native has no PDF canvas renderer.
-- **NativeWind** styling uses the same design tokens as web.
-- **Permissions**: `app.json` declares camera and microphone permissions.
+**Trade-offs accepted with the removal:**
 
-### 9.3 Mobile parity status
+- No app-store listing or home-screen icon (users can still "Add to Home Screen").
+- No push notifications. Employer/candidate lifecycle events are in-app only.
+- No native background upload; a large upload must keep the tab open. Pitch clips are
+  capped at 50 MB and certificates at 10 MB, which keeps this practical on mobile data.
 
-| Feature | Web | Mobile |
-|---|---|---|
-| Sign-in / sign-up / corporate gate | Yes | Yes |
-| Candidate profile | Yes | Yes |
-| Certificate upload + OCR | Yes | Yes |
-| Live pitch recording | Yes | Yes |
-| Finalize + review history | Yes | Yes |
-| Employer company profile | Yes | Yes |
-| Candidate discovery + filters | Yes | Yes |
-| Pitch playback | Yes | Yes |
-| Unlock | Yes | Yes |
-| Confidential certificate viewer | Yes | Yes |
-| Billing / Stripe redirect | Yes | Yes |
-| Priority Pro upgrade | Yes | Yes |
-| Realtime chat (both sides) | Yes | Yes |
-| Landing page / marquee | Yes | Entry screen only |
-| Admin review | Yes | No (web only) |
+**Security benefit:** one auth cookie model, one API surface, one set of security headers,
+and no long-lived refresh tokens stored in device AsyncStorage.
 
-Admin review is intentionally web-only; the admin role is an internal operations function.
+**Still enforced for mobile browsers:** the confidential certificate viewer keeps its
+canvas-only rendering, repeating forensic watermark, and append-only
+`document_access_logs` audit row on every open. The difference is that screen capture on a
+phone browser cannot be blocked at the OS level, so deterrence rests on the watermark and
+the audit trail (see §13.2).
 
 ---
 
@@ -978,39 +940,38 @@ Admin review is intentionally web-only; the admin role is an internal operations
 
 ### 10.1 Supabase connection
 
-| Setting | Value |
-|---|---|
-| Project ref | `jecdhhihbtaocbfzlljt` |
-| API URL | `https://jecdhhihbtaocbfzlljt.supabase.co` |
-| Web env file | `apps/web/.env.local` |
-| Mobile env file | `apps/mobile/.env` |
-| Migrations applied | `0001_initial_schema.sql`, `0002_verification_reviews.sql`, `0003_degree_verification_compliance.sql` |
-| Auth site URL | `http://localhost:3000` |
-| Auth redirect URLs | `http://localhost:3000/auth/callback`, LAN callback |
-| Email autoconfirm | `true` (testing only) |
-| Public tables verified | 9 tables + `company_marquee` view |
+| Setting                | Value                                                                                                                                                                                                           |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Project ref            | `jecdhhihbtaocbfzlljt`                                                                                                                                                                                          |
+| API URL                | `https://jecdhhihbtaocbfzlljt.supabase.co`                                                                                                                                                                      |
+| Web env file           | `apps/web/.env.local`                                                                                                                                                                                           |
+| Migrations applied     | `0001_initial_schema.sql`, `0002_verification_reviews.sql`, `0003_degree_verification_compliance.sql`, `0004_employer_certificate_confidentiality.sql` (`0005_security_hardening.sql` authored, not yet pushed) |
+| Auth site URL          | `http://localhost:3000`                                                                                                                                                                                         |
+| Auth redirect URLs     | `http://localhost:3000/auth/callback`, LAN callback                                                                                                                                                             |
+| Email autoconfirm      | `true` (testing only)                                                                                                                                                                                           |
+| Public tables verified | 9 tables + `company_marquee` view                                                                                                                                                                               |
 
 ### 10.2 Current data
 
 Verified through the REST API with the service role:
 
-| Table | Rows |
-|---|---|
-| `profiles` | 1 |
-| `candidate_profiles` | 0 |
-| `candidate_media` | 0 |
-| `companies` | 0 |
-| `credit_ledger` | 0 |
-| `company_unlocked_candidates` | 0 |
-| `messages` | 0 |
-| `candidate_profile_views` | 0 |
-| `verification_reviews` | 0 |
-| `company_marquee` | 0 |
+| Table                         | Rows |
+| ----------------------------- | ---- |
+| `profiles`                    | 1    |
+| `candidate_profiles`          | 0    |
+| `candidate_media`             | 0    |
+| `companies`                   | 0    |
+| `credit_ledger`               | 0    |
+| `company_unlocked_candidates` | 0    |
+| `messages`                    | 0    |
+| `candidate_profile_views`     | 0    |
+| `verification_reviews`        | 0    |
+| `company_marquee`             | 0    |
 
 The only profile is:
 
-| Email | Role | Note |
-|---|---|---|
+| Email             | Role    | Note                                                              |
+| ----------------- | ------- | ----------------------------------------------------------------- |
 | `you@example.com` | `admin` | Originally signed up as candidate, promoted with the service role |
 
 **Important:** `you@example.com` is a placeholder address, not a real inbox. It is fine for
@@ -1038,7 +999,7 @@ present in `apps/web/.env.local`.
 **Root cause:** `apps/web/src/lib/env.ts` read public values dynamically:
 
 ```ts
-process.env[key]
+process.env[key];
 ```
 
 Next.js only inlines **statically referenced** `NEXT_PUBLIC_*` variables into browser
@@ -1051,8 +1012,7 @@ returned `undefined` in the browser.
 const publicSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? "";
 const publicSupabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? "";
 const publicAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() ?? "";
-const publicStripePublishableKey =
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() ?? "";
+const publicStripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() ?? "";
 ```
 
 Server-only secrets still use dynamic `read()` calls. After restarting the dev server:
@@ -1069,46 +1029,51 @@ Server-only secrets still use dynamic `read()` calls. After restarting the dev s
 
 #### App
 
-| Variable | Used by | Current value |
-|---|---|---|
+| Variable              | Used by                        | Current value           |
+| --------------------- | ------------------------------ | ----------------------- |
 | `NEXT_PUBLIC_APP_URL` | Web metadata, Stripe redirects | `http://localhost:3000` |
-| `EXPO_PUBLIC_API_URL` | Mobile API calls | `http://192.168.70.72:3000` |
 
 #### Supabase
 
-| Variable | Used by | Current value |
-|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Web browser/server | Live project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Web browser/server | Live anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Web server only | Live service-role key |
-| `EXPO_PUBLIC_SUPABASE_URL` | Mobile | Live project URL |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Mobile | Live anon key |
+| Variable                        | Used by            | Current value         |
+| ------------------------------- | ------------------ | --------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Web browser/server | Live project URL      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Web browser/server | Live anon key         |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Web server only    | Live service-role key |
+
+#### Security and abuse protection
+
+| Variable                   | Used by                       | Current value              |
+| -------------------------- | ----------------------------- | -------------------------- |
+| `UPSTASH_REDIS_REST_URL`   | Distributed rate limiter      | Empty (in-memory fallback) |
+| `UPSTASH_REDIS_REST_TOKEN` | Distributed rate limiter      | Empty (in-memory fallback) |
+| `SECURITY_ALLOWED_ORIGINS` | Extra allowed browser origins | Empty                      |
 
 #### Cloudflare R2
 
-| Variable | Current value |
-|---|---|
-| `R2_ACCOUNT_ID` | Placeholder |
-| `R2_ACCESS_KEY_ID` | Placeholder |
-| `R2_SECRET_ACCESS_KEY` | Placeholder |
-| `R2_BUCKET_PRIVATE_CREDENTIALS` | `private-credentials` |
-| `R2_BUCKET_PITCH_VIDEOS` | `pitch-videos` |
-| `R2_BUCKET_COMPANY_LOGOS` | `company-logos` |
-| `R2_PUBLIC_LOGOS_BASE_URL` | Empty |
-| `R2_PRESIGN_UPLOAD_TTL_SECONDS` | Optional, default 600 |
+| Variable                          | Current value         |
+| --------------------------------- | --------------------- |
+| `R2_ACCOUNT_ID`                   | Placeholder           |
+| `R2_ACCESS_KEY_ID`                | Placeholder           |
+| `R2_SECRET_ACCESS_KEY`            | Placeholder           |
+| `R2_BUCKET_PRIVATE_CREDENTIALS`   | `private-credentials` |
+| `R2_BUCKET_PITCH_VIDEOS`          | `pitch-videos`        |
+| `R2_BUCKET_COMPANY_LOGOS`         | `company-logos`       |
+| `R2_PUBLIC_LOGOS_BASE_URL`        | Empty                 |
+| `R2_PRESIGN_UPLOAD_TTL_SECONDS`   | Optional, default 600 |
 | `R2_PRESIGN_DOWNLOAD_TTL_SECONDS` | Optional, default 300 |
 
 #### Stripe
 
-| Variable | Current value |
-|---|---|
-| `STRIPE_SECRET_KEY` | Placeholder |
-| `STRIPE_WEBHOOK_SECRET` | Placeholder |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Placeholder |
-| `STRIPE_PRICE_CREDITS_5` | Placeholder |
-| `STRIPE_PRICE_CREDITS_15` | Placeholder |
-| `STRIPE_PRICE_CREDITS_30` | Placeholder |
-| `STRIPE_PRICE_CANDIDATE_PRO` | Placeholder |
+| Variable                             | Current value |
+| ------------------------------------ | ------------- |
+| `STRIPE_SECRET_KEY`                  | Placeholder   |
+| `STRIPE_WEBHOOK_SECRET`              | Placeholder   |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Placeholder   |
+| `STRIPE_PRICE_CREDITS_5`             | Placeholder   |
+| `STRIPE_PRICE_CREDITS_15`            | Placeholder   |
+| `STRIPE_PRICE_CREDITS_30`            | Placeholder   |
+| `STRIPE_PRICE_CANDIDATE_PRO`         | Placeholder   |
 
 ### 11.2 What works without R2/Stripe
 
@@ -1140,26 +1105,34 @@ Server-only secrets still use dynamic `read()` calls. After restarting the dev s
 
 ## 12. Verification evidence
 
-| Check | Result |
-|---|---|
-| `pnpm typecheck` across shared, storage, web, mobile | Pass |
-| `pnpm -r --workspace-concurrency=1 typecheck` after Phase 5 | Pass |
-| `pnpm --filter @utn/web typecheck` after env fix | Pass |
-| `pnpm --filter @utn/web build` (Next.js production) | Pass |
-| `pnpm --filter @utn/web build` after Phase 5 (secure viewer routes) | Pass |
-| Expo Android export (`expo export --platform android`) | Pass (`Exported: dist`) |
-| Migration `0004_employer_certificate_confidentiality.sql` | Authored; not yet pushed |
-| Dev server boot | Ready on `:3000` |
-| Landing page / sign-in HTTP 200 | Pass |
-| Browser sign-up against live Supabase | Pass |
-| Profile trigger on signup | Pass |
-| Employer provisioning + company + 2 trial credits | Pass |
-| Admin promotion via service role | Pass |
-| Client bundle contains Supabase URL + anon key | Pass |
-| Client bundle excludes full service-role key | Pass |
-| Live schema objects | 9 tables + `company_marquee` view + `chk_registrar_consent` (validated) |
-| PGlite migration + seed behavioral suite | 41/41 checks (includes migration `0003` registrar-consent enforcement) |
-| tesseract.js OCR smoke test | 95% confidence (per earlier phase work) |
+| Check                                                                    | Result                                                                  |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `pnpm typecheck` across shared, storage, web                             | Pass                                                                    |
+| `pnpm -r --workspace-concurrency=1 typecheck` after Phase 5              | Pass                                                                    |
+| `pnpm --filter @utn/web typecheck` after env fix                         | Pass                                                                    |
+| `pnpm --filter @utn/web build` (Next.js production)                      | Pass                                                                    |
+| `pnpm --filter @utn/web build` after Phase 5 (secure viewer routes)      | Pass                                                                    |
+| `pnpm --filter @utn/web build` after security hardening + mobile removal | Pass                                                                    |
+| `pnpm --filter @utn/web typecheck` after mobile removal                  | Pass                                                                    |
+| Migration `0004_employer_certificate_confidentiality.sql`                | Authored; not yet pushed                                                |
+| Migration `0005_security_hardening.sql`                                  | Authored; not yet pushed                                                |
+| Dev server boot                                                          | Ready on `:3000`                                                        |
+| Landing page / sign-in HTTP 200                                          | Pass                                                                    |
+| Browser sign-up against live Supabase                                    | Pass                                                                    |
+| Profile trigger on signup                                                | Pass                                                                    |
+| Employer provisioning + company + 2 trial credits                        | Pass                                                                    |
+| Admin promotion via service role                                         | Pass                                                                    |
+| Client bundle contains Supabase URL + anon key                           | Pass                                                                    |
+| Client bundle excludes full service-role key                             | Pass                                                                    |
+| Live schema objects                                                      | 9 tables + `company_marquee` view + `chk_registrar_consent` (validated) |
+| Security headers on `/` (CSP, HSTS, nosniff, DENY, Referrer-Policy)      | Present                                                                 |
+| Cross-origin `POST` to an API route                                      | `403 cross_origin_blocked`                                              |
+| Same-origin `POST` without a token                                       | `401 missing_token`                                                     |
+| 310 rapid requests to one route                                          | `429 rate_limited` + `Retry-After`                                      |
+| 70 KB JSON body                                                          | `413 payload_too_large`                                                 |
+| Unauthenticated `/dashboard`                                             | `307` redirect to sign-in                                               |
+| PGlite migration + seed behavioral suite                                 | 41/41 checks (includes migration `0003` registrar-consent enforcement)  |
+| tesseract.js OCR smoke test                                              | 95% confidence (per earlier phase work)                                 |
 
 **Not verified in this environment:**
 
@@ -1167,7 +1140,7 @@ Server-only secrets still use dynamic `read()` calls. After restarting the dev s
 - Real Stripe Checkout and webhook delivery.
 - Camera recording on a physical device or headless browser.
 - Local Supabase stack (`pnpm db:reset`) because Docker/Supabase CLI/`psql` are unavailable.
-- Mobile runtime on a device/emulator beyond the Android export.
+- Browser recording on a real iOS/Android device.
 
 ---
 
@@ -1187,7 +1160,8 @@ Server-only secrets still use dynamic `read()` calls. After restarting the dev s
 - **Immutable access audit:** `document_access_logs` is append-only (INSERT own / SELECT
   admin, no UPDATE/DELETE policy, BEFORE UPDATE trigger raises).
 - **Anti-capture:** canvas-only rendering, forensic watermarks, focus-loss shield, print
-  kill-switch, `@media print` hiding, and OS-level screen-capture blocking on mobile.
+  kill-switch, and `@media print` hiding. Screen capture cannot be blocked by a browser,
+  so deterrence rests on the watermark and the audit trail.
 - **Signed upload constraints:** content type and length are part of the PUT signature.
 - **Ownership-prefixed keys:** storage keys must sit under the owner's UUID prefix.
 - **Server-side masking:** candidate contact data is masked in the discovery RPC, not in the
@@ -1201,29 +1175,46 @@ Server-only secrets still use dynamic `read()` calls. After restarting the dev s
   ledger index.
 - **Safe redirects:** `safeNextPath` rejects absolute and `/auth/*` targets.
 - **Marquee privacy:** the public view exposes only id, name, logo key, and creation time.
+- **Rate limiting:** every API route inherits a per-IP pre-auth budget and a per-route
+  per-user budget from `requireApiCaller`; Upstash Redis gives a global limit when
+  configured.
+- **CSRF defence in depth:** state-changing browser requests whose `Origin` does not match
+  the request host are rejected with `403`.
+- **Browser hardening:** CSP, HSTS, `nosniff`, `X-Frame-Options: DENY`,
+  Permissions-Policy, COOP/CORP, and `frame-ancestors 'none'` are emitted on every route.
+- **Upload integrity:** server-side magic-byte detection rejects mislabeled files before
+  they reach Tesseract or the browser's PDF/image renderer; SVG is not accepted for logos.
+- **Request size caps:** 64 KiB on JSON API bodies, 512 KiB on Stripe webhooks.
+- **Database privileges:** `PUBLIC`/`anon` `EXECUTE` is revoked on RPCs and trigger
+  functions have a fixed `search_path` (migration `0005`).
+- **Observability:** security events are emitted as structured JSON lines with field
+  redaction, ready for a log drain and alerting.
+- **Supply chain:** CI runs a dependency audit, a gitleaks secret scan, and typecheck;
+  Dependabot opens weekly updates.
 
 ### 13.2 Risks and hardening items
 
-| Risk | Impact | Recommendation |
-|---|---|---|
-| `mailer_autoconfirm = true` | Anyone can create an unverified email account | Turn off before production; add email verification |
-| Placeholder admin email | Password reset/notifications cannot reach the admin | Replace `you@example.com` with a real address |
-| Supabase PAT was pasted into the session | Token could be reused if not revoked | Revoke it at `https://supabase.com/dashboard/account/tokens` |
-| No rate limiting | Signup, OCR, unlock, and checkout endpoints can be abused | Add per-IP/per-user limits (edge middleware or gateway) |
-| No automated tests | Regressions in RLS/RPC logic can ship silently | Add DB integration tests and API tests |
-| No email notifications | Users miss approvals, rejections, unlocks, messages | Add transactional email (Resend/Postmark/SES) |
-| Orphaned R2 uploads | Abandoned uploads consume storage | Add lifecycle rules or a cleanup job |
-| No malware/AV scan | Uploaded documents are trusted for admin viewing | Scan or sandbox documents before review |
-| External-camera capture | OS/API controls cannot stop a phone photographing the screen | Deterrence is the forensic watermark + audit trail; pursue contractual remedies |
-| No CSP/security headers | Reduced XSS defense in depth | Add CSP, HSTS, frame-ancestors, referrer policy |
-| No audit log for admin role changes | Out-of-band promotion is invisible | Log role changes / use an admin action table |
-| Admin tooling is SQL-only | Company verification and credit adjustments require SQL | Add admin UI for companies, credits, and users |
-| No candidate unlock notification | Candidates may not know an employer is interested | Add in-app/email notification |
-| Analytics limited to view count | Priority Pro value is thin | Add unique viewers, time series, conversion |
-| Stripe has no customer portal/refunds | Billing operations are manual | Add portal and refund handling |
-| Tesseract first-run download | Offline deployments fail OCR | Pre-seed the cache or vendor `eng.traineddata` |
-| `.env.local` contains live secrets | Accidental sharing risk | Keep out of version control; rotate if leaked |
-| No git repository | No history, rollback, or CI | Initialize git and add CI checks |
+| Risk                                          | Impact                                                       | Recommendation                                                                  |
+| --------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| `mailer_autoconfirm = true`                   | Anyone can create an unverified email account                | Turn off before production; add email verification                              |
+| Placeholder admin email                       | Password reset/notifications cannot reach the admin          | Replace `you@example.com` with a real address                                   |
+| Supabase PAT was pasted into the session      | Token could be reused if not revoked                         | Revoke it at `https://supabase.com/dashboard/account/tokens`                    |
+| Rate limiting is per instance without Upstash | Effective limit becomes `limit × instance count`             | Set `UPSTASH_REDIS_REST_URL`/`_TOKEN` in production                             |
+| CSP allows inline scripts                     | Weaker XSS defence than a nonce policy                       | Move to nonce-based CSP once static routes render dynamically                   |
+| Admin MFA is documented but not code-gated    | A stolen admin password gives full access                    | Add an MFA enrollment + enforcement gate for `/admin`                           |
+| Zod 3 memory-exhaustion advisory              | Oversized constrained collections can exhaust memory         | Mitigated by the 64 KiB body cap; plan the Zod 4 upgrade                        |
+| No automated tests                            | Regressions in RLS/RPC logic can ship silently               | Add DB integration tests and API tests                                          |
+| No email notifications                        | Users miss approvals, rejections, unlocks, messages          | Add transactional email (Resend/Postmark/SES)                                   |
+| Orphaned R2 uploads                           | Abandoned uploads consume storage                            | Add lifecycle rules or a cleanup job                                            |
+| No malware/AV scan                            | Uploaded documents are trusted for admin viewing             | Scan or sandbox documents before review                                         |
+| External-camera capture                       | OS/API controls cannot stop a phone photographing the screen | Deterrence is the forensic watermark + audit trail; pursue contractual remedies |
+| No audit log for admin role changes           | Out-of-band promotion is invisible                           | Log role changes / use an admin action table                                    |
+| Admin tooling is SQL-only                     | Company verification and credit adjustments require SQL      | Add admin UI for companies, credits, and users                                  |
+| No candidate unlock notification              | Candidates may not know an employer is interested            | Add in-app/email notification                                                   |
+| Analytics limited to view count               | Priority Pro value is thin                                   | Add unique viewers, time series, conversion                                     |
+| Stripe has no customer portal/refunds         | Billing operations are manual                                | Add portal and refund handling                                                  |
+| Tesseract first-run download                  | Offline deployments fail OCR                                 | Pre-seed the cache or vendor `eng.traineddata`                                  |
+| `.env.local` contains live secrets            | Accidental sharing risk                                      | Keep out of version control; rotate if leaked                                   |
 
 ### 13.3 Admin bootstrap
 
@@ -1261,16 +1252,14 @@ sign-up form.
 - No company logo editing UI on web (API support exists).
 - No admin user management UI.
 - No refunds, invoices, or Stripe customer portal.
-- Mobile admin review is not implemented (intentional).
-- Mobile landing is an entry screen, not the full marketing page.
+- No push notifications or installable app; the web app is the only client.
 
 ### 14.3 Engineering gaps
 
 - No unit, integration, or E2E tests in the repository.
-- No CI pipeline.
-- No git repository initialized.
-- No rate limiting or abuse controls.
-- No observability (structured logs, metrics, tracing, error reporting).
+- CI covers audit, secret scan, and typecheck only; no test or deploy workflow yet.
+- Observability is limited to structured security logs; no metrics, tracing, or error
+  reporting service is wired up.
 - No background jobs for cleanup or notifications.
 - No backup/restore runbook for the cloud database.
 - No load testing of discovery/chat.
@@ -1303,18 +1292,7 @@ pnpm dev:web
 
 The dev server is already running against the live Supabase project.
 
-### 15.2 Run the mobile app
-
-```bash
-cd "/home/bannda/Desktop/University Talent Network (UTN)"
-pnpm dev:mobile
-# Scan the QR code with Expo Go, or press "a" for Android.
-```
-
-`apps/mobile/.env` points the API at the LAN address `http://192.168.70.72:3000`. Update it
-if your machine's IP changes.
-
-### 15.3 Enable R2
+### 15.2 Enable R2
 
 1. Create buckets `private-credentials`, `pitch-videos`, `company-logos`.
 2. Create an R2 API token with Object Read & Write for those buckets.
@@ -1337,7 +1315,7 @@ if your machine's IP changes.
 5. Fill `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`.
 6. Restart `pnpm dev:web`.
 
-### 15.4 Enable Stripe
+### 15.3 Enable Stripe
 
 1. Create one-time prices for the three credit packs and Priority Pro.
 2. Fill `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, and the four price IDs.
@@ -1347,7 +1325,7 @@ if your machine's IP changes.
 5. For local testing, use the Stripe CLI to forward events.
 6. Restart `pnpm dev:web`.
 
-### 15.5 Recommended next actions
+### 15.4 Recommended next actions
 
 1. **Replace the placeholder admin email** with a real address and re-promote the account.
 2. **Revoke the pasted Supabase PAT** at
@@ -1355,12 +1333,15 @@ if your machine's IP changes.
 3. **Turn off `mailer_autoconfirm`** before any production deployment.
 4. **Hide the stale demo-account box** on sign-in unless
    `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true`.
-5. **Initialize git** and commit the current state.
-6. **Add tests** for RLS, RPCs, and API authorization.
-7. **Add rate limiting** and security headers.
-8. **Add transactional email** for the core lifecycle events.
-9. **Add admin company/credit tooling** to remove SQL-only operations.
-10. **Configure R2 and Stripe** to complete the end-to-end demo.
+5. **Push migrations `0004` and `0005`** to the cloud project.
+6. **Set `UPSTASH_REDIS_REST_URL`/`_TOKEN`** so rate limits are global rather than
+   per instance.
+7. **Complete the Supabase dashboard checklist** in `SECURITY.md` §2 (email confirmation,
+   leaked-password protection, CAPTCHA, TOTP MFA, PITR, SSL, Advisors).
+8. **Add tests** for RLS, RPCs, and API authorization.
+9. **Add transactional email** for the core lifecycle events.
+10. **Add admin company/credit tooling** to remove SQL-only operations.
+11. **Configure R2 and Stripe** to complete the end-to-end demo.
 
 ---
 
@@ -1371,15 +1352,15 @@ if your machine's IP changes.
 These exist only after `pnpm db:reset` against a local Supabase stack. They do **not** exist
 in the cloud project.
 
-| Account | Email | Password | Role |
-|---|---|---|---|
-| Admin | `admin@utn.dev` | `UtnAdmin123!` | admin |
-| Northwind Labs | `hiring@northwindlabs.com` | `HireNorthwind123!` | employer, 6 credits, Amara unlocked |
-| Quantum Forge | `talent@quantumforge.io` | `HireQuantum123!` | employer, verified |
-| Stealth Ventures | `people@stealthventures.co` | `HireStealth123!` | employer, unverified |
-| Amara Okafor | `amara.okafor@gmail.com` | `Candidate123!` | candidate, verified, Priority Pro |
-| Liam Chen | `liam.chen@outlook.com` | `Candidate123!` | candidate, pending |
-| Sofia Reyes | `sofia.reyes@proton.me` | `Candidate123!` | candidate, rejected |
+| Account          | Email                       | Password            | Role                                |
+| ---------------- | --------------------------- | ------------------- | ----------------------------------- |
+| Admin            | `admin@utn.dev`             | `UtnAdmin123!`      | admin                               |
+| Northwind Labs   | `hiring@northwindlabs.com`  | `HireNorthwind123!` | employer, 6 credits, Amara unlocked |
+| Quantum Forge    | `talent@quantumforge.io`    | `HireQuantum123!`   | employer, verified                  |
+| Stealth Ventures | `people@stealthventures.co` | `HireStealth123!`   | employer, unverified                |
+| Amara Okafor     | `amara.okafor@gmail.com`    | `Candidate123!`     | candidate, verified, Priority Pro   |
+| Liam Chen        | `liam.chen@outlook.com`     | `Candidate123!`     | candidate, pending                  |
+| Sofia Reyes      | `sofia.reyes@proton.me`     | `Candidate123!`     | candidate, rejected                 |
 
 Seed media keys are placeholders, so certificate/video playback returns 404 until real
 objects are uploaded.
@@ -1427,50 +1408,57 @@ objects are uploaded.
 
 ### 16.3 Credit ledger reasons
 
-| Reason | Delta | Reference | Idempotency |
-|---|---|---|---|
-| `signup_trial_credits` | +2 | Company id | One grant per company |
-| `candidate_unlock` | -1 | Candidate id | Unique per company/reason/reference |
-| `stripe_credit_pack` | +N | Hash-derived UUID from Stripe session | Unique per session |
+| Reason                 | Delta | Reference                             | Idempotency                         |
+| ---------------------- | ----- | ------------------------------------- | ----------------------------------- |
+| `signup_trial_credits` | +2    | Company id                            | One grant per company               |
+| `candidate_unlock`     | -1    | Candidate id                          | Unique per company/reason/reference |
+| `stripe_credit_pack`   | +N    | Hash-derived UUID from Stripe session | Unique per session                  |
 
 ### 16.4 Key files
 
-| Concern | File |
-|---|---|
-| Root scripts | `package.json`, `turbo.json`, `pnpm-workspace.yaml` |
-| Schema | `supabase/migrations/0001_initial_schema.sql` |
-| Audit trail | `supabase/migrations/0002_verification_reviews.sql` |
-| Degree verification compliance | `supabase/migrations/0003_degree_verification_compliance.sql` |
-| Seed | `supabase/seed.sql` |
-| Shared contracts | `packages/shared/src/{constants,schemas,types,helpers}.ts` |
-| Design tokens | `packages/shared/design-tokens.cjs` |
-| R2 client | `packages/storage/src/{config,keys,presign}.ts` |
-| Env access | `apps/web/src/lib/env.ts` |
-| Auth guards | `apps/web/src/middleware.ts`, `src/lib/auth/session.ts`, `src/lib/api/auth.ts` |
-| Provisioning | `apps/web/src/lib/auth/provision.ts`, `src/app/api/auth/provision/route.ts` |
-| Storage API | `apps/web/src/app/api/storage/presign/route.ts` |
-| Verification API | `apps/web/src/app/api/verification/{ocr,finalize}/route.ts` |
-| Admin API | `apps/web/src/app/api/admin/verification/route.ts` |
-| Unlock API | `apps/web/src/app/api/employer/unlock/route.ts` |
-| Stripe | `apps/web/src/app/api/stripe/checkout/route.ts`, `src/app/api/webhooks/stripe/route.ts` |
-| Web verification studio | `apps/web/src/app/(app)/candidate/verification/verification-studio.tsx` |
-| Mobile verification studio | `apps/mobile/components/verification-studio.tsx` |
-| Realtime chat | `apps/web/src/components/chat/chat-thread.tsx` |
-| Marquee | `apps/web/src/components/landing/logo-marquee.tsx` |
-| Live env | `apps/web/.env.local`, `apps/mobile/.env` |
+| Concern                        | File                                                                                    |
+| ------------------------------ | --------------------------------------------------------------------------------------- |
+| Root scripts                   | `package.json`, `turbo.json`, `pnpm-workspace.yaml`                                     |
+| Schema                         | `supabase/migrations/0001_initial_schema.sql`                                           |
+| Audit trail                    | `supabase/migrations/0002_verification_reviews.sql`                                     |
+| Degree verification compliance | `supabase/migrations/0003_degree_verification_compliance.sql`                           |
+| Seed                           | `supabase/seed.sql`                                                                     |
+| Shared contracts               | `packages/shared/src/{constants,schemas,types,helpers}.ts`                              |
+| Design tokens                  | `packages/shared/design-tokens.cjs`                                                     |
+| R2 client                      | `packages/storage/src/{config,keys,presign}.ts`                                         |
+| Env access                     | `apps/web/src/lib/env.ts`                                                               |
+| Auth guards                    | `apps/web/src/middleware.ts`, `src/lib/auth/session.ts`, `src/lib/api/auth.ts`          |
+| Provisioning                   | `apps/web/src/lib/auth/provision.ts`, `src/app/api/auth/provision/route.ts`             |
+| Storage API                    | `apps/web/src/app/api/storage/presign/route.ts`                                         |
+| Verification API               | `apps/web/src/app/api/verification/{ocr,finalize}/route.ts`                             |
+| Admin API                      | `apps/web/src/app/api/admin/verification/route.ts`                                      |
+| Unlock API                     | `apps/web/src/app/api/employer/unlock/route.ts`                                         |
+| Stripe                         | `apps/web/src/app/api/stripe/checkout/route.ts`, `src/app/api/webhooks/stripe/route.ts` |
+| Web verification studio        | `apps/web/src/app/(app)/candidate/verification/verification-studio.tsx`                 |
+| Rate limiting                  | `apps/web/src/lib/security/rate-limit.ts`                                               |
+| Origin / CSRF check            | `apps/web/src/lib/security/origin.ts`                                                   |
+| Security event log             | `apps/web/src/lib/security/log.ts`                                                      |
+| Security headers / CSP         | `apps/web/next.config.ts`                                                               |
+| Aurora background              | `apps/web/src/components/ui/AuroraRibbons.tsx`                                          |
+| Engraved contour field         | `apps/web/src/components/ui/TopographicField.tsx`                                       |
+| Aurora + surface styles        | `apps/web/src/app/globals.css`                                                          |
+| Security policy                | `SECURITY.md`                                                                           |
+| Realtime chat                  | `apps/web/src/components/chat/chat-thread.tsx`                                          |
+| Marquee                        | `apps/web/src/components/landing/logo-marquee.tsx`                                      |
+| Live env                       | `apps/web/.env.local`                                                                   |
 
 ### 16.5 Glossary
 
-| Term | Meaning |
-|---|---|
-| Unlock | Spending 1 credit to reveal contact details, certificate, and chat |
-| Priority Pro | Candidate paid placement and view analytics |
-| Verification | Admin approval of degree certificate + live pitch |
-| Masked candidate | Pre-unlock display name derived from a hash |
-| Entitlement | A `company_unlocked_candidates` row |
-| Ledger | Append-only `credit_ledger`; balance is derived |
-| Finalize | Server-side validation of uploaded certificate/video before review |
-| RLS | PostgreSQL Row Level Security |
+| Term             | Meaning                                                            |
+| ---------------- | ------------------------------------------------------------------ |
+| Unlock           | Spending 1 credit to reveal contact details, certificate, and chat |
+| Priority Pro     | Candidate paid placement and view analytics                        |
+| Verification     | Admin approval of degree certificate + live pitch                  |
+| Masked candidate | Pre-unlock display name derived from a hash                        |
+| Entitlement      | A `company_unlocked_candidates` row                                |
+| Ledger           | Append-only `credit_ledger`; balance is derived                    |
+| Finalize         | Server-side validation of uploaded certificate/video before review |
+| RLS              | PostgreSQL Row Level Security                                      |
 
 ---
 

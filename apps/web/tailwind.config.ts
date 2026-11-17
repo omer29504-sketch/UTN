@@ -2,12 +2,13 @@ import type { Config } from "tailwindcss";
 import { designTokens } from "@utn/shared/design-tokens";
 
 /**
- * Web-only Quiet Luxury palette.
+ * Web Quiet Luxury palette.
  *
- * The canonical palette in `@utn/shared/design-tokens` still drives the mobile
- * app, so the web surface gets its own explicit colour map here. Do not spread
- * the shared tokens into `colors` — that would silently re-colour the indigo
- * accents the native client depends on.
+ * The canonical palette in `@utn/shared/design-tokens` is consumed by the
+ * shared packages; the web surface keeps its own explicit colour map here so a
+ * token change cannot silently recolour the product. The aurora accents live
+ * in `globals.css` as CSS custom properties because they are gradients, not
+ * flat colours.
  */
 const colors = {
   brand: {

@@ -317,6 +317,180 @@
     background-size: 200% 100%;
     animation: shimmer 1.8s linear infinite;
   }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+   * Aurora / Northern Lights silk ribbons
+   *
+   * A pure-CSS light field: four heavily blurred gradient ellipses drifting
+   * over the navy sky, with thin SVG threads drawn above them so the aurora
+   * keeps a silk fibre structure instead of reading as flat haze. No images,
+   * no canvas, no runtime JavaScript. The global reduced-motion rule freezes
+   * the drift.
+   * ───────────────────────────────────────────────────────────────────────── */
+
+  @keyframes aurora-sway {
+    0% {
+      transform: rotate(var(--aurora-rotate, 0deg)) translate3d(-2%, 0, 0) scale(1);
+      opacity: var(--aurora-opacity, 0.45);
+    }
+    50% {
+      transform: rotate(calc(var(--aurora-rotate, 0deg) + 4deg)) translate3d(2%, -3%, 0) scale(1.06);
+      opacity: calc(var(--aurora-opacity, 0.45) * 1.15);
+    }
+    100% {
+      transform: rotate(calc(var(--aurora-rotate, 0deg) - 3deg)) translate3d(1%, 2%, 0) scale(0.98);
+      opacity: calc(var(--aurora-opacity, 0.45) * 0.9);
+    }
+  }
+
+  .aurora-field {
+    opacity: 1;
+    transition: opacity 0.6s ease;
+  }
+
+  /* In-app banners sit behind dense UI, so the light is dialled back. */
+  .aurora-field--ambient {
+    opacity: 0.68;
+  }
+
+  .aurora-ribbon {
+    position: absolute;
+    display: block;
+    border-radius: 9999px;
+    pointer-events: none;
+    opacity: var(--aurora-opacity, 0.45);
+    filter: blur(64px) saturate(145%);
+    mix-blend-mode: screen;
+    transform: rotate(var(--aurora-rotate, 0deg));
+    animation: aurora-sway var(--aurora-duration, 28s) ease-in-out infinite alternate;
+    animation-delay: var(--aurora-delay, 0s);
+    will-change: transform, opacity;
+  }
+
+  .aurora-field--light .aurora-ribbon {
+    mix-blend-mode: normal;
+    filter: blur(58px) saturate(120%);
+  }
+
+  .aurora-ribbon--emerald {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(16, 185, 129, 0.85) 32%,
+      rgba(34, 211, 238, 0.6) 62%,
+      transparent 100%
+    );
+  }
+
+  .aurora-ribbon--indigo {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(99, 102, 241, 0.75) 38%,
+      rgba(139, 92, 246, 0.45) 68%,
+      transparent 100%
+    );
+  }
+
+  .aurora-ribbon--cyan {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(34, 211, 238, 0.55) 34%,
+      rgba(16, 185, 129, 0.4) 70%,
+      transparent 100%
+    );
+  }
+
+  /* Gold stays deliberately faint: an accent thread, never a second sun. */
+  .aurora-ribbon--gold {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(197, 160, 89, 0.45) 42%,
+      rgba(197, 160, 89, 0.12) 74%,
+      transparent 100%
+    );
+  }
+
+  .aurora-ribbon--a {
+    top: -18%;
+    left: -22%;
+    width: 112%;
+    height: 46%;
+    --aurora-rotate: -12deg;
+    --aurora-opacity: 0.5;
+    --aurora-duration: 30s;
+  }
+
+  .aurora-ribbon--b {
+    top: 4%;
+    right: -28%;
+    width: 98%;
+    height: 38%;
+    --aurora-rotate: 14deg;
+    --aurora-opacity: 0.4;
+    --aurora-duration: 38s;
+    --aurora-delay: -8s;
+  }
+
+  .aurora-ribbon--c {
+    bottom: -14%;
+    left: 6%;
+    width: 92%;
+    height: 34%;
+    --aurora-rotate: -4deg;
+    --aurora-opacity: 0.28;
+    --aurora-duration: 44s;
+    --aurora-delay: -16s;
+  }
+
+  .aurora-ribbon--d {
+    top: 36%;
+    left: 24%;
+    width: 72%;
+    height: 22%;
+    --aurora-rotate: 6deg;
+    --aurora-opacity: 0.2;
+    --aurora-duration: 26s;
+    --aurora-delay: -4s;
+  }
+
+  /* Silk fibres: one hairline per ribbon, softened by a tiny blur. */
+  .aurora-threads {
+    filter: blur(0.4px) drop-shadow(0 0 6px rgba(16, 185, 129, 0.18));
+    opacity: 0.9;
+  }
+
+  /*
+   * Ambient aurora wash for light workspace pages. Sits under the content,
+   * fades to nothing, and costs three radial gradients.
+   */
+  .aurora-wash {
+    background:
+      radial-gradient(58% 78% at 12% -6%, rgba(16, 185, 129, 0.12), transparent 70%),
+      radial-gradient(46% 66% at 52% -12%, rgba(99, 102, 241, 0.1), transparent 72%),
+      radial-gradient(42% 58% at 92% -8%, rgba(34, 211, 238, 0.09), transparent 70%);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      rgba(0, 0, 0, 0.55) 55%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.55) 55%, transparent 100%);
+  }
+
+  /* Cheap phones pay for every blurred pixel: soften and drop the smallest
+     ribbon rather than shipping a janky animation. */
+  @media (max-width: 640px) {
+    .aurora-ribbon {
+      filter: blur(44px) saturate(135%);
+    }
+
+    .aurora-ribbon--d {
+      display: none;
+    }
+  }
 }
 
 /*
@@ -354,6 +528,13 @@
   .animate-topo-drift-slow {
     animation: none !important;
     transform: none !important;
+  }
+
+  /* Freeze the aurora at its resting opacity rather than at a keyframe end. */
+  .aurora-ribbon {
+    animation: none !important;
+    transform: rotate(var(--aurora-rotate, 0deg)) !important;
+    opacity: var(--aurora-opacity, 0.45) !important;
   }
 
   .spotlight-card,
