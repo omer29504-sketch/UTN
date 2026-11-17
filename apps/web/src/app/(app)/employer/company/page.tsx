@@ -6,6 +6,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader } from "@/components/ui/card";
+import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
+import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 import { CompanyForm } from "./company-form";
 
 export const metadata: Metadata = {
@@ -35,46 +37,47 @@ export default async function EmployerCompanyPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-indigo">
-            Employer onboarding
-          </p>
-          <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
-            {company ? "Company profile" : "Set up your company"}
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm text-ink-muted">
-            Your corporate domain gates employer access. The trial credit grant is applied once per
-            company by the database.
-          </p>
+      <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+        <TopographicHeroBg fadeTo="navy" />
+        <div className="relative flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow text-accent-gold">Employer onboarding</p>
+            <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
+              {company ? "Company profile" : "Set up your company"}
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
+              Your corporate domain gates employer access. The trial credit grant is applied once
+              per company by the database.
+            </p>
+          </div>
+          <Badge tone={company?.is_verified ? "emerald" : "warning"}>
+            {company?.is_verified ? "Verified employer" : "Awaiting verification"}
+          </Badge>
         </div>
-        <Badge tone={company?.is_verified ? "emerald" : "warning"}>
-          {company?.is_verified ? "Verified employer" : "Awaiting verification"}
-        </Badge>
-      </div>
+      </section>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-line bg-surface-card p-5 shadow-card">
-          <Building2 className="size-5 text-accent-indigo" aria-hidden />
+        <SpotlightGlassCard className="p-5">
+          <Building2 className="size-5 text-accent-emerald" aria-hidden />
           <p className="mt-3 font-display text-xl font-extrabold text-brand-navy">
             {company?.company_name ?? "Not set"}
           </p>
           <p className="text-xs text-ink-muted">Company</p>
-        </div>
-        <div className="rounded-2xl border border-line bg-surface-card p-5 shadow-card">
-          <CreditCard className="size-5 text-accent-indigo" aria-hidden />
+        </SpotlightGlassCard>
+        <SpotlightGlassCard className="p-5">
+          <CreditCard className="size-5 text-accent-emerald" aria-hidden />
           <p className="mt-3 font-display text-xl font-extrabold text-brand-navy">
             {Number(balance ?? 0)} credits
           </p>
           <p className="text-xs text-ink-muted">Trial balance from the immutable ledger</p>
-        </div>
-        <div className="rounded-2xl border border-line bg-surface-card p-5 shadow-card">
-          <ShieldCheck className="size-5 text-accent-indigo" aria-hidden />
+        </SpotlightGlassCard>
+        <SpotlightGlassCard className="p-5">
+          <ShieldCheck className="size-5 text-accent-emerald" aria-hidden />
           <p className="mt-3 font-display text-xl font-extrabold text-brand-navy">
             {company?.corporate_domain ?? "—"}
           </p>
           <p className="text-xs text-ink-muted">Corporate domain</p>
-        </div>
+        </SpotlightGlassCard>
       </div>
 
       <Card>
@@ -83,11 +86,7 @@ export default async function EmployerCompanyPage() {
           description="Your work email must match the corporate domain."
         />
         <div className="mt-5">
-          <CompanyForm
-            userId={session.user.id}
-            email={session.user.email}
-            company={company}
-          />
+          <CompanyForm userId={session.user.id} email={session.user.email} company={company} />
         </div>
       </Card>
     </div>

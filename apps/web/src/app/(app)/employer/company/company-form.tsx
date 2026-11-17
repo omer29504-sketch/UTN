@@ -3,11 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Save } from "lucide-react";
-import {
-  getEmailDomain,
-  isCorporateEmail,
-  type Company,
-} from "@utn/shared";
+import { getEmailDomain, isCorporateEmail, type Company } from "@utn/shared";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -120,7 +116,11 @@ export function CompanyForm({
         </Field>
       </div>
 
-      <Field label="Corporate domain" htmlFor="domain" hint="Automatically derived from your work email.">
+      <Field
+        label="Corporate domain"
+        htmlFor="domain"
+        hint="Automatically derived from your work email."
+      >
         <Input id="domain" value={domain} readOnly disabled />
       </Field>
 
@@ -132,7 +132,7 @@ export function CompanyForm({
             setDisplayLogoConsent(event.target.checked);
             setSaved(false);
           }}
-          className="mt-0.5 size-4 rounded border-line text-accent-indigo focus:ring-accent-indigo"
+          className="mt-0.5 size-4 rounded border-line text-accent-emerald focus:ring-accent-emerald"
         />
         <span>
           <span className="block text-sm font-semibold text-brand-navy">

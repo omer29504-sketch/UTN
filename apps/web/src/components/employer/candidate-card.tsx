@@ -8,7 +8,7 @@ import type { EmployerCandidateCard } from "@utn/shared";
 import { formatPitchDuration } from "@utn/shared";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
 import { Alert } from "@/components/ui/alert";
 import {
   SecureCertificateViewer,
@@ -95,7 +95,7 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
   }
 
   return (
-    <Card className="lift flex h-full flex-col gap-3 hover:border-accent-indigo/25 hover:shadow-floating">
+    <SpotlightGlassCard interactive className="flex h-full flex-col gap-3 p-5">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate font-display text-lg font-bold text-brand-navy">{displayName}</p>
@@ -105,7 +105,7 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
         </div>
         <div className="flex shrink-0 items-center gap-1">
           {candidate.is_featured ? (
-            <Badge tone="indigo">
+            <Badge tone="gold">
               <Sparkles className="mr-1 size-3" aria-hidden />
               Priority Pro
             </Badge>
@@ -124,7 +124,7 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 text-xs text-ink-muted">
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-line/70 bg-surface-canvas/70 p-3 text-xs text-ink-muted">
         <span>{candidate.degree_level}</span>
         <span>{candidate.university_name}</span>
         <span>Grad {candidate.graduation_year}</span>
@@ -166,11 +166,11 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
       )}
 
       {unlocked ? (
-        <div className="space-y-2 rounded-xl border border-verified-emerald/30 bg-verified-emerald/5 p-3 text-sm">
+        <div className="space-y-2 rounded-xl border border-accent-emerald/30 bg-accent-emerald/[0.06] p-3 text-sm">
           <p className="font-semibold text-brand-navy">{candidate.full_name}</p>
           {candidate.email ? (
             <p className="text-ink-muted">
-              <a className="text-accent-indigo hover:underline" href={`mailto:${candidate.email}`}>
+              <a className="text-accent-emerald hover:underline" href={`mailto:${candidate.email}`}>
                 {candidate.email}
               </a>
             </p>
@@ -181,19 +181,27 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
           ) : null}
           <Link
             href={`/employer/candidates/${candidate.candidate_id}`}
-            className="inline-flex items-center gap-1 text-sm font-semibold text-accent-indigo hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-accent-emerald hover:underline"
           >
             Open full profile <ArrowRight className="size-3.5" aria-hidden />
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="mt-auto flex flex-col gap-2 rounded-xl border border-accent-gold/30 bg-white/60 p-3 backdrop-blur-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-gold-hover">
+            Confidential dossier
+          </p>
           {unlockError ? (
             <Alert tone="error" title="Unlock failed">
               {unlockError}
             </Alert>
           ) : null}
-          <Button onClick={() => void handleUnlock()} loading={unlocking} className="gap-2">
+          <Button
+            variant="emerald"
+            onClick={() => void handleUnlock()}
+            loading={unlocking}
+            className="gap-2"
+          >
             <Unlock className="size-4" aria-hidden />
             Unlock candidate (1 credit)
           </Button>
@@ -202,6 +210,6 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
           ) : null}
         </div>
       )}
-    </Card>
+    </SpotlightGlassCard>
   );
 }

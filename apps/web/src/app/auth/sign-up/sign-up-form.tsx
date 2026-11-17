@@ -143,9 +143,7 @@ export function SignUpForm() {
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-indigo">
-        Create an account
-      </p>
+      <p className="eyebrow text-accent-gold-hover">Create an account</p>
       <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
         Start with the right profile
       </h1>
@@ -169,12 +167,12 @@ export function SignUpForm() {
               className={cn(
                 "rounded-xl border p-3.5 text-left transition",
                 active
-                  ? "border-accent-indigo bg-accent-indigo-soft ring-2 ring-accent-indigo/20"
+                  ? "border-accent-emerald bg-accent-emerald-soft ring-2 ring-accent-emerald/20"
                   : "border-line bg-white hover:border-ink-muted/40",
               )}
             >
               <option.icon
-                className={cn("size-5", active ? "text-accent-indigo" : "text-ink-muted")}
+                className={cn("size-5", active ? "text-accent-emerald" : "text-ink-muted")}
                 aria-hidden
               />
               <p className="mt-2 text-sm font-semibold text-brand-navy">{option.label}</p>
@@ -284,7 +282,7 @@ export function SignUpForm() {
 
       <p className="mt-6 text-center text-sm text-ink-muted">
         Already have an account?{" "}
-        <Link href="/auth/sign-in" className="font-semibold text-accent-indigo hover:underline">
+        <Link href="/auth/sign-in" className="font-semibold text-accent-emerald hover:underline">
           Sign in
         </Link>
       </p>

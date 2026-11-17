@@ -580,10 +580,10 @@ export function VerificationStudio() {
                 "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 text-center transition-colors duration-300",
                 certificate.status === "uploaded"
                   ? "border-verified-emerald/40 bg-verified-emerald-soft/40"
-                  : "border-line bg-surface-canvas hover:border-accent-indigo/40 hover:bg-accent-indigo-soft/30",
+                  : "border-line bg-surface-canvas hover:border-accent-emerald/40 hover:bg-accent-emerald-soft/30",
               )}
             >
-              <span className="grid size-11 place-items-center rounded-xl bg-white text-accent-indigo shadow-sm">
+              <span className="grid size-11 place-items-center rounded-xl bg-white text-accent-emerald shadow-sm">
                 {certificate.status === "uploading" ? (
                   <Loader2 className="size-5 animate-spin" aria-hidden />
                 ) : certificate.status === "uploaded" ? (
@@ -675,7 +675,7 @@ export function VerificationStudio() {
 
           <div className="mt-5">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
-              <ScanText className="size-4 text-accent-indigo" aria-hidden />
+              <ScanText className="size-4 text-accent-emerald" aria-hidden />
               Automatic text check
             </div>
 
@@ -687,7 +687,7 @@ export function VerificationStudio() {
             ) : null}
 
             {ocr.status === "running" ? (
-              <div className="mt-2 flex items-center gap-2 rounded-xl border border-accent-indigo/20 bg-accent-indigo-soft p-3 text-xs font-medium text-accent-indigo">
+              <div className="mt-2 flex items-center gap-2 rounded-xl border border-accent-emerald/20 bg-accent-emerald-soft p-3 text-xs font-medium text-accent-emerald">
                 <Loader2 className="size-4 animate-spin" aria-hidden />
                 Reading the document…
               </div>
@@ -903,7 +903,7 @@ export function VerificationStudio() {
 
           <div className="mt-4 rounded-xl border border-line bg-surface-canvas p-3">
             <p className="flex items-center gap-1.5 text-xs font-semibold text-brand-navy">
-              <FileText className="size-3.5 text-accent-indigo" aria-hidden />
+              <FileText className="size-3.5 text-accent-emerald" aria-hidden />
               What to cover
             </p>
             <ol className="mt-2 space-y-1.5">

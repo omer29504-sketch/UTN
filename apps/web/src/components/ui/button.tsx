@@ -12,7 +12,7 @@ const variants: Record<Variant, string> = {
   ghost: "text-ink-muted hover:bg-surface-muted hover:text-brand-navy disabled:opacity-50",
   danger: "bg-danger text-white shadow-sm hover:bg-red-700 disabled:bg-danger/40",
   emerald:
-    "sheen bg-verified-emerald text-white shadow-sm hover:bg-emerald-600 disabled:bg-verified-emerald/40",
+    "sheen bg-verified-emerald text-white shadow-sm hover:bg-accent-emerald-hover disabled:bg-verified-emerald/40",
 };
 
 const sizes: Record<Size, string> = {
@@ -36,7 +36,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        "inline-flex items-center justify-center font-semibold transition duration-300 ease-out-expo focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed motion-reduce:active:scale-100",
+        "inline-flex items-center justify-center font-semibold transition duration-300 ease-out-expo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-emerald/40 focus-visible:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed motion-reduce:active:scale-100",
         variants[variant],
         sizes[size],
         className,

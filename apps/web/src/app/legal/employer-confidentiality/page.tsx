@@ -25,7 +25,7 @@ export default function EmployerConfidentialityPage() {
     <main id="main" className="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-16">
       <Link
         href="/employer/candidates"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-indigo hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald hover:underline"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Back to candidates

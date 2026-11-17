@@ -1,22 +1,11 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeCheck,
-  Building2,
-  Clock3,
-  Filter,
-  Play,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  Unlock,
-  Video,
-} from "lucide-react";
+import type { ReactNode } from "react";
+import { ArrowRight, Building2, Filter, Search } from "lucide-react";
 import { requireSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { INDUSTRIES, DEGREE_LEVELS } from "@utn/shared";
 import type { EmployerCandidateCard } from "@utn/shared";
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { CandidateCard } from "@/components/employer/candidate-card";
 import type { EmployerViewerIdentity } from "@/components/employer/secure-certificate-viewer";
 import { Badge } from "@/components/ui/badge";
@@ -24,8 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Alert } from "@/components/ui/alert";
-import { VerificationBadge } from "@/components/verification-badge";
 import { Reveal } from "@/components/motion/reveal";
+import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
+import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
+import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -77,8 +68,8 @@ export default async function EmployerCandidatesPage({
 
   if (!company) {
     return (
-      <Card className="border-accent-indigo/20 bg-gradient-to-br from-white to-accent-indigo-soft/40">
-        <span className="grid size-12 place-items-center rounded-2xl bg-accent-indigo-soft text-accent-indigo">
+      <SpotlightGlassCard className="p-6">
+        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald ring-1 ring-inset ring-accent-emerald/15">
           <Building2 className="size-6" aria-hidden />
         </span>
         <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
@@ -94,7 +85,7 @@ export default async function EmployerCandidatesPage({
           Create company profile
           <ArrowRight className="size-4" aria-hidden />
         </Link>
-      </Card>
+      </SpotlightGlassCard>
     );
   }
 
@@ -132,16 +123,15 @@ export default async function EmployerCandidatesPage({
   return (
     <div className="space-y-6">
       <Reveal>
-        <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
+        <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+          <TopographicHeroBg fadeTo="navy" />
+          <div className="relative flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
-                Candidate discovery
-              </p>
-              <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
+              <p className="eyebrow text-accent-gold">Candidate discovery</p>
+              <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
                 {company.company_name}
               </h1>
-              <p className="mt-2 text-sm text-white/60">
+              <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
                 Browse verified graduates. Pitch videos are free to watch; unlock contact details
                 for 1 credit.
               </p>
@@ -150,103 +140,141 @@ export default async function EmployerCandidatesPage({
               {company.is_verified ? "Verified employer" : "Unverified employer"}
             </Badge>
           </div>
-        </div>
+          <div className="relative mt-6 flex flex-wrap gap-2 text-[11px] font-medium text-white/55">
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5">
+              Verified talent pool
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5">
+              Free pitch playback
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5">
+              1 credit per unlock
+            </span>
+          </div>
+        </section>
       </Reveal>
 
       <Reveal delay={60}>
-        <form
-          method="get"
-          className="rounded-2xl border border-line bg-surface-card p-4 shadow-card"
-        >
-          <div className="grid gap-3 md:grid-cols-4">
-            <div className="md:col-span-2">
-              <label className="mb-1 block text-xs font-semibold text-ink-muted">Search</label>
-              <Input
-                name="q"
-                defaultValue={params.q ?? ""}
-                placeholder="Headline, university, industry…"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-ink-muted">Industry</label>
-              <Select name="industry" defaultValue={params.industry ?? ""}>
-                <option value="">All industries</option>
-                {INDUSTRIES.map((i) => (
-                  <option key={i} value={i}>
-                    {i}
-                  </option>
-                ))}
-              </Select>
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-ink-muted">
-                Degree level
-              </label>
-              <Select name="degreeLevel" defaultValue={params.degreeLevel ?? ""}>
-                <option value="">All degrees</option>
-                {DEGREE_LEVELS.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </Select>
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-ink-muted">University</label>
-              <Input
-                name="university"
-                defaultValue={params.university ?? ""}
-                placeholder="University name"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-ink-muted">
-                Graduation year
-              </label>
-              <Input
-                name="graduationYear"
-                type="number"
-                defaultValue={params.graduationYear ?? ""}
-                placeholder="e.g. 2024"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-ink-muted">
-                Max experience (yrs)
-              </label>
-              <Input
-                name="maxExperienceYears"
-                type="number"
-                defaultValue={params.maxExperienceYears ?? ""}
-                placeholder="e.g. 2"
-              />
-            </div>
-            <div className="flex items-end">
-              <label className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
-                <input
-                  type="checkbox"
-                  name="onlyFeatured"
-                  value="1"
-                  defaultChecked={params.onlyFeatured === "1" || params.onlyFeatured === "true"}
-                />
-                Priority Pro only
-              </label>
-            </div>
-            <div className="flex items-end gap-2 md:col-span-4">
-              <Button type="submit" className="gap-2">
-                <Filter className="size-4" aria-hidden />
-                Apply filters
-              </Button>
-              <Link
-                href="/employer/candidates"
-                className="inline-flex items-center rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
-              >
-                Reset
-              </Link>
-            </div>
+        <SpotlightGlassCard className="p-4 sm:p-5">
+          <div className="mb-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
+            <Filter className="size-3.5 text-accent-emerald" aria-hidden />
+            Refine the directory
           </div>
-        </form>
+          <form method="get">
+            <div className="grid gap-3 md:grid-cols-4">
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-xs font-semibold text-ink-muted">Search</label>
+                <Input
+                  name="q"
+                  defaultValue={params.q ?? ""}
+                  placeholder="Headline, university, industry…"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-ink-muted">Industry</label>
+                <Select name="industry" defaultValue={params.industry ?? ""}>
+                  <option value="">All industries</option>
+                  {INDUSTRIES.map((i) => (
+                    <option key={i} value={i}>
+                      {i}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                  Degree level
+                </label>
+                <Select name="degreeLevel" defaultValue={params.degreeLevel ?? ""}>
+                  <option value="">All degrees</option>
+                  {DEGREE_LEVELS.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                  University
+                </label>
+                <Input
+                  name="university"
+                  defaultValue={params.university ?? ""}
+                  placeholder="University name"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                  Graduation year
+                </label>
+                <Input
+                  name="graduationYear"
+                  type="number"
+                  defaultValue={params.graduationYear ?? ""}
+                  placeholder="e.g. 2024"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                  Max experience (yrs)
+                </label>
+                <Input
+                  name="maxExperienceYears"
+                  type="number"
+                  defaultValue={params.maxExperienceYears ?? ""}
+                  placeholder="e.g. 2"
+                />
+              </div>
+              <div className="flex items-end">
+                <label className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
+                  <input
+                    type="checkbox"
+                    name="onlyFeatured"
+                    value="1"
+                    className="size-4 accent-[#10B981]"
+                    defaultChecked={params.onlyFeatured === "1" || params.onlyFeatured === "true"}
+                  />
+                  Priority Pro only
+                </label>
+              </div>
+              <div className="flex items-end gap-2 md:col-span-4">
+                <Button type="submit" className="gap-2">
+                  <Filter className="size-4" aria-hidden />
+                  Apply filters
+                </Button>
+                <Link
+                  href="/employer/candidates"
+                  className="inline-flex items-center rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
+                >
+                  Reset
+                </Link>
+              </div>
+            </div>
+          </form>
+        </SpotlightGlassCard>
       </Reveal>
+
+      <div className="flex flex-wrap gap-2">
+        <FilterPill href="/employer/candidates" active={!params.onlyFeatured && !params.industry}>
+          All candidates
+        </FilterPill>
+        <FilterPill
+          href="/employer/candidates?onlyFeatured=1"
+          active={params.onlyFeatured === "1" || params.onlyFeatured === "true"}
+        >
+          Priority Pro
+        </FilterPill>
+        {INDUSTRIES.slice(0, 4).map((industry) => (
+          <FilterPill
+            key={industry}
+            href={`/employer/candidates?industry=${encodeURIComponent(industry)}`}
+            active={params.industry === industry}
+          >
+            {industry}
+          </FilterPill>
+        ))}
+      </div>
 
       {error ? (
         <Alert tone="error" title="Could not load candidates">
@@ -260,7 +288,7 @@ export default async function EmployerCandidatesPage({
 
       {rows.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-2 py-12 text-center">
-          <span className="grid size-14 animate-float-slow place-items-center rounded-2xl bg-accent-indigo-soft text-accent-indigo motion-reduce:animate-none">
+          <span className="grid size-14 animate-float-slow place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald motion-reduce:animate-none">
             <Search className="size-6" aria-hidden />
           </span>
           <p className="text-sm font-semibold text-brand-navy">
@@ -318,5 +346,30 @@ export default async function EmployerCandidatesPage({
         </div>
       ) : null}
     </div>
+  );
+}
+
+function FilterPill({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "inline-flex items-center rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors duration-300",
+        active
+          ? "border-accent-emerald/30 bg-accent-emerald-soft text-brand-navy ring-1 ring-inset ring-accent-emerald/15"
+          : "border-line/90 bg-white/70 text-ink-muted backdrop-blur-sm hover:border-accent-gold/40 hover:text-brand-navy",
+      )}
+    >
+      {children}
+    </Link>
   );
 }

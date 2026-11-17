@@ -1,20 +1,70 @@
 import type { Config } from "tailwindcss";
 import { designTokens } from "@utn/shared/design-tokens";
 
+/**
+ * Web-only Quiet Luxury palette.
+ *
+ * The canonical palette in `@utn/shared/design-tokens` still drives the mobile
+ * app, so the web surface gets its own explicit colour map here. Do not spread
+ * the shared tokens into `colors` — that would silently re-colour the indigo
+ * accents the native client depends on.
+ */
+const colors = {
+  brand: {
+    navy: "#0A1128",
+    "navy-soft": "#111C38",
+    "navy-line": "#1E2A4A",
+  },
+  surface: {
+    canvas: "#F8FAFC",
+    card: "#FFFFFF",
+    muted: "#F1F5F9",
+  },
+  accent: {
+    emerald: "#10B981",
+    "emerald-hover": "#059669",
+    "emerald-soft": "#ECFDF5",
+    gold: "#C5A059",
+    "gold-hover": "#A8873F",
+    "gold-soft": "#F7F1E4",
+  },
+  verified: {
+    emerald: "#10B981",
+    "emerald-soft": "#ECFDF5",
+  },
+  studio: {
+    obsidian: "#080D1C",
+    "obsidian-soft": "#111C38",
+    "obsidian-line": "#22304F",
+  },
+  ink: {
+    primary: "#1E293B",
+    muted: "#64748B",
+    inverse: "#F8FAFC",
+  },
+  line: "#E2E8F0",
+  danger: "#DC2626",
+  warning: "#D97706",
+};
+
 const config: Config = {
   content: ["./src/**/*.{ts,tsx,mdx}"],
   theme: {
     extend: {
-      ...designTokens,
+      colors,
+      borderRadius: designTokens.borderRadius,
       fontFamily: {
         sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
         display: ["var(--font-plus-jakarta)", "var(--font-inter)", "sans-serif"],
       },
       boxShadow: {
-        card: "0 1px 2px rgba(15, 23, 42, 0.04), 0 16px 40px -24px rgba(15, 23, 42, 0.24)",
-        floating: "0 24px 70px -24px rgba(15, 23, 42, 0.45)",
+        card: "0 1px 2px rgba(10, 17, 40, 0.04), 0 16px 40px -24px rgba(10, 17, 40, 0.24)",
+        floating: "0 24px 70px -24px rgba(10, 17, 40, 0.45)",
+        luxe: "0 1px 2px rgba(10, 17, 40, 0.04), 0 28px 70px -36px rgba(10, 17, 40, 0.32)",
+        "luxe-lg": "0 36px 100px -44px rgba(10, 17, 40, 0.55)",
         "emerald-glow":
           "0 0 0 1px rgba(16, 185, 129, 0.2), 0 18px 50px -20px rgba(16, 185, 129, 0.5)",
+        "gold-hairline": "inset 0 0 0 1px rgba(197, 160, 89, 0.35)",
       },
       keyframes: {
         marquee: {
@@ -54,6 +104,16 @@ const config: Config = {
           "50%": { transform: "translate3d(24px, -18px, 0) scale(1.08)" },
           "100%": { transform: "translate3d(-16px, 12px, 0) scale(0.96)" },
         },
+        // Engraved contour lines breathe rather than slide, so the eye reads
+        // them as a static security print under the content.
+        "topo-drift": {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) scale(1)" },
+          "50%": { transform: "translate3d(-14px, 9px, 0) scale(1.012)" },
+        },
+        "topo-drift-slow": {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) scale(1.01)" },
+          "50%": { transform: "translate3d(16px, -11px, 0) scale(1)" },
+        },
         "reveal-up": {
           from: { opacity: "0", transform: "translateY(14px)" },
           to: { opacity: "1", transform: "translateY(0)" },
@@ -92,6 +152,8 @@ const config: Config = {
         "cap-toss": "cap-toss 8s cubic-bezier(0.45, 0, 0.55, 1) infinite",
         "cap-tassel": "cap-tassel 6.5s ease-in-out infinite",
         "aurora-drift": "aurora-drift 20s ease-in-out infinite alternate",
+        "topo-drift": "topo-drift 46s ease-in-out infinite",
+        "topo-drift-slow": "topo-drift-slow 68s ease-in-out infinite",
         "reveal-up": "reveal-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) both",
         sheen: "sheen 0.9s cubic-bezier(0.16, 1, 0.3, 1)",
         shimmer: "shimmer 1.8s linear infinite",

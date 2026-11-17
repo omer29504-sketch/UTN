@@ -4,6 +4,7 @@ import { requireRole } from "@/lib/auth/session";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Alert } from "@/components/ui/alert";
+import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 
 export const dynamic = "force-dynamic";
 
@@ -33,17 +34,18 @@ export default async function CandidateMessagesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-indigo">
-          Messages
-        </p>
-        <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
-          Your conversations
-        </h1>
-        <p className="mt-1 max-w-2xl text-sm text-ink-muted">
-          Employers who unlocked your profile can message you directly. Reply here in real time.
-        </p>
-      </div>
+      <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+        <TopographicHeroBg fadeTo="navy" />
+        <div className="relative">
+          <p className="eyebrow text-accent-gold">Messages</p>
+          <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
+            Your conversations
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
+            Employers who unlocked your profile can message you directly. Reply here in real time.
+          </p>
+        </div>
+      </section>
 
       {error ? (
         <Alert tone="error" title="Could not load conversations">
@@ -67,7 +69,7 @@ export default async function CandidateMessagesPage() {
             >
               <Card className="transition hover:shadow-card">
                 <div className="flex items-center gap-3">
-                  <span className="grid size-10 place-items-center rounded-xl bg-accent-indigo-soft text-accent-indigo">
+                  <span className="grid size-10 place-items-center rounded-xl bg-accent-emerald-soft text-accent-emerald">
                     <MessageSquare className="size-5" aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">

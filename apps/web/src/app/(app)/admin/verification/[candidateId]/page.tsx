@@ -23,6 +23,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader } from "@/components/ui/card";
+import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 import { VerificationBadge } from "@/components/verification-badge";
 import { AdminDecisionPanel } from "../admin-decision-panel";
 import { RegistrarVerificationPanel } from "./registrar-verification-panel";
@@ -109,23 +110,25 @@ export default async function AdminReviewDetailPage({
         Back to queue
       </Link>
 
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-indigo">
-            Candidate review
-          </p>
-          <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
-            {profile.full_name}
-          </h1>
-          <p className="mt-1 text-sm text-ink-muted">
-            {profile.degree_level} · {profile.university_name} · Graduated {profile.graduation_year}
-          </p>
+      <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+        <TopographicHeroBg fadeTo="navy" />
+        <div className="relative flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="eyebrow text-accent-gold">Candidate review</p>
+            <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
+              {profile.full_name}
+            </h1>
+            <p className="mt-2 text-sm text-white/60">
+              {profile.degree_level} · {profile.university_name} · Graduated{" "}
+              {profile.graduation_year}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <VerificationBadge status={profile.verification_status} />
+            {profile.is_featured ? <Badge tone="gold">Priority Pro</Badge> : null}
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <VerificationBadge status={profile.verification_status} />
-          {profile.is_featured ? <Badge tone="indigo">Priority Pro</Badge> : null}
-        </div>
-      </div>
+      </section>
 
       <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="space-y-5">
@@ -295,7 +298,7 @@ export default async function AdminReviewDetailPage({
                   ? `${formatPitchDuration(media.video_duration_seconds)} · camera-only recording · signed link expires in 10 minutes.`
                   : "Signed link expires in 10 minutes."
               }
-              action={<Video className="size-4 text-accent-indigo" aria-hidden />}
+              action={<Video className="size-4 text-accent-emerald" aria-hidden />}
             />
             <div className="mt-4">
               {videoUrl ? (

@@ -57,7 +57,9 @@ export function SignInForm() {
       }
 
       if (!data.session) {
-        setFormError("Your email is not confirmed yet. Check your inbox for the confirmation link.");
+        setFormError(
+          "Your email is not confirmed yet. Check your inbox for the confirmation link.",
+        );
         return;
       }
 
@@ -73,9 +75,7 @@ export function SignInForm() {
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-indigo">
-        Welcome back
-      </p>
+      <p className="eyebrow text-accent-gold-hover">Welcome back</p>
       <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
         Sign in to your account
       </h1>
@@ -141,7 +141,7 @@ export function SignInForm() {
 
       <p className="mt-6 text-center text-sm text-ink-muted">
         New here?{" "}
-        <Link href="/auth/sign-up" className="font-semibold text-accent-indigo hover:underline">
+        <Link href="/auth/sign-up" className="font-semibold text-accent-emerald hover:underline">
           Create an account
         </Link>
       </p>

@@ -26,6 +26,8 @@ import { PitchVideo } from "@/components/employer/pitch-video";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
 import { ChatThread } from "@/components/chat/chat-thread";
+import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
+import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 
 export const dynamic = "force-dynamic";
 
@@ -96,7 +98,7 @@ export default async function UnlockedCandidatePage({
       <div className="space-y-4">
         <Link
           href="/employer/candidates"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-accent-indigo hover:underline"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald hover:underline"
         >
           <ArrowLeft className="size-4" aria-hidden />
           Back to candidates
@@ -136,28 +138,27 @@ export default async function UnlockedCandidatePage({
     <div className="space-y-6">
       <Link
         href="/employer/candidates"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-indigo hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald hover:underline"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Back to candidates
       </Link>
 
-      <div className="animate-slide-in rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <section className="relative isolate animate-slide-in overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+        <TopographicHeroBg fadeTo="navy" />
+        <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
-              Unlocked candidate
-            </p>
-            <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
+            <p className="eyebrow text-accent-gold">Unlocked candidate</p>
+            <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
               {candidate.full_name}
             </h1>
             {candidate.headline ? (
-              <p className="mt-2 text-sm text-white/70">{candidate.headline}</p>
+              <p className="mt-2 max-w-2xl text-sm text-white/70">{candidate.headline}</p>
             ) : null}
           </div>
           <div className="flex items-center gap-2">
             {candidate.is_featured ? (
-              <Badge tone="indigo">
+              <Badge tone="gold">
                 <Sparkles className="mr-1 size-3" aria-hidden />
                 Priority Pro
               </Badge>
@@ -168,17 +169,17 @@ export default async function UnlockedCandidatePage({
             </Badge>
           </div>
         </div>
-      </div>
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="space-y-3">
+        <SpotlightGlassCard className="space-y-3 p-6">
           <CardHeader title="Contact" />
           <div className="space-y-2 text-sm">
             <p className="flex items-center gap-2 text-brand-navy">
-              <Mail className="size-4 text-accent-indigo" aria-hidden />
+              <Mail className="size-4 text-accent-emerald" aria-hidden />
               {candidate.email ? (
                 <a
-                  className="text-accent-indigo hover:underline"
+                  className="text-accent-emerald hover:underline"
                   href={`mailto:${candidate.email}`}
                 >
                   {candidate.email}
@@ -188,13 +189,13 @@ export default async function UnlockedCandidatePage({
               )}
             </p>
             <p className="flex items-center gap-2 text-brand-navy">
-              <Phone className="size-4 text-accent-indigo" aria-hidden />
+              <Phone className="size-4 text-accent-emerald" aria-hidden />
               {candidate.phone ?? "—"}
             </p>
           </div>
-        </Card>
+        </SpotlightGlassCard>
 
-        <Card className="space-y-3">
+        <SpotlightGlassCard className="space-y-3 p-6">
           <CardHeader title="Degree" />
           <div className="space-y-1 text-sm text-ink-muted">
             <p>
@@ -208,9 +209,9 @@ export default async function UnlockedCandidatePage({
           {candidate.certificate_r2_key && session.profile.role === "employer" ? (
             <SecureCertificateViewer candidateId={candidate.candidate_id} employer={employer} />
           ) : null}
-        </Card>
+        </SpotlightGlassCard>
 
-        <Card className="space-y-3">
+        <SpotlightGlassCard className="space-y-3 p-6">
           <CardHeader title="Pitch video" />
           {candidate.video_r2_key ? (
             <PitchVideo storageKey={candidate.video_r2_key} />
@@ -222,7 +223,7 @@ export default async function UnlockedCandidatePage({
               {formatPitchDuration(candidate.video_duration_seconds)}
             </p>
           ) : null}
-        </Card>
+        </SpotlightGlassCard>
       </div>
 
       {company ? (

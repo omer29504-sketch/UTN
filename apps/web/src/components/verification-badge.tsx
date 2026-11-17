@@ -26,7 +26,7 @@ export function VerificationBadge({ status }: { status: VerificationStatus }) {
 
 export function RoleBadge({ role }: { role: "candidate" | "employer" | "admin" }) {
   return (
-    <Badge tone={role === "admin" ? "indigo" : "neutral"} className="capitalize">
+    <Badge tone={role === "admin" ? "gold" : "neutral"} className="capitalize">
       {role}
     </Badge>
   );

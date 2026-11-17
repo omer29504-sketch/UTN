@@ -22,9 +22,7 @@ export function CheckoutButton({ kind, packId, label, highlight }: Props) {
     setError(null);
     try {
       const body =
-        kind === "credit_pack"
-          ? { kind: "credit_pack", packId }
-          : { kind: "candidate_pro" };
+        kind === "credit_pack" ? { kind: "credit_pack", packId } : { kind: "candidate_pro" };
       const res = await authFetch("/api/stripe/checkout", {
         method: "POST",
         body: JSON.stringify(body),
@@ -47,12 +45,16 @@ export function CheckoutButton({ kind, packId, label, highlight }: Props) {
       <Button
         onClick={() => void start()}
         loading={loading}
-        className={`gap-2 ${highlight ? "bg-accent-indigo" : ""}`}
+        className={`gap-2 ${highlight ? "bg-accent-emerald" : ""}`}
       >
         <CreditCard className="size-4" aria-hidden />
         {label}
       </Button>
-      {error ? <Alert tone="error" title="Checkout failed">{error}</Alert> : null}
+      {error ? (
+        <Alert tone="error" title="Checkout failed">
+          {error}
+        </Alert>
+      ) : null}
     </div>
   );
 }

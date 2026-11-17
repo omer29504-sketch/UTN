@@ -88,7 +88,7 @@ export function RegistrarVerificationPanel({
                   href={reference}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent-indigo transition hover:text-accent-indigo-hover"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent-emerald transition hover:text-accent-emerald-hover"
                 >
                   Open University Verification Link
                   <ExternalLink className="size-3.5" aria-hidden />

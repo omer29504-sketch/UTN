@@ -546,7 +546,7 @@ export function SecureCertificateViewer({
           ))}
           <Link
             href={EMPLOYER_CONFIDENTIALITY_ROUTE}
-            className="inline-block font-semibold text-accent-indigo hover:underline"
+            className="inline-block font-semibold text-accent-emerald hover:underline"
             target="_blank"
             rel="noreferrer"
           >

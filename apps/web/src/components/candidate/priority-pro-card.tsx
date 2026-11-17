@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { authFetch, readApiError } from "@/lib/api/client";
-import { Card } from "@/components/ui/card";
+import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
 
@@ -34,9 +34,9 @@ export function PriorityProCard({ isFeatured }: { isFeatured: boolean }) {
 
   if (isFeatured) {
     return (
-      <Card className="border-accent-indigo/20 bg-gradient-to-br from-white to-accent-indigo-soft/40">
+      <SpotlightGlassCard className="hairline-gold p-6">
         <div className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-xl bg-accent-indigo-soft text-accent-indigo">
+          <span className="grid size-11 place-items-center rounded-xl border border-accent-gold/30 bg-accent-gold-soft text-accent-gold-hover">
             <Sparkles className="size-5" aria-hidden />
           </span>
           <div>
@@ -46,32 +46,41 @@ export function PriorityProCard({ isFeatured }: { isFeatured: boolean }) {
             </p>
           </div>
         </div>
-      </Card>
+      </SpotlightGlassCard>
     );
   }
 
   return (
-    <Card>
+    <SpotlightGlassCard className="p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent-indigo-soft text-accent-indigo">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-accent-gold/30 bg-accent-gold-soft text-accent-gold-hover">
             <Sparkles className="size-5" aria-hidden />
           </span>
           <div>
-            <h2 className="font-display text-lg font-bold text-brand-navy">Priority Pro</h2>
+            <p className="eyebrow">Prestige placement</p>
+            <h2 className="mt-1.5 font-display text-lg font-bold text-brand-navy">Priority Pro</h2>
             <p className="mt-1 max-w-xl text-sm leading-6 text-ink-muted">
               Pin your profile higher in search results and unlock profile-view analytics.
             </p>
           </div>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <Button onClick={() => void startCheckout()} loading={loading} className="gap-2">
+          <Button
+            onClick={() => void startCheckout()}
+            loading={loading}
+            className="gap-2 bg-brand-navy hover:bg-brand-navy-soft"
+          >
             <Sparkles className="size-4" aria-hidden />
             Upgrade
           </Button>
-          {error ? <Alert tone="error" title="Checkout failed">{error}</Alert> : null}
+          {error ? (
+            <Alert tone="error" title="Checkout failed">
+              {error}
+            </Alert>
+          ) : null}
         </div>
       </div>
-    </Card>
+    </SpotlightGlassCard>
   );
 }

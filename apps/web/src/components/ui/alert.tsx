@@ -5,7 +5,10 @@ import { cn } from "@/lib/utils";
 type Tone = "info" | "success" | "error" | "warning";
 
 const styles: Record<Tone, { wrapper: string; icon: typeof Info }> = {
-  info: { wrapper: "border-accent-indigo/20 bg-accent-indigo-soft text-accent-indigo", icon: Info },
+  info: {
+    wrapper: "border-accent-gold/30 bg-accent-gold-soft text-accent-gold-hover",
+    icon: Info,
+  },
   success: {
     wrapper: "border-verified-emerald/25 bg-verified-emerald-soft text-emerald-700",
     icon: CheckCircle2,
@@ -31,7 +34,8 @@ export function Alert({
   return (
     <div
       className={cn("flex gap-3 rounded-xl border p-3.5 text-sm", style.wrapper, className)}
-      role={tone === "error" ? "alert" : "status"}    >
+      role={tone === "error" ? "alert" : "status"}
+    >
       <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
       <div className="min-w-0">
         {title ? <p className="font-semibold">{title}</p> : null}

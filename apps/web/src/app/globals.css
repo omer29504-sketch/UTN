@@ -7,6 +7,10 @@
     color-scheme: light;
     --canvas: #f8fafc;
     --ink: #1e293b;
+    --navy: #0a1128;
+    --navy-soft: #111c38;
+    --emerald: #10b981;
+    --gold: #c5a059;
   }
 
   * {
@@ -38,16 +42,26 @@
   }
 
   ::selection {
-    @apply bg-accent-indigo text-white;
+    @apply bg-accent-emerald text-white;
   }
 
   :focus-visible {
-    outline: 2px solid #4f46e5;
+    outline: 2px solid #10b981;
     outline-offset: 2px;
   }
 }
 
 @layer utilities {
+  /*
+   * Tactile security-stock grain. A single inline SVG turbulence tile — no
+   * network request, no canvas, no runtime cost beyond one decoded texture.
+   */
+  .bg-luxury-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='0.025'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 180px 180px;
+  }
+
   /* Frosted navigation, cards, and drawer chrome. */
   .glass {
     @apply border border-white/70 bg-white/75 backdrop-blur-xl;
@@ -55,6 +69,134 @@
 
   .glass-dark {
     @apply border border-white/10 bg-white/[0.04] backdrop-blur-xl;
+  }
+
+  /*
+   * Cursor-tracked frosted card.
+   *
+   * The component writes --mouse-x / --mouse-y on pointermove. Until the
+   * pointer enters, the spotlight sits at the centre at zero visibility, so
+   * the resting surface stays calm. The ::before ring is a 1px gradient
+   * border drawn with a mask so it never bleeds into the card body.
+   */
+  .spotlight-card {
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 1rem;
+    background:
+      radial-gradient(
+        360px circle at var(--mouse-x) var(--mouse-y),
+        rgba(16, 185, 129, 0.08),
+        transparent 68%
+      ),
+      rgba(255, 255, 255, 0.74);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow:
+      0 1px 2px rgba(10, 17, 40, 0.03),
+      0 24px 60px -42px rgba(10, 17, 40, 0.35);
+    transition:
+      border-color 0.45s ease,
+      box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .spotlight-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 2;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(
+      260px circle at var(--mouse-x) var(--mouse-y),
+      rgba(16, 185, 129, 0.7),
+      rgba(197, 160, 89, 0.42) 42%,
+      transparent 72%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+  }
+
+  .spotlight-card:hover {
+    border-color: rgba(16, 185, 129, 0.24);
+    box-shadow:
+      0 1px 2px rgba(10, 17, 40, 0.04),
+      0 32px 80px -40px rgba(10, 17, 40, 0.45);
+  }
+
+  .spotlight-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Dark-hero variant used on dashboard banners and auth dossiers. */
+  .spotlight-card-dark {
+    border-color: rgba(255, 255, 255, 0.1);
+    background:
+      radial-gradient(
+        360px circle at var(--mouse-x) var(--mouse-y),
+        rgba(16, 185, 129, 0.14),
+        transparent 68%
+      ),
+      rgba(255, 255, 255, 0.04);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 24px 60px -40px rgba(0, 0, 0, 0.7);
+  }
+
+  .spotlight-card-dark:hover {
+    border-color: rgba(197, 160, 89, 0.32);
+  }
+
+  .spotlight-lift:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Crisp alabaster surface with an architectural hairline. */
+  .surface-card {
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 1rem;
+    background-color: #ffffff;
+    box-shadow:
+      0 1px 2px rgba(10, 17, 40, 0.03),
+      0 16px 40px -30px rgba(10, 17, 40, 0.28);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #8a6d2f;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 1.5rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.55;
+  }
+
+  .hairline-gold {
+    box-shadow: inset 0 0 0 1px rgba(197, 160, 89, 0.28);
   }
 
   .mask-fade-x {
@@ -206,6 +348,17 @@
 
   .animate-marquee {
     animation: none;
+  }
+
+  .animate-topo-drift,
+  .animate-topo-drift-slow {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .spotlight-card,
+  .spotlight-card::before {
+    transition: none;
   }
 }
 

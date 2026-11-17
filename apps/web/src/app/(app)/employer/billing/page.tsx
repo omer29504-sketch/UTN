@@ -7,6 +7,8 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert } from "@/components/ui/alert";
 import { CheckoutButton } from "@/components/employer/checkout-button";
+import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
+import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +50,7 @@ export default async function EmployerBillingPage({
     <div className="space-y-6">
       <Link
         href="/employer/candidates"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-indigo hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-accent-emerald hover:underline"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Back to candidates
@@ -65,26 +67,39 @@ export default async function EmployerBillingPage({
         </Alert>
       ) : null}
 
-      <div className="animate-slide-in rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">Billing</p>
-        <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
-          {company.company_name}
-        </h1>
-        <p className="mt-2 text-sm text-white/60">
-          Credit balance: <span className="font-bold text-white">{Number(balance ?? 0)}</span>{" "}
-          credits
-        </p>
-      </div>
+      <section className="relative isolate animate-slide-in overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+        <TopographicHeroBg fadeTo="navy" />
+        <div className="relative flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow text-accent-gold">Billing</p>
+            <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
+              {company.company_name}
+            </h1>
+            <p className="mt-2 text-sm text-white/60">
+              Credit balance: <span className="font-bold text-white">{Number(balance ?? 0)}</span>{" "}
+              credits
+            </p>
+          </div>
+          <Badge tone="dark">
+            <CreditCard className="size-3.5" aria-hidden />
+            Secure checkout
+          </Badge>
+        </div>
+      </section>
 
       <div className="grid gap-4 md:grid-cols-3">
         {CREDIT_PACKS.map((pack) => (
-          <Card key={pack.id} className={pack.highlight ? "border-accent-indigo" : undefined}>
+          <SpotlightGlassCard
+            key={pack.id}
+            interactive
+            className={pack.highlight ? "hairline-gold p-6" : "p-6"}
+          >
             <CardHeader
               title={pack.label}
               description={`${pack.credits} unlock credits`}
               action={
                 pack.highlight ? (
-                  <Badge tone="indigo">
+                  <Badge tone="gold">
                     <Sparkles className="mr-1 size-3" aria-hidden />
                     Popular
                   </Badge>
@@ -102,7 +117,7 @@ export default async function EmployerBillingPage({
                 highlight={pack.highlight}
               />
             </div>
-          </Card>
+          </SpotlightGlassCard>
         ))}
       </div>
 

@@ -5,11 +5,10 @@ import {
   BadgeCheck,
   Building2,
   ClipboardCheck,
-  Clock3,
   CreditCard,
-  Search,
   FileText,
   ScanFace,
+  Search,
   Sparkles,
   Video,
 } from "lucide-react";
@@ -22,33 +21,65 @@ import { VerificationBadge } from "@/components/verification-badge";
 import { Alert } from "@/components/ui/alert";
 import { CountUp } from "@/components/motion/count-up";
 import { Reveal } from "@/components/motion/reveal";
+import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
+import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 
 export const dynamic = "force-dynamic";
 
-function StatCard({
+/** Compact dark stat tile that lives inside the engraved hero banner. */
+function HeroStat({
   icon: Icon,
   label,
   value,
   hint,
-  delay = 0,
 }: {
   icon: typeof BadgeCheck;
   label: string;
   value: ReactNode;
   hint: string;
-  delay?: number;
 }) {
   return (
-    <Reveal delay={delay} className="h-full">
-      <div className="lift h-full rounded-2xl border border-line bg-surface-card p-5 shadow-card hover:border-accent-indigo/20 hover:shadow-floating">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
-          <Icon className="size-4 text-accent-indigo" aria-hidden />
-          {label}
-        </div>
-        <p className="mt-3 font-display text-2xl font-extrabold text-brand-navy">{value}</p>
-        <p className="mt-1 text-xs text-ink-muted">{hint}</p>
+    <SpotlightGlassCard tone="dark" className="p-4">
+      <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/50">
+        <Icon className="size-3.5 text-accent-emerald" aria-hidden />
+        {label}
       </div>
-    </Reveal>
+      <p className="mt-2 font-display text-xl font-extrabold leading-tight text-white">{value}</p>
+      <p className="mt-1 text-[11px] leading-4 text-white/45">{hint}</p>
+    </SpotlightGlassCard>
+  );
+}
+
+function HeroShell({
+  eyebrow,
+  title,
+  description,
+  badge,
+  children,
+}: {
+  eyebrow: string;
+  title: ReactNode;
+  description: ReactNode;
+  badge?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+      <TopographicHeroBg fadeTo="navy" />
+      <div className="relative">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="eyebrow text-accent-gold">{eyebrow}</p>
+            <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
+              {title}
+            </h1>
+            <div className="mt-2 max-w-xl text-sm leading-6 text-white/60">{description}</div>
+          </div>
+          {badge}
+        </div>
+        {children}
+      </div>
+    </section>
   );
 }
 
@@ -86,8 +117,8 @@ async function CandidateOverview({
 
   if (!profile) {
     return (
-      <Card className="animate-slide-in border-accent-indigo/20 bg-gradient-to-br from-white to-accent-indigo-soft/40">
-        <span className="grid size-12 place-items-center rounded-2xl bg-accent-indigo-soft text-accent-indigo">
+      <SpotlightGlassCard className="animate-slide-in p-6">
+        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald ring-1 ring-inset ring-accent-emerald/15">
           <Sparkles className="size-6" aria-hidden />
         </span>
         <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
@@ -104,7 +135,7 @@ async function CandidateOverview({
           Complete profile
           <ArrowRight className="size-4" aria-hidden />
         </Link>
-      </Card>
+      </SpotlightGlassCard>
     );
   }
 
@@ -148,28 +179,21 @@ async function CandidateOverview({
   return (
     <div className="space-y-6">
       <Reveal>
-        <div className="overflow-hidden rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
-                Candidate dashboard
-              </p>
-              <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
-                Welcome back, {displayName.split(" ")[0]}
-              </h1>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
-                {status === "verified"
-                  ? "Your profile is verified. Employers can watch your pitch and unlock your contact details."
-                  : status === "pending"
-                    ? "Your documents are with the review team. We will notify you when a decision is made."
-                    : status === "rejected"
-                      ? "The reviewer asked for changes. Update your documents and resubmit when ready."
-                      : "Complete your verification to become discoverable to employers."}
-              </p>
-            </div>
-            <VerificationBadge status={status} />
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3">
+        <HeroShell
+          eyebrow="Candidate dashboard"
+          title={`Welcome back, ${displayName.split(" ")[0]}`}
+          description={
+            status === "verified"
+              ? "Your profile is verified. Employers can watch your pitch and unlock your contact details."
+              : status === "pending"
+                ? "Your documents are with the review team. We will notify you when a decision is made."
+                : status === "rejected"
+                  ? "The reviewer asked for changes. Update your documents and resubmit when ready."
+                  : "Complete your verification to become discoverable to employers."
+          }
+          badge={<VerificationBadge status={status} />}
+        >
+          <div className="mt-7 flex flex-wrap gap-3">
             <Link
               href="/candidate/verification"
               className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-brand-navy transition hover:bg-white/90"
@@ -181,12 +205,59 @@ async function CandidateOverview({
             </Link>
             <Link
               href="/candidate/profile"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
             >
               Edit profile
             </Link>
           </div>
-        </div>
+
+          <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <HeroStat
+              icon={ScanFace}
+              label="Verification"
+              value={
+                status === "verified"
+                  ? "Verified"
+                  : status === "pending"
+                    ? "In review"
+                    : status === "rejected"
+                      ? "Action needed"
+                      : "Not started"
+              }
+              hint="University document + live pitch"
+            />
+            <HeroStat
+              icon={Video}
+              label="Pitch length"
+              value={
+                media?.video_duration_seconds
+                  ? formatPitchDuration(media.video_duration_seconds)
+                  : "—"
+              }
+              hint="Must stay between 01:00 and 02:00"
+            />
+            <HeroStat
+              icon={Sparkles}
+              label="Profile views"
+              value={String(viewCount ?? 0)}
+              hint={
+                profile?.is_featured
+                  ? "Priority Pro analytics"
+                  : "Upgrade to Priority Pro for analytics"
+              }
+            />
+            <HeroStat
+              icon={FileText}
+              label="Submission"
+              value={media?.submitted_at ? "Submitted" : "Draft"}
+              hint={
+                latestReview
+                  ? `Last decision ${new Date(latestReview.created_at).toLocaleDateString()}`
+                  : "No review decisions yet"
+              }
+            />
+          </div>
+        </HeroShell>
       </Reveal>
 
       {status === "rejected" && profile.rejection_reason ? (
@@ -194,55 +265,6 @@ async function CandidateOverview({
           {profile.rejection_reason}
         </Alert>
       ) : null}
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          icon={ScanFace}
-          label="Verification"
-          delay={0}
-          value={
-            status === "verified"
-              ? "Verified"
-              : status === "pending"
-                ? "In review"
-                : status === "rejected"
-                  ? "Action needed"
-                  : "Not started"
-          }
-          hint="University document + live pitch"
-        />
-        <StatCard
-          icon={Video}
-          label="Pitch length"
-          delay={60}
-          value={
-            media?.video_duration_seconds ? formatPitchDuration(media.video_duration_seconds) : "—"
-          }
-          hint="Must stay between 01:00 and 02:00"
-        />
-        <StatCard
-          icon={Sparkles}
-          label="Profile views"
-          delay={120}
-          value={String(viewCount ?? 0)}
-          hint={
-            profile?.is_featured
-              ? "Priority Pro analytics"
-              : "Upgrade to Priority Pro for analytics"
-          }
-        />
-        <StatCard
-          icon={FileText}
-          label="Submission"
-          delay={180}
-          value={media?.submitted_at ? "Submitted" : "Draft"}
-          hint={
-            latestReview
-              ? `Last decision ${new Date(latestReview.created_at).toLocaleDateString()}`
-              : "No review decisions yet"
-          }
-        />
-      </div>
 
       <Card>
         <CardHeader
@@ -297,8 +319,8 @@ async function EmployerOverview({ userId }: { userId: string }) {
 
   if (!company) {
     return (
-      <Card className="animate-slide-in border-accent-indigo/20 bg-gradient-to-br from-white to-accent-indigo-soft/40">
-        <span className="grid size-12 place-items-center rounded-2xl bg-accent-indigo-soft text-accent-indigo">
+      <SpotlightGlassCard className="animate-slide-in p-6">
+        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald ring-1 ring-inset ring-accent-emerald/15">
           <Building2 className="size-6" aria-hidden />
         </span>
         <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
@@ -315,61 +337,51 @@ async function EmployerOverview({ userId }: { userId: string }) {
           Create company profile
           <ArrowRight className="size-4" aria-hidden />
         </Link>
-      </Card>
+      </SpotlightGlassCard>
     );
   }
 
   return (
     <div className="space-y-6">
       <Reveal>
-        <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
-                Employer workspace
-              </p>
-              <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
-                {company.company_name}
-              </h1>
-              <p className="mt-2 text-sm text-white/60">
-                {company.corporate_domain} ·{" "}
-                {company.is_verified ? "Company verified" : "Verification pending"}
-              </p>
-            </div>
+        <HeroShell
+          eyebrow="Employer workspace"
+          title={company.company_name}
+          description={`${company.corporate_domain} · ${
+            company.is_verified ? "Company verified" : "Verification pending"
+          }`}
+          badge={
             <Badge tone={company.is_verified ? "emerald" : "warning"}>
               {company.is_verified ? "Verified employer" : "Unverified employer"}
             </Badge>
-          </div>
-        </div>
-      </Reveal>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard
-          icon={Sparkles}
-          label="Credit balance"
-          delay={0}
-          value={
-            <>
-              <CountUp value={Number(balance ?? 0)} /> credits
-            </>
           }
-          hint="Two trial credits are granted at company creation"
-        />
-        <StatCard
-          icon={Building2}
-          label="Corporate domain"
-          delay={60}
-          value={company.corporate_domain}
-          hint="Locked to your work email"
-        />
-        <StatCard
-          icon={BadgeCheck}
-          label="Logo consent"
-          delay={120}
-          value={company.display_logo_consent ? "Opted in" : "Opted out"}
-          hint="Controls the public landing-page marquee"
-        />
-      </div>
+        >
+          <div className="mt-7 grid gap-3 sm:grid-cols-3">
+            <HeroStat
+              icon={Sparkles}
+              label="Credit balance"
+              value={
+                <>
+                  <CountUp value={Number(balance ?? 0)} /> credits
+                </>
+              }
+              hint="Two trial credits are granted at company creation"
+            />
+            <HeroStat
+              icon={Building2}
+              label="Corporate domain"
+              value={company.corporate_domain}
+              hint="Locked to your work email"
+            />
+            <HeroStat
+              icon={BadgeCheck}
+              label="Logo consent"
+              value={company.display_logo_consent ? "Opted in" : "Opted out"}
+              hint="Controls the public landing-page marquee"
+            />
+          </div>
+        </HeroShell>
+      </Reveal>
 
       <Card>
         <CardHeader
@@ -431,36 +443,27 @@ async function AdminOverview() {
   return (
     <div className="space-y-6">
       <Reveal>
-        <div className="rounded-2xl border border-line bg-brand-navy p-6 text-white shadow-card sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-300">
-            Admin workspace
-          </p>
-          <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight">
-            Verification review
-          </h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
-            Check each candidate&apos;s degree document against their profile and 60–120 second
-            pitch, then record a decision with an audit trail.
-          </p>
-        </div>
+        <HeroShell
+          eyebrow="Admin workspace"
+          title="Verification review"
+          description="Check each candidate's degree document against their profile and 60–120 second pitch, then record a decision with an audit trail."
+        >
+          <div className="mt-7 grid gap-3 sm:grid-cols-2">
+            <HeroStat
+              icon={ClipboardCheck}
+              label="Pending reviews"
+              value={String(pendingCount ?? 0)}
+              hint="Candidates waiting for a decision"
+            />
+            <HeroStat
+              icon={BadgeCheck}
+              label="Recent decisions"
+              value={String(recentReviews?.length ?? 0)}
+              hint="Latest review history entries"
+            />
+          </div>
+        </HeroShell>
       </Reveal>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <StatCard
-          icon={ClipboardCheck}
-          label="Pending reviews"
-          delay={0}
-          value={String(pendingCount ?? 0)}
-          hint="Candidates waiting for a decision"
-        />
-        <StatCard
-          icon={BadgeCheck}
-          label="Recent decisions"
-          delay={60}
-          value={String(recentReviews?.length ?? 0)}
-          hint="Latest review history entries"
-        />
-      </div>
 
       <Card>
         <CardHeader

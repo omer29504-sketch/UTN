@@ -12,17 +12,14 @@ import {
   ScanFace,
   ShieldAlert,
 } from "lucide-react";
-import {
-  formatPitchDuration,
-  type CandidateMedia,
-  type CandidateProfile,
-} from "@utn/shared";
+import { formatPitchDuration, type CandidateMedia, type CandidateProfile } from "@utn/shared";
 import { requireRole } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader } from "@/components/ui/card";
 import { VerificationBadge } from "@/components/verification-badge";
+import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 import { VerificationStudio } from "./verification-studio";
 
 export const metadata: Metadata = {
@@ -43,7 +40,10 @@ function LockedSubmission({
   const verified = decision === "verified";
   const steps = [
     { label: "Certificate uploaded", done: Boolean(media?.certificate_r2_key) },
-    { label: `Live pitch recorded (${formatPitchDuration(media?.video_duration_seconds ?? 0)})`, done: Boolean(media?.video_r2_key) },
+    {
+      label: `Live pitch recorded (${formatPitchDuration(media?.video_duration_seconds ?? 0)})`,
+      done: Boolean(media?.video_r2_key),
+    },
     { label: verified ? "University verified" : "Admin review in progress", done: verified },
   ];
 
@@ -62,7 +62,11 @@ function LockedSubmission({
               verified ? "bg-verified-emerald" : "bg-warning"
             }`}
           >
-            {verified ? <BadgeCheck className="size-6" aria-hidden /> : <Clock3 className="size-6" aria-hidden />}
+            {verified ? (
+              <BadgeCheck className="size-6" aria-hidden />
+            ) : (
+              <Clock3 className="size-6" aria-hidden />
+            )}
           </span>
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-muted">
@@ -98,7 +102,9 @@ function LockedSubmission({
                   <Clock3 className="size-3.5" aria-hidden />
                 )}
               </span>
-              <span className="text-[11px] font-medium leading-4 text-brand-navy">{step.label}</span>
+              <span className="text-[11px] font-medium leading-4 text-brand-navy">
+                {step.label}
+              </span>
             </div>
           ))}
         </div>
@@ -114,7 +120,10 @@ function LockedSubmission({
               ["Degree", profile.degree_level],
               ["Graduation", String(profile.graduation_year)],
             ].map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between gap-3 border-b border-line pb-2 last:border-0 last:pb-0">
+              <div
+                key={label}
+                className="flex items-center justify-between gap-3 border-b border-line pb-2 last:border-0 last:pb-0"
+              >
                 <dt className="text-xs text-ink-muted">{label}</dt>
                 <dd className="text-right text-xs font-semibold text-brand-navy">{value}</dd>
               </div>
@@ -126,12 +135,12 @@ function LockedSubmission({
           <CardHeader title="Private media" description="Short-lived signed links only." />
           <div className="mt-4 space-y-2">
             <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-canvas p-3">
-              <FileCheck2 className="size-4 text-accent-indigo" aria-hidden />
+              <FileCheck2 className="size-4 text-accent-emerald" aria-hidden />
               <span className="flex-1 text-xs font-medium text-brand-navy">Degree certificate</span>
               <Badge tone="emerald">Stored</Badge>
             </div>
             <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-canvas p-3">
-              <Camera className="size-4 text-accent-indigo" aria-hidden />
+              <Camera className="size-4 text-accent-emerald" aria-hidden />
               <span className="flex-1 text-xs font-medium text-brand-navy">
                 Live pitch · {formatPitchDuration(media?.video_duration_seconds ?? 0)}
               </span>
@@ -192,8 +201,8 @@ export default async function CandidateVerificationPage() {
 
   if (!profile) {
     return (
-      <Card className="border-accent-indigo/20 bg-gradient-to-br from-white to-accent-indigo-soft/40">
-        <span className="grid size-12 place-items-center rounded-2xl bg-accent-indigo-soft text-accent-indigo">
+      <Card className="border-accent-emerald/20 bg-gradient-to-br from-white to-accent-emerald-soft/40">
+        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald">
           <ScanFace className="size-6" aria-hidden />
         </span>
         <h1 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
@@ -218,21 +227,22 @@ export default async function CandidateVerificationPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-indigo">
-            Candidate verification
-          </p>
-          <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
-            Prove your degree. Pitch live.
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm text-ink-muted">
-            Two gates: a private degree document and an unedited 60–120 second pitch recorded from
-            your camera. Submit unlocks at exactly 01:00.
-          </p>
+      <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-brand-navy p-6 text-white shadow-luxe sm:p-8">
+        <TopographicHeroBg fadeTo="navy" />
+        <div className="relative flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow text-accent-gold">Candidate verification</p>
+            <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white">
+              Prove your degree. Pitch live.
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
+              Two gates: a private degree document and an unedited 60–120 second pitch recorded from
+              your camera. Submit unlocks at exactly 01:00.
+            </p>
+          </div>
+          <VerificationBadge status={status} />
         </div>
-        <VerificationBadge status={status} />
-      </div>
+      </section>
 
       {status === "pending" ? (
         <LockedSubmission profile={profile} media={media} decision="pending" />
@@ -293,7 +303,9 @@ export default async function CandidateVerificationPage() {
                     </span>
                   </div>
                   {review.rejection_reason ? (
-                    <p className="mt-1 text-xs leading-5 text-ink-muted">{review.rejection_reason}</p>
+                    <p className="mt-1 text-xs leading-5 text-ink-muted">
+                      {review.rejection_reason}
+                    </p>
                   ) : null}
                 </div>
               </li>
