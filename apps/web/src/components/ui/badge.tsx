@@ -11,8 +11,8 @@ const tones: Record<Tone, string> = {
   danger: "border-danger/25 bg-accent-rose-soft text-danger",
   warning: "border-warning/25 bg-[#FBF0DA] text-warning",
   dark: "border-white/15 bg-white/10 text-white",
-  sapphire: "border-accent-sapphire/30 bg-accent-sapphire-soft text-accent-sapphire",
-  amethyst: "border-accent-amethyst/30 bg-accent-amethyst-soft text-accent-amethyst",
+  sapphire: "border-accent-sapphire/30 bg-accent-sapphire-soft text-accent-sapphire-ink",
+  amethyst: "border-accent-amethyst/30 bg-accent-amethyst-soft text-accent-amethyst-ink",
 };
 
 export function Badge({

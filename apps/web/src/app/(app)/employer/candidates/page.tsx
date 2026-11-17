@@ -165,16 +165,27 @@ export default async function EmployerCandidatesPage({
           <form method="get">
             <div className="grid gap-3 md:grid-cols-4">
               <div className="md:col-span-2">
-                <label className="mb-1 block text-xs font-semibold text-ink-muted">Search</label>
+                <label
+                  htmlFor="filter-q"
+                  className="mb-1 block text-xs font-semibold text-ink-muted"
+                >
+                  Search
+                </label>
                 <Input
+                  id="filter-q"
                   name="q"
                   defaultValue={params.q ?? ""}
                   placeholder="Headline, university, industry…"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-ink-muted">Industry</label>
-                <Select name="industry" defaultValue={params.industry ?? ""}>
+                <label
+                  htmlFor="filter-industry"
+                  className="mb-1 block text-xs font-semibold text-ink-muted"
+                >
+                  Industry
+                </label>
+                <Select id="filter-industry" name="industry" defaultValue={params.industry ?? ""}>
                   <option value="">All industries</option>
                   {INDUSTRIES.map((i) => (
                     <option key={i} value={i}>
@@ -184,10 +195,17 @@ export default async function EmployerCandidatesPage({
                 </Select>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                <label
+                  htmlFor="filter-degree"
+                  className="mb-1 block text-xs font-semibold text-ink-muted"
+                >
                   Degree level
                 </label>
-                <Select name="degreeLevel" defaultValue={params.degreeLevel ?? ""}>
+                <Select
+                  id="filter-degree"
+                  name="degreeLevel"
+                  defaultValue={params.degreeLevel ?? ""}
+                >
                   <option value="">All degrees</option>
                   {DEGREE_LEVELS.map((d) => (
                     <option key={d} value={d}>
@@ -197,20 +215,28 @@ export default async function EmployerCandidatesPage({
                 </Select>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                <label
+                  htmlFor="filter-university"
+                  className="mb-1 block text-xs font-semibold text-ink-muted"
+                >
                   University
                 </label>
                 <Input
+                  id="filter-university"
                   name="university"
                   defaultValue={params.university ?? ""}
                   placeholder="University name"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                <label
+                  htmlFor="filter-graduation-year"
+                  className="mb-1 block text-xs font-semibold text-ink-muted"
+                >
                   Graduation year
                 </label>
                 <Input
+                  id="filter-graduation-year"
                   name="graduationYear"
                   type="number"
                   defaultValue={params.graduationYear ?? ""}
@@ -218,10 +244,14 @@ export default async function EmployerCandidatesPage({
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-ink-muted">
+                <label
+                  htmlFor="filter-max-experience"
+                  className="mb-1 block text-xs font-semibold text-ink-muted"
+                >
                   Max experience (yrs)
                 </label>
                 <Input
+                  id="filter-max-experience"
                   name="maxExperienceYears"
                   type="number"
                   defaultValue={params.maxExperienceYears ?? ""}
@@ -229,8 +259,12 @@ export default async function EmployerCandidatesPage({
                 />
               </div>
               <div className="flex items-end">
-                <label className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
+                <label
+                  htmlFor="filter-featured"
+                  className="flex items-center gap-2 text-sm font-semibold text-brand-navy"
+                >
                   <input
+                    id="filter-featured"
                     type="checkbox"
                     name="onlyFeatured"
                     value="1"

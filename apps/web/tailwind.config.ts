@@ -26,15 +26,17 @@ const colors = {
   },
   accent: {
     emerald: "#0E9F6E",
-    "emerald-hover": "#0B7F58",
+    "emerald-hover": "#0A7652",
     "emerald-soft": "#E6F6EF",
     gold: "#C8A45D",
     // Deep enough to clear 4.5:1 as small text on ivory, still unmistakably gold.
     "gold-hover": "#8A6626",
     "gold-soft": "#F8F0DE",
     sapphire: "#3B5BFF",
+    "sapphire-ink": "#2E4BE0",
     "sapphire-soft": "#EAEEFF",
     amethyst: "#8B5CF6",
+    "amethyst-ink": "#6D3BD1",
     "amethyst-soft": "#F3EDFF",
     teal: "#0FB5BA",
     "teal-soft": "#E4F7F8",
@@ -56,8 +58,10 @@ const colors = {
     inverse: "#FBF8F1",
   },
   line: "#E5DBC9",
-  danger: "#D93B4B",
-  warning: "#C77A16",
+  // Deep enough that validation and error copy clears 4.5:1 on rose-soft.
+  danger: "#C22B3C",
+  // Deep amber so warning copy clears 4.5:1 on the amber-soft chip (#FBF0DA).
+  warning: "#8A5A0B",
 };
 
 const config: Config = {
