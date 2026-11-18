@@ -59,21 +59,21 @@ export default async function EmployerCompanyPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <SpotlightGlassCard className="p-5">
           <Building2 className="size-5 text-accent-emerald-hover" aria-hidden />
-          <p className="mt-3 font-display text-xl font-extrabold text-ink-primary">
+          <p className="mt-3 font-display text-xl font-extrabold text-brand-navy">
             {company?.company_name ?? "Not set"}
           </p>
           <p className="text-xs text-ink-muted">Company</p>
         </SpotlightGlassCard>
         <SpotlightGlassCard className="p-5">
           <CreditCard className="size-5 text-accent-emerald-hover" aria-hidden />
-          <p className="mt-3 font-display text-xl font-extrabold text-ink-primary">
+          <p className="mt-3 font-display text-xl font-extrabold text-brand-navy">
             {Number(balance ?? 0)} credits
           </p>
           <p className="text-xs text-ink-muted">Trial balance from the immutable ledger</p>
         </SpotlightGlassCard>
         <SpotlightGlassCard className="p-5">
           <ShieldCheck className="size-5 text-accent-emerald-hover" aria-hidden />
-          <p className="mt-3 font-display text-xl font-extrabold text-ink-primary">
+          <p className="mt-3 font-display text-xl font-extrabold text-brand-navy">
             {company?.corporate_domain ?? "—"}
           </p>
           <p className="text-xs text-ink-muted">Corporate domain</p>

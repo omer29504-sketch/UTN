@@ -4,7 +4,7 @@ import { useCallback, useRef, type HTMLAttributes, type PointerEvent } from "rea
 import { cn } from "@/lib/utils";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  /** Frosted emerald glass (default) or the darker hero variant. */
+  /** Light alabaster surface (default) or the dark navy hero surface. */
   tone?: "light" | "dark";
   /** Add a gentle lift on hover. Off by default so calm surfaces stay calm. */
   interactive?: boolean;

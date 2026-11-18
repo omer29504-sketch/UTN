@@ -1,218 +1,172 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { ArrowRight, Lock, Play, Sparkles, Unlock, Video } from "lucide-react";
-import { authFetch, readApiError } from "@/lib/api/client";
+import { GraduationCap, Lock, Play, ShieldCheck, Sparkles, Unlock } from "lucide-react";
 import type { EmployerCandidateCard } from "@utn/shared";
 import { formatPitchDuration } from "@utn/shared";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
-import { Alert } from "@/components/ui/alert";
-import {
-  SecureCertificateViewer,
-  type EmployerViewerIdentity,
-} from "@/components/employer/secure-certificate-viewer";
+import { cn } from "@/lib/utils";
 
 interface Props {
   candidate: EmployerCandidateCard;
-  companyId: string;
-  employer: EmployerViewerIdentity;
+  /** Opens the dossier drawer on the summary panel. */
+  onOpen: () => void;
+  /** Opens the dossier drawer and starts the pitch. */
+  onPlay: () => void;
+  /** True while this candidate owns the open drawer. */
+  active?: boolean;
 }
 
-export function CandidateCard({ candidate, companyId, employer }: Props) {
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [videoLoading, setVideoLoading] = useState(false);
-  const [videoError, setVideoError] = useState<string | null>(null);
-  const [unlocking, setUnlocking] = useState(false);
-  const [unlocked, setUnlocked] = useState(candidate.is_unlocked);
-  const [balance, setBalance] = useState<number | null>(null);
-  const [unlockError, setUnlockError] = useState<string | null>(null);
-
+/**
+ * Employer talent-grid card.
+ *
+ * Deliberately carries exactly three scannable signals and nothing else:
+ *   1. Trust  — verified degree, institution, emerald seal.
+ *   2. Focus  — industry tag, class year, experience.
+ *   3. Human  — pitch stage with duration and an explicit play trigger.
+ *
+ * Accreditation detail, OCR summaries, audit references, contact fields and
+ * the certificate viewer live in the dossier drawer, so the grid never turns
+ * into a wall of metadata.
+ */
+export function CandidateCard({ candidate, onOpen, onPlay, active }: Props) {
+  const unlocked = candidate.is_unlocked;
   const displayName = unlocked
     ? (candidate.full_name ?? candidate.display_name)
     : candidate.display_name;
+  const duration = candidate.video_duration_seconds
+    ? formatPitchDuration(candidate.video_duration_seconds)
+    : null;
+  const initials = displayName
+    .replace(/^Verified Candidate #?/i, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
 
-  async function loadVideo() {
-    if (!candidate.video_r2_key) return;
-    setVideoLoading(true);
-    setVideoError(null);
-    try {
-      const res = await authFetch("/api/storage/presign", {
-        method: "POST",
-        body: JSON.stringify({
-          intent: "download",
-          bucket: "pitch-videos",
-          key: candidate.video_r2_key,
-        }),
-      });
-      if (!res.ok) {
-        setVideoError(await readApiError(res));
-        return;
-      }
-      const body = (await res.json()) as { url: string };
-      setVideoUrl(body.url);
-    } catch (e) {
-      setVideoError(e instanceof Error ? e.message : "Could not load video.");
-    } finally {
-      setVideoLoading(false);
-    }
-  }
-
-  async function handleUnlock() {
-    setUnlocking(true);
-    setUnlockError(null);
-    try {
-      const res = await authFetch("/api/employer/unlock", {
-        method: "POST",
-        body: JSON.stringify({
-          companyId,
-          candidateId: candidate.candidate_id,
-        }),
-      });
-      const body = (await res.json()) as {
-        success?: boolean;
-        alreadyUnlocked?: boolean;
-        creditBalance?: number | null;
-        message?: string;
-      };
-      if (!res.ok) {
-        setUnlockError(await readApiError(res));
-        return;
-      }
-      if (body.success) {
-        setUnlocked(true);
-        setBalance(body.creditBalance ?? null);
-      } else {
-        setUnlockError(body.message ?? "Unlock failed.");
-      }
-    } catch (e) {
-      setUnlockError(e instanceof Error ? e.message : "Unlock failed.");
-    } finally {
-      setUnlocking(false);
-    }
-  }
+  // The whole card is one button, so its name carries all three signals for
+  // screen-reader users instead of only the candidate label.
+  const cardSignals = [
+    `Verified ${candidate.degree_level} at ${candidate.university_name}`,
+    candidate.industry,
+    `Class of ${candidate.graduation_year}`,
+    duration ? `pitch ${duration}` : "no pitch submitted",
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   return (
-    <SpotlightGlassCard interactive className="flex h-full flex-col gap-3 p-5">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate font-display text-lg font-bold text-ink-primary">{displayName}</p>
-          {candidate.headline ? (
-            <p className="mt-0.5 truncate text-sm text-ink-muted">{candidate.headline}</p>
-          ) : null}
-        </div>
-        <div className="flex shrink-0 items-center gap-1">
-          {candidate.is_featured ? (
-            <Badge tone="gold">
-              <Sparkles className="mr-1 size-3" aria-hidden />
-              Priority Pro
-            </Badge>
-          ) : null}
+    <article
+      className={cn(
+        "group atelier-card-hover relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface-card shadow-sm",
+        active && "border-accent-emerald/50",
+      )}
+    >
+      {/* The whole card is one target; the play control sits above it. */}
+      <button
+        type="button"
+        onClick={onOpen}
+        className="absolute inset-0 z-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-emerald/60 focus-visible:ring-offset-2"
+        aria-label={`Open dossier for ${displayName}. ${cardSignals}`}
+      />
+
+      {/* Signal 3 — human: pitch stage, duration, explicit play. */}
+      <div className="pointer-events-none relative z-10 aspect-[16/10] w-full overflow-hidden bg-studio-obsidian">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,#1E2740_0%,#0E1424_52%,#070B16_100%)]"
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 grid place-items-center font-display text-4xl font-extrabold tracking-tight text-white/10"
+        >
+          {initials || "UTN"}
+        </span>
+
+        {candidate.is_featured ? (
+          <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-accent-gold/40 bg-[#070F24]/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#E9CF96] backdrop-blur-sm">
+            <Sparkles className="size-3" aria-hidden />
+            Priority Pro
+          </span>
+        ) : null}
+
+        <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/15 bg-[#070F24]/70 px-2.5 py-1 text-[10px] font-semibold text-white/80 backdrop-blur-sm">
           {unlocked ? (
-            <Badge tone="emerald">
-              <Unlock className="mr-1 size-3" aria-hidden />
+            <>
+              <Unlock className="size-3 text-[#6EE7B7]" aria-hidden />
               Unlocked
-            </Badge>
+            </>
           ) : (
-            <Badge tone="neutral">
-              <Lock className="mr-1 size-3" aria-hidden />
+            <>
+              <Lock className="size-3" aria-hidden />
               Locked
-            </Badge>
+            </>
           )}
-        </div>
+        </span>
+
+        <button
+          type="button"
+          onClick={onPlay}
+          disabled={!candidate.video_r2_key}
+          className="tactile-press pointer-events-auto absolute left-1/2 top-1/2 z-20 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-md hover:border-white/40 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0E1424] disabled:cursor-not-allowed disabled:opacity-40"
+          aria-label={
+            duration
+              ? `Play ${displayName}'s pitch, ${duration}`
+              : `Play ${displayName}'s pitch`
+          }
+        >
+          <Play className="size-5 translate-x-px" aria-hidden />
+        </button>
+
+        {duration ? (
+          <span className="absolute bottom-3 right-3 rounded-md bg-[#070F24]/80 px-2 py-0.5 font-mono text-[11px] font-semibold tabular-nums text-white/90 backdrop-blur-sm">
+            {duration}
+          </span>
+        ) : (
+          <span className="absolute bottom-3 right-3 rounded-md bg-[#070F24]/80 px-2 py-0.5 text-[10px] font-semibold text-white/70 backdrop-blur-sm">
+            No pitch
+          </span>
+        )}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 rounded-xl border border-line/70 bg-surface-canvas/70 p-3 text-xs text-ink-muted">
-        <span>{candidate.degree_level}</span>
-        <span>{candidate.university_name}</span>
-        <span>Grad {candidate.graduation_year}</span>
-        <span>{candidate.experience_years} yrs exp</span>
-        {candidate.industry ? <span className="col-span-2">{candidate.industry}</span> : null}
-      </div>
+      <div className="pointer-events-none relative z-10 flex flex-1 flex-col gap-3 p-4">
+        <h3 className="truncate font-display text-base font-bold text-ink-primary">
+          {displayName}
+        </h3>
 
-      {candidate.video_r2_key ? (
-        <div className="overflow-hidden rounded-xl border border-line bg-studio-obsidian">
-          {videoUrl ? (
-            <video src={videoUrl} controls className="aspect-video w-full" preload="metadata" />
-          ) : (
-            <button
-              type="button"
-              onClick={() => void loadVideo()}
-              disabled={videoLoading}
-              className="flex aspect-video w-full items-center justify-center text-white/80 transition hover:text-white"
-            >
-              {videoLoading ? (
-                <span className="text-sm">Loading…</span>
-              ) : (
-                <span className="flex items-center gap-2 text-sm font-semibold">
-                  <Play className="size-5" aria-hidden />
-                  Watch pitch
-                  {candidate.video_duration_seconds
-                    ? ` (${formatPitchDuration(candidate.video_duration_seconds)})`
-                    : ""}
-                </span>
-              )}
-            </button>
-          )}
-          {videoError ? <p className="px-3 py-2 text-xs text-danger">{videoError}</p> : null}
-        </div>
-      ) : (
-        <div className="flex aspect-video items-center justify-center rounded-xl border border-line bg-surface-canvas text-xs text-ink-muted">
-          <Video className="mr-2 size-4" aria-hidden />
-          No pitch video
-        </div>
-      )}
-
-      {unlocked ? (
-        <div className="space-y-2 rounded-xl border border-accent-emerald/30 bg-accent-emerald/[0.06] p-3 text-sm">
-          <p className="font-semibold text-ink-primary">{candidate.full_name}</p>
-          {candidate.email ? (
-            <p className="text-ink-muted">
-              <a
-                className="text-accent-emerald-hover hover:underline"
-                href={`mailto:${candidate.email}`}
-              >
-                {candidate.email}
-              </a>
+        {/* Signal 1 — trust & institution. */}
+        <div className="flex items-start gap-2">
+          <ShieldCheck
+            className="mt-0.5 size-4 shrink-0 text-verified-emerald"
+            aria-hidden
+          />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-ink-primary">
+              Verified {candidate.degree_level}
             </p>
-          ) : null}
-          {candidate.phone ? <p className="text-ink-muted">{candidate.phone}</p> : null}
-          {candidate.certificate_r2_key ? (
-            <SecureCertificateViewer candidateId={candidate.candidate_id} employer={employer} />
-          ) : null}
-          <Link
-            href={`/employer/candidates/${candidate.candidate_id}`}
-            className="inline-flex items-center gap-1 text-sm font-semibold text-accent-emerald-hover hover:underline"
-          >
-            Open full profile <ArrowRight className="size-3.5" aria-hidden />
-          </Link>
+            <p className="truncate text-xs text-ink-muted">{candidate.university_name}</p>
+          </div>
         </div>
-      ) : (
-        <div className="mt-auto flex flex-col gap-2 rounded-xl border border-accent-gold/30 bg-surface-card/60 p-3 backdrop-blur-sm">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-gold-hover">
-            Confidential dossier
-          </p>
-          {unlockError ? (
-            <Alert tone="error" title="Unlock failed">
-              {unlockError}
-            </Alert>
+
+        {/* Signal 2 — focus & readiness. */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {candidate.industry ? (
+            <Badge tone="sapphire">{candidate.industry}</Badge>
           ) : null}
-          <Button
-            variant="emerald"
-            onClick={() => void handleUnlock()}
-            loading={unlocking}
-            className="gap-2"
-          >
-            <Unlock className="size-4" aria-hidden />
-            Unlock candidate (1 credit)
-          </Button>
-          {balance !== null ? (
-            <p className="text-xs text-ink-muted">New balance: {balance} credits</p>
-          ) : null}
+          <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface-canvas px-2.5 py-1 text-[11px] font-medium text-ink-muted">
+            <GraduationCap className="size-3" aria-hidden />
+            Class of {candidate.graduation_year}
+          </span>
+          <span className="rounded-full border border-line bg-surface-canvas px-2.5 py-1 text-[11px] font-medium text-ink-muted">
+            {candidate.experience_years} yr{candidate.experience_years === 1 ? "" : "s"} exp
+          </span>
         </div>
-      )}
-    </SpotlightGlassCard>
+
+        <p className="mt-auto flex items-center gap-1 text-[11px] font-semibold text-accent-emerald-hover opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:opacity-100">
+          Open dossier
+          <span aria-hidden>→</span>
+        </p>
+      </div>
+    </article>
   );
 }

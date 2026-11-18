@@ -6,8 +6,8 @@
 **Client:** responsive Next.js web app (the Expo client was removed)
 **Backend:** Supabase Cloud project `jecdhhihbtaocbfzlljt`
 **Local URL:** `http://localhost:3000` (LAN `http://192.168.70.72:3000`)
-**Design system:** "Midnight Emerald" — deep emerald-ink canvas, dark glass cards,
-champagne-gold hairlines, warm ivory type, and a permanent aurora (see §11)
+**Design system:** "Jewel Atelier" — warm pearl canvas, midnight-ink type, champagne
+hairlines, jewel accents, and a restrained aurora reserved for dark surfaces (see §11)
 
 This document describes the platform as built: what it does, how each flow works, every
 technology and tool in use, the data model, the API surface, the security controls, the
@@ -1008,74 +1008,71 @@ but unreachable, the limiter logs and falls back rather than failing the API.
 
 ### 11.1 Principles
 
-**Midnight Emerald** — modern luxury that is easy on the eyes. A deep emerald-ink canvas,
-dark glass cards, warm ivory type, champagne hairlines, and jewel accents (emerald,
+**Jewel Atelier** — quiet luxury, built for scrutiny. A warm pearl canvas (`#F7F3EB`),
+midnight-ink type (`#070F24`), champagne hairlines (`#E5DBC9`), and jewel accents (emerald,
 sapphire, amethyst, teal, rose, gold) that read like light passing through cut stone.
-Generous whitespace, a tight typographic hierarchy, and slow motion that suggests quality
+Generous whitespace, a tight typographic hierarchy, and damped motion that suggests quality
 rather than demanding attention.
 
-The direction replaced the earlier light "Jewel Atelier" palette. It is applied
-platform-wide: landing page, auth, every candidate/employer/admin workspace, and the 404
-and error screens. There is deliberately no white surface left; the only light tone is a
-warm ivory "paper" reserved for document and certificate previews, where a real page is
-the correct metaphor.
+The workspace is deliberately static: the pearl canvas carries a fixed, low-opacity jewel
+halo but no full-screen animation, so pitch video and confidential credentials are never
+competing with moving light. The only dark surfaces are the engraved heroes, the recording
+studio, and the certificate viewer, where a dark frame protects media.
 
 ### 11.2 Palette and type
 
 | Token                   | Value     | Use                                            |
 | ----------------------- | --------- | ---------------------------------------------- |
-| `brand.navy`            | `#04100C` | Emerald ink: heroes, dark fills, ink on gold    |
-| `brand.navy-soft`       | `#081A14` | Secondary dark surface                         |
-| `brand.navy-line`       | `#173B31` | Hairlines on dark                              |
-| `surface.canvas`        | `#06120F` | Page background                                |
-| `surface.card`          | `#0A1C17` | Cards and panels                               |
-| `surface.muted`         | `#0C231C` | Inset wells and secondary fills                |
-| `surface.elevated`      | `#0F2A22` | Raised surfaces                                |
-| `surface.paper`         | `#F2ECDF` | Document/certificate stock (only light surface) |
-| `accent.emerald`        | `#10B981` | Bright accent                                  |
-| `accent.emerald-hover`  | `#34D399` | Small emerald text on dark and soft chips      |
-| `accent.emerald-deep`   | `#0B7A57` | Solid fill behind white text                   |
+| `brand.navy`            | `#070F24` | Midnight ink: heroes, dark fills, ink on gold  |
+| `brand.navy-soft`       | `#0E1B3D` | Secondary dark surface                         |
+| `brand.navy-line`       | `#1D2C55` | Hairlines on dark                              |
+| `surface.canvas`        | `#F7F3EB` | Warm pearl page background                     |
+| `surface.card`          | `#FFFCF7` | Cards and panels                               |
+| `surface.muted`         | `#F0E8DA` | Inset wells and secondary fills                |
+| `surface.elevated`      | `#FFFFFF` | Raised surfaces                                |
+| `accent.emerald`        | `#0E9F6E` | Verified seal, fills, decorative accents       |
+| `accent.emerald-hover`  | `#0A7652` | Small emerald text (4.5:1 on ivory)            |
 | `accent.gold`           | `#C8A45D` | Eyebrows, hairlines, Priority Pro              |
-| `accent.gold-hover`     | `#E9CF96` | Small champagne text on dark                   |
+| `accent.gold-hover`     | `#8A6626` | Small champagne text (4.5:1 on ivory)          |
 | `accent.sapphire`       | `#3B5BFF` | Employer/indigo accents                        |
-| `accent.sapphire-ink`   | `#8FA3FF` | Sapphire badge text on `sapphire-soft`         |
+| `accent.sapphire-ink`   | `#2E4BE0` | Sapphire badge text on `sapphire-soft`         |
 | `accent.amethyst`       | `#8B5CF6` | Premium/amethyst accents                       |
-| `accent.amethyst-ink`   | `#C4B5FD` | Amethyst badge text on `amethyst-soft`         |
+| `accent.amethyst-ink`   | `#6D3BD1` | Amethyst badge text on `amethyst-soft`         |
 | `accent.teal`           | `#0FB5BA` | Data and secondary jewel accent                |
 | `accent.rose`           | `#E2557B` | Rejection and destructive accents              |
-| `ink.primary`           | `#EDE6D6` | Body text (warm ivory)                         |
-| `ink.muted`             | `#9DB2A8` | Secondary text (sage)                          |
-| `ink.inverse`           | `#04100C` | Text on paper and gold                         |
-| `line`                  | `#1B3A30` | Hairline border                                |
-| `danger`                | `#F87171` | Errors (4.5:1 on rose-soft)                    |
-| `danger-deep`           | `#B91C1C` | Destructive fill behind white text             |
-| `warning`               | `#FBBF24` | Warnings (4.5:1 on `warning-soft`)             |
-| `warning-soft`          | `#2A1F0B` | Warning chip background                        |
+| `ink.primary`           | `#151B2E` | Body text                                      |
+| `ink.muted`             | `#5D6478` | Secondary text (4.5:1 on canvas)               |
+| `ink.inverse`           | `#FBF8F1` | Text on midnight ink                           |
+| `line`                  | `#E5DBC9` | Champagne hairline border                      |
+| `danger`                | `#C22B3C` | Errors (4.5:1 on rose-soft)                    |
+| `warning`               | `#8A5A0B` | Warnings (4.5:1 on warning-soft)               |
 
 - Headings: **Plus Jakarta Sans** (600/700/800).
 - Body: **Inter** (400/500/600).
 - Both load through `next/font` and are self-hosted at build time.
 - Text-safe variants (`emerald-hover`, `gold-hover`, `sapphire-ink`, `amethyst-ink`) exist
-  because a hue cannot be both a bright accent on a near-black canvas and a fill behind
-  white text; `*-deep` tokens carry solid fills. `color-scheme: dark` makes native selects,
-  pickers, and scrollbars match the canvas.
+  because a hue cannot be both a bright fill and small text on warm ivory; the deep variants
+  carry the 4.5:1 ratio. `color-scheme: light` keeps native selects, pickers, and scrollbars
+  on the pearl canvas.
+- Motion is defined by `--ease-luxury: cubic-bezier(0.22, 1, 0.36, 1)`. `.tactile-press`
+  (140 ms `scale(0.985)`) covers primary actions, unlock CTAs, and filter chips;
+  `.atelier-card-hover` (200 ms, `translateY(-2px)`, champagne → emerald hairline) covers
+  candidate cards. Only `transform`, `opacity`, and `border-color` animate, so the compositor
+  never reflows around a playing pitch. `prefers-reduced-motion` collapses both to a
+  ≤ 150 ms opacity/border fade with no transform.
 
 `packages/shared/design-tokens.cjs` still holds the legacy slate palette and the shared
 card radius. The web app defines its own explicit palette in
 `apps/web/tailwind.config.ts` so a shared token change cannot silently recolour the
 product; it consumes only the radius token.
 
-### 11.3 Aurora / midnight silk
+### 11.3 Aurora / jewel silk
 
-- Seven heavily blurred gradient ribbons (emerald, indigo, cyan, jade, amethyst, gold,
-  pearl) drifting over the emerald-ink sky, each on its own sway cycle so the layers never
-  visibly repeat.
-- A slow conic sheen (`.aurora-sheen`, 72 s) turns beneath the ribbons, and a warm pearl
-  horizon (`.aurora-horizon`, 22 s breathe) anchors the bottom edge, so the light field
-  reads as depth rather than a flat tint.
-- Eight hairline SVG silk filaments (`.aurora-threads`) are drawn above the ribbons.
+- Five heavily blurred gradient ribbons (emerald, indigo, cyan, amethyst, gold) drifting over
+  the dark hero sky, each on its own sway cycle so the layers never visibly repeat.
+- Five hairline SVG silk filaments (`.aurora-threads`) are drawn above the ribbons.
 - Composed with the engraved contour field (`TopographicField`), security grain, and a
-  deep vignette.
+  vignette.
 - Implemented as `.aurora-*` classes in `globals.css` plus
   `components/ui/AuroraRibbons.tsx`; no images, no canvas, no client JavaScript.
 - `TopographicHeroBg` layers the contour print under the aurora, so every dark banner
@@ -1083,19 +1080,19 @@ product; it consumes only the radius token.
 - Landing hero and auth aside use `hero` intensity; in-app banners use `ambient`.
 - Workspace pages carry a masked `.aurora-wash` behind the content, so the silk signature
   is present on every screen rather than only on marketing pages.
-- `prefers-reduced-motion` freezes the ribbon drift, sheen, and horizon at resting
-  opacity; below 640 px the four smallest ribbons (d–g) are hidden and blur is reduced.
+- `prefers-reduced-motion` freezes the ribbon drift at resting opacity; below 640 px the
+  two smallest ribbons (d–e) are hidden and blur is reduced.
 
 ### 11.4 Components
 
 | Group       | Components                                                                                                                                  |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Primitives  | `Button` (primary/secondary/ghost/danger/emerald/gold), `Input`, `Textarea`, `Select`, `Field`, `Card`, `Badge` (8 tones), `Alert`          |
-| Surfaces    | `SpotlightGlassCard` (cursor spotlight), `surface-card`, jewel-border and hairline utilities                                                |
+| Primitives  | `Button` (primary/secondary/ghost/danger/emerald/gold, `.tactile-press`), `Input`, `Textarea`, `Select`, `Field`, `Card`, `Badge` (8 tones), `Alert` |
+| Surfaces    | `SpotlightGlassCard` (cursor spotlight), `surface-card`, jewel-border and hairline utilities, `.atelier-card-hover`                           |
 | Backgrounds | `AuroraRibbons`, `TopographicField`, `TopographicHeroBg`, `aurora-wash`                                                                     |
 | Motion      | `Reveal`, `GradCap`, `CountUp` (all respect reduced motion)                                                                                 |
 | Brand       | `BrandMark`, `Navbar`, `AppShell`, `SignOutButton`, `RoleBadge`                                                                             |
-| Feature     | Verification studio, secure certificate viewer, pitch player, chat thread, candidate card, checkout button, Priority Pro card, logo marquee |
+| Feature     | Verification studio (3-step rail + device readiness), secure certificate viewer, `CandidateDossierDrawer` (playlist slide-over), pitch player, chat thread, 3-signal candidate card, checkout button, Priority Pro card, logo marquee |
 | Route state | `not-found.tsx` (404), `error.tsx` (segment boundary), `global-error.tsx` (root boundary)                                                   |
 
 ### 11.5 Responsive behavior
@@ -1114,21 +1111,26 @@ product; it consumes only the radius token.
   `/employer/candidates`, `/employer/billing`, `/admin/verification`,
   `/admin/verification/[candidateId]`, plus the 404 and error screens.
 - Contrast audited and tuned on 16 routes across all three roles with a rendered-colour
-  audit that composites alpha layers, gradient stops, and the emerald canvas: **0 failures**
+  audit that composites alpha layers, gradient stops, and the pearl canvas: **0 failures**
   at WCAG AA (4.5:1 body, 3:1 large).
-- Dark-only palette means no bright surface can wash out type: text-safe accent variants
-  (`emerald-hover`, `gold-hover`, `sapphire-ink`, `amethyst-ink`), solid `*-deep` fills
-  behind white text, `warning-soft`/rose-soft chips for warning and danger, and warm ivory
-  `ink.primary` on every canvas.
-- `color-scheme: dark` makes native selects, date pickers, and scrollbars match the canvas
-  instead of flashing white.
+- Text-safe accent variants (`emerald-hover`, `gold-hover`, `sapphire-ink`,
+  `amethyst-ink`) keep small coloured copy above 4.5:1 on ivory; solid jewel fills sit
+  behind white text, and `warning`/`danger` use deep variants on soft chips.
+- `color-scheme: light` makes native selects, date pickers, and scrollbars match the pearl
+  canvas.
 - Skip link to `#main`.
 - Visible `:focus-visible` outline (emerald, 2 px offset).
 - Labels and `aria-invalid` on form fields; `role="radiogroup"` for role selection; every
   talent-search filter is `htmlFor`/`id` bound.
 - `aria-hidden` on decorative visuals.
-- Reduced-motion support for every animation, including the ribbons, sheen, and horizon.
-- Semantic headings and `text-wrap: balance` on titles.
+- Reduced-motion support for every animation, including the ribbons; tactile transforms
+  collapse to a short opacity/border fade.
+- Semantic headings and `text-wrap: balance` on titles. The talent grid carries an `h2`
+  count line so cards (`h3`) never skip a level.
+- The candidate dossier drawer is a `role="dialog"` / `aria-modal="true"` panel labelled by
+  its candidate heading. It traps focus, closes on `Escape` or backdrop click, restores
+  focus to the exact card control that opened it, and keeps 44×44 px controls. Playlist
+  stepping (`↑`/`K`, `↓`/`J`) is ignored while typing in an input or textarea.
 - No horizontal overflow at 1296 px or mobile widths on any audited route.
 
 ### 11.7 Route failure states
@@ -1302,21 +1304,31 @@ Dependabot opens weekly npm and Actions updates.
 | PGlite behavioral suite (earlier phase)                      | 41/41 checks                                |
 | tesseract.js OCR smoke test                                  | 95% confidence                              |
 
-**Midnight Emerald and three-workspace smoke test (2026-11-18)**
+**Jewel Atelier + Quiet Luxury smoke test (2026-11-18)**
 
 | Check                                                                                      | Result                                              |
 | ------------------------------------------------------------------------------------------ | --------------------------------------------------- |
 | Lighthouse accessibility, 16 audited routes + 404                                           | **100** everywhere                                  |
 | Lighthouse best-practices and SEO (audited routes)                                         | **100**                                             |
+| Lighthouse accessibility, employer grid with dossier drawer open                            | **100** (after the certificate-link contrast fix)    |
+| Lighthouse accessibility, candidate verification studio                                     | **100**                                             |
 | Rendered-colour contrast failures (16 routes, all three roles)                              | 0                                                   |
-| Bright surfaces (luma > 0.7, > 4000 px²) across 5 routes                                    | 0; body always `rgb(6,18,15)`                       |
-| Aurora live render                                                                          | 7 ribbons ×2 instances, 16 filaments, sheen + horizon |
-| Reduced-motion freeze for ribbons, sheen, and horizon                                       | Present in built CSS                                |
+| Pearl canvas (body background) across audited routes                                        | `rgb(247, 243, 235)`; no full-screen workspace animation |
+| Aurora live render                                                                          | 5 ribbons, 5 filaments, no sheen/horizon             |
+| Reduced-motion freeze for ribbons; tactile transforms collapse to opacity/border fades      | Present in built CSS                                |
 | Horizontal overflow at 1296 px and mobile widths                                           | 0 on every audited route                            |
 | Unauthenticated protected routes (`/dashboard`, `/candidate/*`, `/employer/*`, `/admin/*`) | `307` → `/auth/sign-in?next=…`                      |
 | API routes without a token                                                                 | `401 {"error":"missing_token"}`                     |
 | Stripe webhook without a signature                                                         | `400 {"error":"missing_signature"}`                 |
 | Employer talent-search filter GET                                                          | Works; all 7 controls labelled; empty state renders |
+| Employer `/dashboard` landing                                                              | `307` → `/employer/candidates` with live credits pill |
+| Talent grid card signals                                                                   | Exactly 3: verified degree/university, focus/class, pitch/duration |
+| Dossier drawer open/step/close                                                              | `role="dialog"`, focus trapped, `↑`/`K` `↓`/`J` step, `Esc` closes, focus returns to opener |
+| Dossier shortcuts while typing                                                             | Ignored inside inputs and textareas                 |
+| Dossier accordion                                                                          | `aria-expanded` toggles, `0fr → 1fr` rows animate    |
+| 1-credit unlock inside drawer                                                              | Balance 7 → 6, contact + certificate + chat released, grid card updates after refresh |
+| Verification studio rail                                                                   | 3 steps render with current/complete states          |
+| Camera/mic readiness check                                                                 | `getUserMedia` probe stops tracks; ready and error states announced via `role="status"` |
 | Employer company save                                                                      | `PATCH` → `204`, success copy shown                 |
 | Billing checkout with placeholder keys                                                     | Fails gracefully ("Checkout failed") + `500`        |
 | Branded 404 (`/does-not-exist`)                                                            | `404`, aurora + gold CTA, a11y 100                  |

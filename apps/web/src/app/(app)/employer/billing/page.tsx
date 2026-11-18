@@ -109,7 +109,7 @@ export default async function EmployerBillingPage({
               }
             />
             <div className="mt-4 flex items-center justify-between">
-              <p className="font-display text-2xl font-extrabold text-ink-primary">
+              <p className="font-display text-2xl font-extrabold text-brand-navy">
                 {pack.credits} credits
               </p>
               <CheckoutButton

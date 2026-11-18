@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   ArrowRight,
   BadgeCheck,
-  Building2,
   ClipboardCheck,
-  CreditCard,
   FileText,
   ScanFace,
-  Search,
   Sparkles,
   Video,
 } from "lucide-react";
@@ -20,7 +18,6 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { VerificationBadge } from "@/components/verification-badge";
 import { Alert } from "@/components/ui/alert";
-import { CountUp } from "@/components/motion/count-up";
 import { Reveal } from "@/components/motion/reveal";
 import { SpotlightGlassCard } from "@/components/ui/SpotlightGlassCard";
 import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
@@ -123,7 +120,7 @@ async function CandidateOverview({
         <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15">
           <Sparkles className="size-6" aria-hidden />
         </span>
-        <h2 className="mt-4 font-display text-2xl font-extrabold text-ink-primary">
+        <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
           Finish your candidate profile
         </h2>
         <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">
@@ -283,14 +280,14 @@ async function CandidateOverview({
               <span
                 className={`grid size-8 shrink-0 place-items-center rounded-full text-xs font-bold ${
                   item.done
-                    ? "animate-check-pop bg-accent-emerald-deep text-white"
+                    ? "animate-check-pop bg-verified-emerald text-white"
                     : "bg-surface-card text-ink-muted ring-1 ring-line"
                 }`}
               >
                 {item.done ? <BadgeCheck className="size-4" aria-hidden /> : index + 1}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-ink-primary">{item.label}</p>
+                <p className="text-sm font-semibold text-brand-navy">{item.label}</p>
                 <p className="truncate text-xs text-ink-muted">{item.hint}</p>
               </div>
               <Badge tone={item.done ? "emerald" : "neutral"}>
@@ -299,122 +296,6 @@ async function CandidateOverview({
             </li>
           ))}
         </ol>
-      </Card>
-    </div>
-  );
-}
-
-async function EmployerOverview({ userId }: { userId: string }) {
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return (
-      <Alert tone="error" title="Supabase is not configured">
-        Add the public Supabase URL and anon key to <code>apps/web/.env.local</code>.
-      </Alert>
-    );
-  }
-
-  const [{ data: company }, { data: balance }] = await Promise.all([
-    supabase.from("companies").select("*").eq("owner_id", userId).maybeSingle(),
-    supabase.rpc("get_my_credit_balance"),
-  ]);
-
-  if (!company) {
-    return (
-      <SpotlightGlassCard className="animate-slide-in p-6">
-        <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15">
-          <Building2 className="size-6" aria-hidden />
-        </span>
-        <h2 className="mt-4 font-display text-2xl font-extrabold text-ink-primary">
-          Set up your company
-        </h2>
-        <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">
-          Confirm your company name and logo consent. Your corporate email domain is verified
-          automatically, and two trial credits are granted once per company.
-        </p>
-        <Link
-          href="/employer/company"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white"
-        >
-          Create company profile
-          <ArrowRight className="size-4" aria-hidden />
-        </Link>
-      </SpotlightGlassCard>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <Reveal>
-        <HeroShell
-          eyebrow="Employer workspace"
-          title={company.company_name}
-          description={`${company.corporate_domain} · ${
-            company.is_verified ? "Company verified" : "Verification pending"
-          }`}
-          badge={
-            <Badge tone={company.is_verified ? "emerald" : "warning"}>
-              {company.is_verified ? "Verified employer" : "Unverified employer"}
-            </Badge>
-          }
-        >
-          <div className="mt-7 grid gap-3 sm:grid-cols-3">
-            <HeroStat
-              icon={Sparkles}
-              label="Credit balance"
-              value={
-                <>
-                  <CountUp value={Number(balance ?? 0)} /> credits
-                </>
-              }
-              hint="Two trial credits are granted at company creation"
-            />
-            <HeroStat
-              icon={Building2}
-              label="Corporate domain"
-              value={company.corporate_domain}
-              hint="Locked to your work email"
-            />
-            <HeroStat
-              icon={BadgeCheck}
-              label="Logo consent"
-              value={company.display_logo_consent ? "Opted in" : "Opted out"}
-              hint="Controls the public landing-page marquee"
-            />
-          </div>
-        </HeroShell>
-      </Reveal>
-
-      <Card>
-        <CardHeader
-          title="Candidate discovery"
-          description="Search verified graduates, watch their pitches for free, and unlock full profiles."
-          action={
-            <Link
-              href="/employer/candidates"
-              className="inline-flex items-center gap-2 rounded-lg bg-jewel-ink px-3 py-2 text-xs font-semibold text-white"
-            >
-              Open search
-              <ArrowRight className="size-3.5" aria-hidden />
-            </Link>
-          }
-        />
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link
-            href="/employer/candidates"
-            className="inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2.5 text-sm font-semibold text-white"
-          >
-            <Search className="size-4" aria-hidden />
-            Search candidates
-          </Link>
-          <Link
-            href="/employer/billing"
-            className="inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink-primary hover:bg-surface-muted"
-          >
-            <CreditCard className="size-4" aria-hidden />
-            Buy credits
-          </Link>
-        </div>
       </Card>
     </div>
   );
@@ -492,7 +373,7 @@ async function AdminOverview() {
                 style={{ animationDelay: `${index * 60}ms` }}
               >
                 <div>
-                  <p className="text-sm font-semibold capitalize text-ink-primary">
+                  <p className="text-sm font-semibold capitalize text-brand-navy">
                     {review.decision}
                   </p>
                   <p className="text-xs text-ink-muted">{review.reviewer_email}</p>
@@ -516,8 +397,10 @@ export default async function DashboardPage() {
     return <CandidateOverview userId={session.user.id} fullName={session.user.fullName} />;
   }
 
+  // Employers land straight in the verified talent pool, never on an empty
+  // overview screen. The credit pill in that page's hero is their orientation.
   if (session.profile.role === "employer") {
-    return <EmployerOverview userId={session.user.id} />;
+    redirect("/employer/candidates");
   }
 
   return <AdminOverview />;

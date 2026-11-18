@@ -6,9 +6,9 @@ type FadeTo = "navy" | "canvas" | "none";
 type Intensity = "hero" | "ambient";
 
 const VIGNETTE: Record<Tone, string> = {
-  navy: "radial-gradient(125% 105% at 50% 26%, rgba(4,16,12,0) 0%, rgba(4,16,12,0.3) 48%, rgba(4,16,12,0.96) 100%)",
+  navy: "radial-gradient(125% 105% at 50% 30%, rgba(7,15,36,0) 0%, rgba(7,15,36,0.34) 56%, rgba(7,15,36,0.94) 100%)",
   light:
-    "radial-gradient(125% 105% at 50% 30%, rgba(242,236,223,0) 0%, rgba(242,236,223,0.4) 58%, rgba(242,236,223,0.96) 100%)",
+    "radial-gradient(125% 105% at 50% 30%, rgba(247,243,235,0) 0%, rgba(247,243,235,0.4) 58%, rgba(247,243,235,0.96) 100%)",
 };
 
 const FADE: Record<Exclude<FadeTo, "none">, string> = {
@@ -17,63 +17,44 @@ const FADE: Record<Exclude<FadeTo, "none">, string> = {
 };
 
 /**
- * Hand-drawn silk filaments. Each entry is a single stroked S-curve, so the
- * aurora keeps a visible fibre structure instead of reading as pure haze.
+ * Hand-drawn silk threads. Four long S-curves, each a single stroked path, so
+ * the aurora keeps a visible fibre structure instead of reading as pure haze.
  * Coordinates live in the same 1440×720 space as the contour field.
- *
- * The first five are the broad ribbons' fibres; the last three are the fine
- * champagne and pearl threads that give the wave its "silk" character.
  */
 const THREADS = [
   {
     d: "M -140 548 C 180 412, 360 664, 706 500 S 1186 296, 1580 402",
-    stroke: "rgba(52, 211, 153, 0.6)",
+    stroke: "rgba(14, 159, 110, 0.55)",
     width: 1.4,
   },
   {
     d: "M -140 300 C 244 196, 428 404, 786 300 S 1224 128, 1580 224",
-    stroke: "rgba(143, 163, 255, 0.55)",
+    stroke: "rgba(59, 91, 255, 0.5)",
     width: 1.1,
   },
   {
     d: "M -140 682 C 322 598, 526 744, 928 578 S 1322 498, 1580 560",
-    stroke: "rgba(45, 212, 191, 0.45)",
+    stroke: "rgba(15, 181, 186, 0.42)",
     width: 1,
   },
   {
     d: "M -140 428 C 300 376, 520 524, 866 430 S 1284 336, 1580 380",
-    stroke: "rgba(233, 207, 150, 0.34)",
+    stroke: "rgba(200, 164, 93, 0.3)",
     width: 0.9,
   },
   {
     d: "M -140 214 C 268 132, 512 300, 842 214 S 1268 84, 1580 152",
-    stroke: "rgba(167, 139, 250, 0.38)",
+    stroke: "rgba(139, 92, 246, 0.34)",
     width: 0.8,
-  },
-  {
-    d: "M -140 470 C 220 440, 470 566, 780 476 S 1200 388, 1580 448",
-    stroke: "rgba(242, 220, 171, 0.2)",
-    width: 0.7,
-  },
-  {
-    d: "M -140 366 C 300 318, 560 462, 900 366 S 1300 270, 1580 322",
-    stroke: "rgba(237, 230, 214, 0.18)",
-    width: 0.6,
-  },
-  {
-    d: "M -140 616 C 280 566, 540 690, 880 610 S 1290 540, 1580 596",
-    stroke: "rgba(16, 185, 129, 0.24)",
-    width: 0.6,
   },
 ] as const;
 
 /**
- * Aurora / Midnight Emerald silk ribbons.
+ * Aurora / Northern Lights silk ribbons.
  *
- * A slow light field for dark surfaces: seven heavily blurred gradient
- * ribbons drifting on an emerald-ink sky, a conic sheen turning beneath them,
- * fine silk filaments above, then the engraved contour field, security grain,
- * a pearl horizon, and a deep vignette.
+ * A slow light field for dark surfaces: four heavily blurred gradient
+ * ellipses drifting on a navy sky, thin silk threads drawn on top, then the
+ * existing engraved contour field, security grain, and vignette.
  *
  * Everything is CSS and inline SVG. There is no image request, no canvas, no
  * client JavaScript, and the global reduced-motion rule freezes the drift.
@@ -101,7 +82,7 @@ export function AuroraRibbons({
       aria-hidden
       className={cn(
         "pointer-events-none absolute inset-0 overflow-hidden",
-        tone === "navy" ? "bg-brand-navy" : "bg-surface-paper",
+        tone === "navy" ? "bg-brand-navy" : "bg-surface-canvas",
         className,
       )}
     >
@@ -114,17 +95,11 @@ export function AuroraRibbons({
           tone === "light" && "aurora-field--light",
         )}
       >
-        <span className="aurora-sheen" />
-
         <span className="aurora-ribbon aurora-ribbon--emerald aurora-ribbon--a" />
         <span className="aurora-ribbon aurora-ribbon--indigo aurora-ribbon--b" />
         <span className="aurora-ribbon aurora-ribbon--cyan aurora-ribbon--c" />
-        <span className="aurora-ribbon aurora-ribbon--jade aurora-ribbon--f" />
         <span className="aurora-ribbon aurora-ribbon--amethyst aurora-ribbon--e" />
         <span className="aurora-ribbon aurora-ribbon--gold aurora-ribbon--d" />
-        <span className="aurora-ribbon aurora-ribbon--pearl aurora-ribbon--g" />
-
-        <span className="aurora-horizon" />
       </div>
 
       <svg

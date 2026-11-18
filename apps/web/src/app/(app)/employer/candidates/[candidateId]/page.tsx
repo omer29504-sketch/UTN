@@ -175,7 +175,7 @@ export default async function UnlockedCandidatePage({
         <SpotlightGlassCard className="space-y-3 p-6">
           <CardHeader title="Contact" />
           <div className="space-y-2 text-sm">
-            <p className="flex items-center gap-2 text-ink-primary">
+            <p className="flex items-center gap-2 text-brand-navy">
               <Mail className="size-4 text-accent-emerald-hover" aria-hidden />
               {candidate.email ? (
                 <a
@@ -188,7 +188,7 @@ export default async function UnlockedCandidatePage({
                 "—"
               )}
             </p>
-            <p className="flex items-center gap-2 text-ink-primary">
+            <p className="flex items-center gap-2 text-brand-navy">
               <Phone className="size-4 text-accent-emerald-hover" aria-hidden />
               {candidate.phone ?? "—"}
             </p>
@@ -199,7 +199,7 @@ export default async function UnlockedCandidatePage({
           <CardHeader title="Degree" />
           <div className="space-y-1 text-sm text-ink-muted">
             <p>
-              <span className="font-semibold text-ink-primary">{candidate.degree_level}</span>
+              <span className="font-semibold text-brand-navy">{candidate.degree_level}</span>
             </p>
             <p>{candidate.university_name}</p>
             <p>Graduated {candidate.graduation_year}</p>

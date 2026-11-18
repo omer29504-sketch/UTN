@@ -58,7 +58,7 @@ export function PitchVideo({ storageKey }: { storageKey: string }) {
           </span>
         )}
       </button>
-      {error ? <p className="text-xs text-danger">{error}</p> : null}
+      {error ? <p className="text-xs text-red-600">{error}</p> : null}
     </div>
   );
 }

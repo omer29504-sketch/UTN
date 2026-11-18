@@ -33,8 +33,7 @@ const linksByRole: Record<Role, { href: string; label: string; icon: Icon }[]> =
     { href: "/candidate/messages", label: "Messages", icon: MessageSquare },
   ],
   employer: [
-    { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-    { href: "/employer/candidates", label: "Candidates", icon: Search },
+    { href: "/employer/candidates", label: "Talent pool", icon: Search },
     { href: "/employer/company", label: "Company", icon: Building2 },
     { href: "/employer/billing", label: "Billing", icon: CreditCard },
   ],
@@ -68,8 +67,8 @@ export interface NavbarProps {
 /**
  * Floating frosted navigation shell.
  *
- * Sits above both the emerald-ink heroes and the dark workspace: the frosted
- * emerald glass keeps links legible on either surface, while the emerald pill
+ * Sits above both the navy heroes and the alabaster workspace: the translucent
+ * white glass keeps links legible in either light, while the emerald pill
  * slides between the active destination instead of snapping.
  */
 export function Navbar({ role, email, credits }: NavbarProps) {
@@ -214,7 +213,7 @@ export function Navbar({ role, email, credits }: NavbarProps) {
               {role ? (
                 <>
                   <div className="hidden items-center gap-2 md:flex">
-                    <span className="grid size-8 place-items-center rounded-full bg-gradient-to-br from-accent-emerald-deep to-[#1E3AC8] font-display text-xs font-bold text-white ring-1 ring-inset ring-white/25">
+                    <span className="grid size-8 place-items-center rounded-full bg-gradient-to-br from-accent-emerald to-accent-sapphire font-display text-xs font-bold text-white ring-1 ring-inset ring-white/25">
                       {(email ?? "?").slice(0, 1).toUpperCase()}
                     </span>
                     <div className="hidden text-right xl:block">

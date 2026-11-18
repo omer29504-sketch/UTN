@@ -104,7 +104,7 @@ export default async function AdminReviewDetailPage({
     <div className="space-y-6">
       <Link
         href="/admin/verification"
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted transition hover:text-ink-primary"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted transition hover:text-brand-navy"
       >
         <ArrowLeft className="size-3.5" aria-hidden />
         Back to queue
@@ -152,7 +152,7 @@ export default async function AdminReviewDetailPage({
                   className="flex items-start justify-between gap-3 border-b border-line pb-2.5 last:border-0 last:pb-0"
                 >
                   <dt className="text-xs text-ink-muted">{label}</dt>
-                  <dd className="max-w-[60%] text-right text-xs font-semibold text-ink-primary">
+                  <dd className="max-w-[60%] text-right text-xs font-semibold text-brand-navy">
                     {value}
                   </dd>
                 </div>
@@ -246,14 +246,14 @@ export default async function AdminReviewDetailPage({
                 <iframe
                   title={`Certificate for ${profile.full_name}`}
                   src={certificateUrl}
-                  className="h-[420px] w-full rounded-xl border border-line bg-surface-paper"
+                  className="h-[420px] w-full rounded-xl border border-line bg-white"
                 />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={certificateUrl}
                   alt={`Certificate for ${profile.full_name}`}
-                  className="max-h-[420px] w-full rounded-xl border border-line bg-surface-paper object-contain"
+                  className="max-h-[420px] w-full rounded-xl border border-line bg-white object-contain"
                 />
               )}
             </div>

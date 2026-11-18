@@ -1,13 +1,13 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { ArrowRight, Building2, Filter, Search } from "lucide-react";
+import { ArrowRight, Building2, Coins, Filter, Search } from "lucide-react";
 import { requireSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { INDUSTRIES, DEGREE_LEVELS } from "@utn/shared";
 import type { EmployerCandidateCard } from "@utn/shared";
 import { Card } from "@/components/ui/card";
-import { CandidateCard } from "@/components/employer/candidate-card";
+import { CandidateGrid } from "@/components/employer/CandidateGrid";
 import type { EmployerViewerIdentity } from "@/components/employer/secure-certificate-viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -74,7 +74,7 @@ export default async function EmployerCandidatesPage({
         <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15">
           <Building2 className="size-6" aria-hidden />
         </span>
-        <h2 className="mt-4 font-display text-2xl font-extrabold text-ink-primary">
+        <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
           Set up your company first
         </h2>
         <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">
@@ -118,6 +118,10 @@ export default async function EmployerCandidatesPage({
     tosAcceptedAt: (employerProfile?.employer_tos_accepted_at as string | null | undefined) ?? null,
   };
 
+  // Live credit balance drives the hero pill and the drawer's unlock panel.
+  const { data: creditBalance } = await supabase.rpc("get_my_credit_balance");
+  const credits = typeof creditBalance === "number" ? creditBalance : null;
+
   const rows = (data ?? []) as EmployerCandidateCard[];
   const totalCount = rows[0]?.total_count ?? 0;
   const totalPages = Math.max(1, Math.ceil(Number(totalCount) / PAGE_SIZE));
@@ -138,9 +142,17 @@ export default async function EmployerCandidatesPage({
                 for 1 credit.
               </p>
             </div>
-            <Badge tone={company.is_verified ? "emerald" : "warning"}>
-              {company.is_verified ? "Verified employer" : "Unverified employer"}
-            </Badge>
+            <div className="flex flex-col items-start gap-2 sm:items-end">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3.5 py-1.5 text-xs font-semibold text-white/85 backdrop-blur-sm">
+                <Coins className="size-3.5 text-[#E9CF96]" aria-hidden />
+                {credits === null
+                  ? "Credit balance unavailable"
+                  : `${credits} credit${credits === 1 ? "" : "s"} ready`}
+              </span>
+              <Badge tone={company.is_verified ? "emerald" : "warning"}>
+                {company.is_verified ? "Verified employer" : "Unverified employer"}
+              </Badge>
+            </div>
           </div>
           <div className="relative mt-6 flex flex-wrap gap-2 text-[11px] font-medium text-white/55">
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5">
@@ -261,7 +273,7 @@ export default async function EmployerCandidatesPage({
               <div className="flex items-end">
                 <label
                   htmlFor="filter-featured"
-                  className="flex items-center gap-2 text-sm font-semibold text-ink-primary"
+                  className="flex items-center gap-2 text-sm font-semibold text-brand-navy"
                 >
                   <input
                     id="filter-featured"
@@ -281,7 +293,7 @@ export default async function EmployerCandidatesPage({
                 </Button>
                 <Link
                   href="/employer/candidates"
-                  className="inline-flex items-center rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink-primary hover:bg-surface-muted"
+                  className="inline-flex items-center rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
                 >
                   Reset
                 </Link>
@@ -318,16 +330,16 @@ export default async function EmployerCandidatesPage({
         </Alert>
       ) : null}
 
-      <p className="text-sm text-ink-muted">
+      <h2 className="text-sm font-semibold text-ink-muted">
         {Number(totalCount)} verified candidate{Number(totalCount) === 1 ? "" : "s"} found.
-      </p>
+      </h2>
 
       {rows.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-2 py-12 text-center">
           <span className="grid size-14 animate-float-slow place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover motion-reduce:animate-none">
             <Search className="size-6" aria-hidden />
           </span>
-          <p className="text-sm font-semibold text-ink-primary">
+          <p className="text-sm font-semibold text-brand-navy">
             No candidates match these filters yet.
           </p>
           <p className="text-xs text-ink-muted">
@@ -335,17 +347,12 @@ export default async function EmployerCandidatesPage({
           </p>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {rows.map((c, index) => (
-            <div
-              key={c.candidate_id}
-              className="h-full animate-slide-in"
-              style={{ animationDelay: `${Math.min(index * 60, 360)}ms` }}
-            >
-              <CandidateCard candidate={c} companyId={String(company.id)} employer={employer} />
-            </div>
-          ))}
-        </div>
+        <CandidateGrid
+          candidates={rows}
+          companyId={String(company.id)}
+          employer={employer}
+          initialCredits={credits}
+        />
       )}
 
       {totalPages > 1 ? (
@@ -358,7 +365,7 @@ export default async function EmployerCandidatesPage({
                 ),
                 page: String(page - 1),
               }).toString()}`}
-              className="rounded-xl border border-line px-4 py-2 text-sm font-semibold text-ink-primary hover:bg-surface-muted"
+              className="rounded-xl border border-line px-4 py-2 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
             >
               Previous
             </Link>
@@ -374,7 +381,7 @@ export default async function EmployerCandidatesPage({
                 ),
                 page: String(page + 1),
               }).toString()}`}
-              className="rounded-xl border border-line px-4 py-2 text-sm font-semibold text-ink-primary hover:bg-surface-muted"
+              className="rounded-xl border border-line px-4 py-2 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
             >
               Next
             </Link>
@@ -399,10 +406,10 @@ function FilterPill({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "inline-flex items-center rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors duration-300",
+        "tactile-press inline-flex min-h-9 items-center rounded-full border px-3.5 py-1.5 text-xs font-semibold",
         active
-          ? "border-accent-emerald/30 bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15"
-          : "border-line/90 bg-surface-card/70 text-ink-muted backdrop-blur-sm hover:border-accent-gold/40 hover:text-ink-primary",
+          ? "border-accent-emerald/30 bg-accent-emerald-soft text-brand-navy ring-1 ring-inset ring-accent-emerald/15"
+          : "border-line/90 bg-white/70 text-ink-muted backdrop-blur-sm hover:border-accent-gold/40 hover:text-brand-navy",
       )}
     >
       {children}

@@ -10,6 +10,7 @@ import {
   FileText,
   Loader2,
   LockKeyhole,
+  Mic,
   Play,
   RotateCcw,
   ScanText,
@@ -109,6 +110,17 @@ function initialVideo(): VideoState {
   };
 }
 
+type ReadinessState = {
+  status: "idle" | "checking" | "ready" | "error";
+  camera: string | null;
+  microphone: string | null;
+  message: string | null;
+};
+
+function initialReadiness(): ReadinessState {
+  return { status: "idle", camera: null, microphone: null, message: null };
+}
+
 export function VerificationStudio() {
   const router = useRouter();
 
@@ -129,6 +141,8 @@ export function VerificationStudio() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+
+  const [readiness, setReadiness] = useState<ReadinessState>(initialReadiness);
 
   const cameraRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -153,6 +167,30 @@ export function VerificationStudio() {
     typeof navigator !== "undefined" &&
     Boolean(navigator.mediaDevices?.getUserMedia) &&
     typeof MediaRecorder !== "undefined";
+
+  // The three-step rail is the studio's single source of orientation. A step is
+  // "done" only when its artefact genuinely exists, never on mere interaction.
+  const studioSteps = [
+    {
+      id: 1,
+      label: "Degree Upload",
+      hint: "Private certificate",
+      done: certificate.status === "uploaded" && Boolean(certificate.key),
+    },
+    {
+      id: 2,
+      label: "60s Live Pitch",
+      hint: "Camera-only take",
+      done: Boolean(video.blob) && video.durationSeconds >= MIN_PITCH_SECONDS,
+    },
+    {
+      id: 3,
+      label: "Legal Consent & Submit",
+      hint: "Registrar authorization",
+      done: registrarConsent,
+    },
+  ];
+  const activeStep = studioSteps.findIndex((step) => !step.done);
 
   // Attach the live stream once React has rendered the <video> element.
   useEffect(() => {
@@ -341,6 +379,46 @@ export function VerificationStudio() {
       cleanupStream();
     }
   }, [cleanupStream]);
+
+  async function checkReadiness() {
+    setReadiness({ status: "checking", camera: null, microphone: null, message: null });
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setReadiness({
+        status: "error",
+        camera: null,
+        microphone: null,
+        message:
+          "This browser cannot reach your camera or microphone. Use a recent Chrome, Edge, Safari, or Firefox over HTTPS.",
+      });
+      return;
+    }
+
+    try {
+      const probe = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const camera = devices.find((device) => device.kind === "videoinput")?.label;
+      const microphone = devices.find((device) => device.kind === "audioinput")?.label;
+      probe.getTracks().forEach((track) => track.stop());
+
+      setReadiness({
+        status: "ready",
+        camera: camera || "Camera ready",
+        microphone: microphone || "Microphone ready",
+        message: null,
+      });
+    } catch (error) {
+      const denied = error instanceof DOMException && error.name === "NotAllowedError";
+      setReadiness({
+        status: "error",
+        camera: null,
+        microphone: null,
+        message: denied
+          ? "Camera or microphone access is blocked. Allow both in your browser's site settings, then check again."
+          : "We could not reach your camera or microphone. Close other apps using them and try again.",
+      });
+    }
+  }
 
   async function startRecording() {
     setRecorderError(null);
@@ -539,11 +617,11 @@ export function VerificationStudio() {
     return (
       <Card className="animate-slide-in border-verified-emerald/30 bg-verified-emerald-soft/40">
         <div className="flex items-start gap-4">
-          <span className="grid size-12 shrink-0 animate-check-pop place-items-center rounded-2xl bg-accent-emerald-deep text-white">
+          <span className="grid size-12 shrink-0 animate-check-pop place-items-center rounded-2xl bg-verified-emerald text-white">
             <CheckCircle2 className="size-6" aria-hidden />
           </span>
           <div>
-            <h2 className="font-display text-2xl font-extrabold text-ink-primary">
+            <h2 className="font-display text-2xl font-extrabold text-brand-navy">
               Submitted for review
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">
@@ -564,6 +642,44 @@ export function VerificationStudio() {
   return (
     <div className="space-y-5">
       {submitError ? <Alert tone="error">{submitError}</Alert> : null}
+
+      <Card className="p-4 sm:p-5">
+        <ol className="grid gap-2 sm:grid-cols-3" aria-label="Verification progress">
+          {studioSteps.map((step, index) => {
+            const state = step.done ? "done" : index === activeStep ? "current" : "upcoming";
+            return (
+              <li
+                key={step.id}
+                aria-current={state === "current" ? "step" : undefined}
+                className={cn(
+                  "flex items-start gap-3 rounded-xl border p-3",
+                  state === "done" && "border-verified-emerald/30 bg-verified-emerald-soft/40",
+                  state === "current" && "border-accent-emerald/35 bg-accent-emerald-soft/50",
+                  state === "upcoming" && "border-line bg-surface-canvas",
+                )}
+              >
+                <span
+                  className={cn(
+                    "grid size-8 shrink-0 place-items-center rounded-full border text-xs font-bold",
+                    state === "done" && "border-verified-emerald bg-verified-emerald text-white",
+                    state === "current" &&
+                      "border-accent-emerald/40 bg-surface-card text-accent-emerald-hover",
+                    state === "upcoming" && "border-line bg-surface-card text-ink-muted",
+                  )}
+                >
+                  {step.done ? <CheckCircle2 className="size-4" aria-hidden /> : step.id}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-brand-navy">{step.label}</span>
+                  <span className="mt-0.5 block text-[11px] text-ink-muted">
+                    {state === "done" ? "Complete" : step.hint}
+                  </span>
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      </Card>
 
       <div className="grid gap-5 lg:grid-cols-[0.92fr_1.08fr]">
         {/* ── Certificate ─────────────────────────────────────────────────── */}
@@ -592,7 +708,7 @@ export function VerificationStudio() {
                   <UploadCloud className="size-5" aria-hidden />
                 )}
               </span>
-              <span className="text-sm font-semibold text-ink-primary">
+              <span className="text-sm font-semibold text-brand-navy">
                 {certificate.status === "uploaded"
                   ? certificate.fileName
                   : certificate.status === "uploading"
@@ -696,7 +812,7 @@ export function VerificationStudio() {
             {ocr.status === "completed" && ocr.text ? (
               <div className="mt-2 rounded-xl border border-verified-emerald/25 bg-verified-emerald-soft/50 p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-accent-emerald-hover">Text extracted</p>
+                  <p className="text-xs font-semibold text-emerald-800">Text extracted</p>
                   {ocr.confidence !== null ? (
                     <Badge tone="emerald">{ocr.confidence}% confidence</Badge>
                   ) : null}
@@ -741,6 +857,77 @@ export function VerificationStudio() {
               </Badge>
             }
           />
+
+          <div className="mt-4 rounded-xl border border-line bg-surface-canvas p-3" role="status" aria-live="polite">
+            {readiness.status === "ready" ? (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="flex items-center gap-1.5 text-sm font-semibold text-accent-emerald-hover">
+                    <CheckCircle2 className="size-4" aria-hidden />
+                    Camera &amp; microphone ready
+                  </p>
+                  <p className="mt-0.5 truncate text-[11px] text-ink-muted">
+                    {readiness.camera} · {readiness.microphone}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => void checkReadiness()}
+                >
+                  <RotateCcw className="size-3.5" aria-hidden />
+                  Check again
+                </Button>
+              </div>
+            ) : readiness.status === "checking" ? (
+              <p className="flex items-center gap-2 text-sm font-medium text-ink-muted">
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+                Asking for camera and microphone…
+              </p>
+            ) : readiness.status === "error" ? (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="flex items-center gap-1.5 text-sm font-semibold text-danger">
+                    <AlertTriangle className="size-4" aria-hidden />
+                    Setup check failed
+                  </p>
+                  <p className="mt-0.5 text-[11px] leading-4 text-ink-muted">{readiness.message}</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => void checkReadiness()}
+                >
+                  Try again
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex min-w-0 items-start gap-2.5">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-surface-card text-accent-emerald-hover ring-1 ring-inset ring-line">
+                    <Camera className="size-4" aria-hidden />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-brand-navy">Check your setup first</p>
+                    <p className="mt-0.5 text-[11px] leading-4 text-ink-muted">
+                      A quick camera and microphone test. Nothing is recorded or uploaded.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => void checkReadiness()}
+                >
+                  <Mic className="size-3.5" aria-hidden />
+                  Check camera &amp; microphone
+                </Button>
+              </div>
+            )}
+          </div>
 
           <div className="mt-4 overflow-hidden rounded-2xl bg-studio-obsidian">
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
@@ -902,7 +1089,7 @@ export function VerificationStudio() {
           </div>
 
           <div className="mt-4 rounded-xl border border-line bg-surface-canvas p-3">
-            <p className="flex items-center gap-1.5 text-xs font-semibold text-ink-primary">
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-brand-navy">
               <FileText className="size-3.5 text-accent-emerald-hover" aria-hidden />
               What to cover
             </p>
@@ -913,7 +1100,7 @@ export function VerificationStudio() {
                     {formatPitchDuration(item.startSeconds)}
                   </span>
                   <span>
-                    <span className="font-semibold text-ink-primary">{item.title}:</span>{" "}
+                    <span className="font-semibold text-brand-navy">{item.title}:</span>{" "}
                     {item.prompt}
                   </span>
                 </li>
@@ -945,7 +1132,7 @@ export function VerificationStudio() {
             )}
           </span>
           <div>
-            <p className="text-sm font-semibold text-ink-primary">
+            <p className="text-sm font-semibold text-brand-navy">
               {canFinalize ? "Everything is ready" : "Submission gates"}
             </p>
             <p className="mt-0.5 text-xs text-ink-muted">

@@ -123,7 +123,7 @@ export function SignUpForm() {
         <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-verified-emerald-soft text-verified-emerald">
           <MailCheck className="size-7" aria-hidden />
         </span>
-        <h1 className="mt-5 font-display text-2xl font-extrabold text-ink-primary">
+        <h1 className="mt-5 font-display text-2xl font-extrabold text-brand-navy">
           Confirm your email
         </h1>
         <p className="mt-3 text-sm leading-6 text-ink-muted">
@@ -144,7 +144,7 @@ export function SignUpForm() {
   return (
     <div>
       <p className="eyebrow text-champagne-ink">Create an account</p>
-      <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-ink-primary">
+      <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
         Start with the right profile
       </h1>
       <p className="mt-2 text-sm text-ink-muted">
@@ -175,7 +175,7 @@ export function SignUpForm() {
                 className={cn("size-5", active ? "text-accent-emerald-hover" : "text-ink-muted")}
                 aria-hidden
               />
-              <p className="mt-2 text-sm font-semibold text-ink-primary">{option.label}</p>
+              <p className="mt-2 text-sm font-semibold text-brand-navy">{option.label}</p>
               <p className="mt-0.5 text-[11px] leading-4 text-ink-muted">{option.description}</p>
             </button>
           );
@@ -262,7 +262,7 @@ export function SignUpForm() {
             <button
               type="button"
               onClick={() => setShowPassword((current) => !current)}
-              className="absolute inset-y-0 right-0 grid w-11 place-items-center text-ink-muted transition hover:text-ink-primary"
+              className="absolute inset-y-0 right-0 grid w-11 place-items-center text-ink-muted transition hover:text-brand-navy"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
