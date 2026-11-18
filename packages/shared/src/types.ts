@@ -128,6 +128,7 @@ export interface EmployerCandidateCard {
   industry: Industry | null;
   university_name: string;
   degree_level: DegreeLevel;
+  major_specialization: string | null;
   graduation_year: number;
   experience_years: number;
   is_featured: boolean;
@@ -141,6 +142,8 @@ export interface EmployerCandidateCard {
   email: string | null;
   phone: string | null;
   certificate_r2_key: string | null;
+  /** True until the employer spends a credit to unlock the real certificate. */
+  certificate_locked: boolean;
   total_count: number;
 }
 

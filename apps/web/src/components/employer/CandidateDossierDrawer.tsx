@@ -20,13 +20,13 @@ import { formatPitchDuration } from "@utn/shared";
 import { authFetch, readApiError } from "@/lib/api/client";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ChatThread } from "@/components/chat/chat-thread";
 import {
   SecureCertificateViewer,
   type EmployerViewerIdentity,
 } from "@/components/employer/secure-certificate-viewer";
 import { QuestionChapterPlayer } from "@/components/verification/question-chapter-player";
+import { BlurredCredentialTeaser } from "@/components/employer/BlurredCredentialTeaser";
 import { cn } from "@/lib/utils";
 
 const SLIDE_MS = 320;
@@ -577,39 +577,25 @@ function DossierBody({
               />
             </section>
           ) : (
-            <section
-              className="rounded-2xl border border-accent-gold/35 bg-accent-gold-soft/60 p-4"
-              aria-label="Unlock this candidate"
-            >
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-gold-hover">
-                Confidential dossier
-              </p>
-              <p className="mt-2 text-sm leading-6 text-ink-muted">
-                One credit releases the candidate&rsquo;s name, contact details, signed certificate
-                and direct message thread.
-              </p>
-
+            <section aria-label="Unlock this candidate" className="space-y-3">
               {unlockError ? (
-                <Alert tone="error" title="Unlock failed" className="mt-3">
+                <Alert tone="error" title="Unlock failed">
                   {unlockError}
                 </Alert>
               ) : null}
 
-              <Button
-                variant="emerald"
-                onClick={() => void handleUnlock()}
-                loading={unlocking}
-                className="mt-3 w-full gap-2"
-              >
-                <Unlock className="size-4" aria-hidden />
-                Unlock candidate — 1 credit
-              </Button>
-
-              <p className="mt-2 text-center text-xs text-ink-muted" aria-live="polite">
-                {balance === null
-                  ? "Credit balance unavailable"
-                  : `${balance} credit${balance === 1 ? "" : "s"} remaining`}
-              </p>
+              <BlurredCredentialTeaser
+                degreeLevel={candidate.degree_level}
+                universityName={candidate.university_name}
+                graduationYear={candidate.graduation_year}
+                major={candidate.major_specialization}
+                credits={balance}
+                unlocking={unlocking}
+                onUnlock={() => void handleUnlock()}
+                onTopUp={() => {
+                  window.location.href = "/employer/billing";
+                }}
+              />
             </section>
           )}
 
