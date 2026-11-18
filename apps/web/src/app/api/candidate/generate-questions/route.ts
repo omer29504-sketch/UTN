@@ -20,9 +20,9 @@ const PER_QUESTION_SECONDS = 30;
 
 const SYSTEM_PROMPT = `You are an academic assessment designer for a verified talent platform.
 
-Given a candidate's degree, major/specialization, university, and sanitized academic keywords
-extracted from their degree certificate, generate exactly 4 sharp, domain-specific interview
-assessment questions. Return ONLY a JSON object with this exact shape:
+Given a candidate's degree, major/specialization, university, industry, and a short
+professional description/headline they provided, generate exactly 4 sharp, domain-specific
+interview assessment questions. Return ONLY a JSON object with this exact shape:
 
 {
   "questions": [
@@ -96,9 +96,9 @@ function disciplineOf(major: string, keywords: string[]): string {
   return "general";
 }
 
-function fallbackQuestions(degree: string, major: string, university: string, keywords: string[]): string[] {
-  const d = disciplineOf(major, keywords);
-  const kw = keywords.slice(0, 3).join(", ") || major;
+function fallbackQuestions(degree: string, major: string, university: string, industry: string, description: string, keywords: string[]): string[] {
+  const d = disciplineOf(major, [industry, description, ...keywords]);
+  const kw = (description || keywords.slice(0, 3).join(", ") || major).slice(0, 80);
   const templates: Record<string, [string, string, string, string]> = {
     computing: [
       `In 30 seconds, explain the core data structures or algorithms from your ${major} studies at ${university} that you rely on most, and why.`,
@@ -288,6 +288,8 @@ export async function POST(request: Request) {
   const major = (profile.major_specialization as string | null)?.trim();
   const degree = String(profile.degree_level);
   const university = String(profile.university_name);
+  const industry = (profile.industry as string | null)?.trim() || "";
+  const description = (profile.headline as string | null)?.trim() || "";
   if (!major) {
     return apiError(
       422,
@@ -323,16 +325,24 @@ export async function POST(request: Request) {
     }
   }
 
-  const sanitizedOcrKeywords = sanitizeAcademicKeywords(media.ocr_extracted_text ?? "");
+  // Questions are derived from the specialization + the candidate's own description,
+  // not from the certificate (which may be a template/scan). OCR text is ignored.
   const clientKeywords = sanitizeAcademicKeywords(parsed.data.keywords ?? []);
-  const keywords = Array.from(new Set([...sanitizedOcrKeywords, ...clientKeywords]));
+  const keywords = Array.from(
+    new Set([
+      ...sanitizeAcademicKeywords([major, description, industry].join(" ")),
+      ...clientKeywords,
+    ]),
+  );
 
   const prompt = `Candidate degree: ${degree}
 Major/specialization: ${major}
 University: ${university}
-Sanitized academic keywords from certificate OCR: ${keywords.join(", ") || "(none)"}
+Industry: ${industry || "(not specified)"}
+Candidate description/headline: ${description || "(not provided)"}
+Sanitized academic keywords: ${keywords.join(", ") || "(none)"}
 
-Generate the 4 assessment questions now.`;
+Generate the 4 assessment questions now. Base the questions on the specialization and the candidate's description, not on any certificate text.`;
 
   let questionTexts: string[] | null = null;
   let source = "fallback";
@@ -352,7 +362,7 @@ Generate the 4 assessment questions now.`;
     }
   }
   if (!questionTexts) {
-    questionTexts = fallbackQuestions(degree, major, university, keywords);
+    questionTexts = fallbackQuestions(degree, major, university, industry, description, keywords);
     source = "fallback";
   }
 
