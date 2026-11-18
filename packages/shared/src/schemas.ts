@@ -216,6 +216,13 @@ export const candidateVerificationSubmissionSchema = z.object({
     contentType: z.enum(["application/pdf", "image/jpeg", "image/png"]),
     sizeBytes: z.coerce.number().int().positive().max(MAX_UPLOAD_BYTES["private-credentials"]),
   }),
+  cv: z
+    .object({
+      r2Key: z.string().trim().min(1).max(512),
+      contentType: z.literal("application/pdf"),
+      sizeBytes: z.coerce.number().int().positive().max(MAX_UPLOAD_BYTES["private-credentials"]),
+    })
+    .optional(),
   video: z.object({
     r2Key: z.string().trim().min(1).max(512),
     durationSeconds: videoDurationSchema,

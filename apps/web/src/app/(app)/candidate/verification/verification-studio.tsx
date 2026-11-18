@@ -52,6 +52,15 @@ type CertificateState = {
   message: string | null;
 };
 
+type CvState = {
+  status: "idle" | "uploading" | "uploaded" | "error";
+  key: string | null;
+  contentType: string;
+  sizeBytes: number;
+  fileName: string;
+  message: string | null;
+};
+
 type OcrState = {
   status: "idle" | "running" | "completed" | "skipped" | "empty" | "failed";
   text: string | null;
@@ -99,6 +108,9 @@ function certificateType(file: File): string | null {
 function initialCertificate(): CertificateState {
   return { status: "idle", key: null, contentType: "", sizeBytes: 0, fileName: "", message: null };
 }
+function initialCv(): CvState {
+  return { status: "idle", key: null, contentType: "", sizeBytes: 0, fileName: "", message: null };
+}
 function initialOcr(): OcrState {
   return { status: "idle", text: null, message: null, confidence: null };
 }
@@ -118,7 +130,8 @@ export function VerificationStudio({
 }) {
   const router = useRouter();
 
-  const [certificate, setCertificate] = useState<CertificateState>(initialCertificate);
+  const [certificate, setCertificate] = useState<CertificateState>(initialCertificate());
+  const [cv, setCv] = useState<CvState>(initialCv());
   const [ocr, setOcr] = useState<OcrState>(initialOcr);
   const [video, setVideo] = useState<VideoState>(initialVideo);
 
@@ -247,6 +260,42 @@ export function VerificationStudio({
     } catch (error) {
       setCertificate((c) => ({ ...c, status: "error", key: null, message: error instanceof Error ? error.message : "The upload failed." }));
       setOcr(initialOcr());
+    }
+  }
+
+  async function handleCv(file: File) {
+    setSubmitError(null);
+    const contentType = "application/pdf";
+    const maxUploadBytes = MAX_UPLOAD_BYTES["private-credentials"];
+    if (file.type && normalizeMime(file.type) !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      setCv({ ...initialCv(), status: "error", message: "Use a PDF file." });
+      return;
+    }
+    if (file.size > maxUploadBytes) {
+      setCv({ ...initialCv(), status: "error", message: `That file is ${formatBytes(file.size)}. Max is ${formatBytes(maxUploadBytes)}.` });
+      return;
+    }
+
+    setCv({ status: "uploading", key: null, contentType, sizeBytes: file.size, fileName: file.name, message: null });
+
+    try {
+      const response = await authFetch("/api/storage/presign", {
+        method: "POST",
+        body: JSON.stringify({ intent: "upload", bucket: "private-credentials", contentType, contentLength: file.size, fileName: file.name }),
+      });
+      if (!response.ok) throw new Error(await readApiError(response));
+      const presigned = (await response.json()) as PresignUploadResponse;
+
+      const upload = await fetch(presigned.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": contentType },
+        body: file,
+      });
+      if (!upload.ok) throw new Error("The secure upload failed. Check your connection and try again.");
+
+      setCv((c: CvState) => ({ ...c, status: "uploaded", key: presigned.key, message: null }));
+    } catch (error) {
+      setCv((c: CvState) => ({ ...c, status: "error", key: null, message: error instanceof Error ? error.message : "The upload failed." }));
     }
   }
 
@@ -509,6 +558,9 @@ export function VerificationStudio({
         method: "POST",
         body: JSON.stringify({
           certificate: { r2Key: certificate.key, contentType: certificate.contentType, sizeBytes: certificate.sizeBytes },
+          cv: cv.key
+            ? { r2Key: cv.key, contentType: "application/pdf", sizeBytes: cv.sizeBytes }
+            : undefined,
           video: { r2Key: presigned.key, durationSeconds: total, contentType: video.mimeType, sizeBytes: video.blob.size },
           videoSessionQuestions: sessionQuestions,
           certificateVerificationRef: verificationRef.trim() || null,
@@ -592,6 +644,21 @@ export function VerificationStudio({
               <input id="certificate" type="file" className="sr-only" accept="application/pdf,image/jpeg,image/png" disabled={certificate.status === "uploading"} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void handleCertificate(f); }} />
             </label>
             {certificate.message ? <Alert tone="error" className="mt-3">{certificate.message}</Alert> : null}
+          </div>
+
+          <div className="mt-4">
+            <label htmlFor="cv" className={cn("flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-4 text-center transition-colors duration-300", cv.status === "uploaded" ? "border-verified-emerald/40 bg-verified-emerald-soft/40" : "border-line bg-surface-canvas hover:border-accent-emerald/40 hover:bg-accent-emerald-soft/30")}>
+              <span className="grid size-9 place-items-center rounded-xl bg-surface-card text-accent-emerald-hover shadow-sm">
+                {cv.status === "uploading" ? <Loader2 className="size-4 animate-spin" aria-hidden /> : cv.status === "uploaded" ? <FileCheck2 className="size-4 text-verified-emerald" aria-hidden /> : <UploadCloud className="size-4" aria-hidden />}
+              </span>
+              <span className="text-sm font-semibold text-brand-navy">{cv.status === "uploaded" ? cv.fileName : cv.status === "uploading" ? "Uploading CV…" : "Add your PDF CV (optional)"}</span>
+              <span className="text-xs text-ink-muted">{cv.status === "uploaded" ? `${formatBytes(cv.sizeBytes)} · Uploaded` : "PDF only · max 10 MB · private storage"}</span>
+              <input id="cv" type="file" className="sr-only" accept="application/pdf" disabled={cv.status === "uploading"} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void handleCv(f); }} />
+            </label>
+            {cv.message ? <Alert tone="error" className="mt-3">{cv.message}</Alert> : null}
+            {cv.status === "uploaded" ? (
+              <button type="button" className="mt-2 text-xs text-ink-muted underline" onClick={() => setCv(initialCv())}>Remove CV</button>
+            ) : null}
           </div>
 
           <div className="mt-5 space-y-4">

@@ -566,6 +566,15 @@ function DossierBody({
                 <SecureCertificateViewer
                   candidateId={candidate.candidate_id}
                   employer={employer}
+                  documentKind="certificate"
+                />
+              ) : null}
+
+              {candidate.cv_r2_key ? (
+                <SecureCertificateViewer
+                  candidateId={candidate.candidate_id}
+                  employer={employer}
+                  documentKind="cv"
                 />
               ) : null}
 

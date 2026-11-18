@@ -60,10 +60,12 @@ const TOS_ACCEPTED_EVENT = "utn:employer-tos-accepted";
 export function SecureCertificateViewer({
   candidateId,
   employer,
+  documentKind = "certificate",
   className,
 }: {
   candidateId: string;
   employer: EmployerViewerIdentity;
+  documentKind?: "certificate" | "cv";
   className?: string;
 }) {
   const [tosAcceptedAt, setTosAcceptedAt] = useState<string | null>(employer.tosAcceptedAt);
@@ -307,7 +309,11 @@ export function SecureCertificateViewer({
 
     void (async () => {
       try {
-        const response = await authFetch(`/api/employer/certificates/${candidateId}/stream`, {
+        const streamUrl =
+          documentKind === "cv"
+            ? `/api/employer/certificates/${candidateId}/stream?kind=cv`
+            : `/api/employer/certificates/${candidateId}/stream`;
+        const response = await authFetch(streamUrl, {
           method: "GET",
           cache: "no-store",
         });

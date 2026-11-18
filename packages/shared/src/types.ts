@@ -46,6 +46,7 @@ export interface VideoSessionQuestion {
 export interface CandidateMedia {
   candidate_id: string;
   certificate_r2_key: string | null;
+  cv_r2_key: string | null;
   video_r2_key: string | null;
   video_duration_seconds: number | null;
   ocr_extracted_text: string | null;
@@ -142,6 +143,8 @@ export interface EmployerCandidateCard {
   email: string | null;
   phone: string | null;
   certificate_r2_key: string | null;
+  /** Optional PDF CV, masked until the candidate is unlocked. */
+  cv_r2_key: string | null;
   /** True until the employer spends a credit to unlock the real certificate. */
   certificate_locked: boolean;
   total_count: number;

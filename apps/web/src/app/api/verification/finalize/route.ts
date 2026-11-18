@@ -39,11 +39,14 @@ export async function POST(request: Request) {
     });
   }
 
-  const { certificate, video, certificateVerificationRef, registrarConsentGiven } = parsed.data;
+  const { certificate, video, cv, certificateVerificationRef, registrarConsentGiven } = parsed.data;
   const userId = auth.caller.userId;
 
   if (!isPrivateCredentialKey(certificate.r2Key, userId)) {
     return apiError(400, "invalid_certificate_key", "The certificate key is not yours.");
+  }
+  if (cv && !isPrivateCredentialKey(cv.r2Key, userId)) {
+    return apiError(400, "invalid_cv_key", "The CV key is not yours.");
   }
   if (!isPitchVideoKey(video.r2Key, userId)) {
     return apiError(400, "invalid_video_key", "The pitch video key is not yours.");
@@ -73,9 +76,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const [certificateHead, videoHead] = await Promise.all([
+    const [certificateHead, videoHead, cvHead] = await Promise.all([
       headStorageObject({ bucket: "private-credentials", key: certificate.r2Key }),
       headStorageObject({ bucket: "pitch-videos", key: video.r2Key }),
+      cv
+        ? headStorageObject({ bucket: "private-credentials", key: cv.r2Key })
+        : Promise.resolve(null),
     ]);
 
     if (!certificateHead) {
@@ -83,6 +89,9 @@ export async function POST(request: Request) {
     }
     if (!videoHead) {
       return apiError(400, "video_missing", "The pitch video upload did not complete.");
+    }
+    if (cv && !cvHead) {
+      return apiError(400, "cv_missing", "The CV upload did not complete.");
     }
 
     if (certificateHead.contentLength !== certificate.sizeBytes) {
@@ -119,6 +128,7 @@ export async function POST(request: Request) {
       {
         candidate_id: userId,
         certificate_r2_key: certificate.r2Key,
+        cv_r2_key: cv ? cv.r2Key : null,
         video_r2_key: video.r2Key,
         video_duration_seconds: video.durationSeconds,
         submitted_at: submittedAt,

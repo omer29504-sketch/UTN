@@ -97,6 +97,11 @@ export default async function AdminReviewDetailPage({
     media?.certificate_r2_key ?? null,
     300,
   );
+  const cvUrl = await signObject(
+    "private-credentials",
+    media?.cv_r2_key ?? null,
+    300,
+  );
   const videoUrl = await signObject("pitch-videos", media?.video_r2_key ?? null, 600);
   const isPdf = (media?.certificate_r2_key ?? "").toLowerCase().endsWith(".pdf");
   const storageReady = isR2Configured();
@@ -258,6 +263,17 @@ export default async function AdminReviewDetailPage({
                 />
               )}
             </div>
+
+            {cvUrl ? (
+              <div className="mt-4 rounded-xl border border-line bg-surface-canvas p-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">PDF CV</p>
+                <iframe
+                  title={`CV for ${profile.full_name}`}
+                  src={cvUrl}
+                  className="mt-2 h-[320px] w-full rounded-xl border border-line bg-white"
+                />
+              </div>
+            ) : null}
           </Card>
 
           <RegistrarVerificationPanel

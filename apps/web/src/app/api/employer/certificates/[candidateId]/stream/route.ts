@@ -54,6 +54,8 @@ export async function GET(request: Request, context: { params: Promise<{ candida
     return apiError(400, "invalid_candidate", "The candidate identifier is invalid.");
   }
 
+  const kind = new URL(request.url).searchParams.get("kind") === "cv" ? "cv" : "certificate";
+
   if (!isR2Configured()) {
     return apiError(503, "storage_not_configured", "Object storage is not configured.");
   }
@@ -109,18 +111,20 @@ export async function GET(request: Request, context: { params: Promise<{ candida
 
     const { data: media, error: mediaError } = await admin
       .from("candidate_media")
-      .select("certificate_r2_key")
+      .select("certificate_r2_key, cv_r2_key")
       .eq("candidate_id", candidateId)
       .maybeSingle();
 
     if (mediaError) throw mediaError;
 
-    const storageKey = media?.certificate_r2_key;
+    const storageKey = kind === "cv" ? media?.cv_r2_key : media?.certificate_r2_key;
     if (!storageKey) {
       return apiError(
         404,
-        "certificate_not_found",
-        "This candidate has not uploaded a certificate.",
+        kind === "cv" ? "cv_not_found" : "certificate_not_found",
+        kind === "cv"
+          ? "This candidate has not uploaded a CV."
+          : "This candidate has not uploaded a certificate.",
       );
     }
 
@@ -140,7 +144,7 @@ export async function GET(request: Request, context: { params: Promise<{ candida
     const { error: auditError } = await admin.from("document_access_logs").insert({
       employer_id: employerId,
       candidate_id: candidateId,
-      event_type: "certificate_viewed",
+      event_type: kind === "cv" ? "cv_viewed" : "certificate_viewed",
       ip_address: fingerprint.ip,
       user_agent: fingerprint.userAgent,
       watermark_signature: watermarkSignature,
