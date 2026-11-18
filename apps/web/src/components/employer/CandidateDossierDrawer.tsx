@@ -26,6 +26,7 @@ import {
   SecureCertificateViewer,
   type EmployerViewerIdentity,
 } from "@/components/employer/secure-certificate-viewer";
+import { QuestionChapterPlayer } from "@/components/verification/question-chapter-player";
 import { cn } from "@/lib/utils";
 
 const SLIDE_MS = 320;
@@ -276,7 +277,6 @@ function DossierBody({
   onUnlocked: (candidateId: string, balance: number | null) => void;
 }) {
   const detailsId = useId();
-  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const [unlocked, setUnlocked] = useState(candidate.is_unlocked);
   const [balance, setBalance] = useState<number | null>(credits);
@@ -335,11 +335,6 @@ function DossierBody({
       cancelled = true;
     };
   }, [candidate.video_r2_key]);
-
-  useEffect(() => {
-    if (!autoPlay || !videoUrl) return;
-    void videoRef.current?.play().catch(() => undefined);
-  }, [autoPlay, videoUrl]);
 
   async function handleUnlock() {
     setUnlocking(true);
@@ -439,17 +434,16 @@ function DossierBody({
         <div className="space-y-5">
           {/* Primary media stage */}
           <section aria-label="Pitch video">
-            <div className="overflow-hidden rounded-2xl border border-line bg-studio-obsidian">
-              {videoUrl ? (
-                <video
-                  ref={videoRef}
-                  src={videoUrl}
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="aspect-video w-full bg-black"
-                />
-              ) : (
+            {videoUrl ? (
+              <QuestionChapterPlayer
+                src={videoUrl}
+                questions={candidate.video_session_questions ?? null}
+                durationSeconds={candidate.video_duration_seconds}
+                title={`Assessment video for ${displayName}`}
+                autoPlay={autoPlay}
+              />
+            ) : (
+              <div className="overflow-hidden rounded-2xl border border-line bg-studio-obsidian">
                 <div className="relative grid aspect-video w-full place-items-center bg-[radial-gradient(circle_at_50%_18%,#1E2740_0%,#0E1424_52%,#070B16_100%)]">
                   {videoLoading ? (
                     <span className="flex items-center gap-2 text-sm text-white/70">
@@ -465,8 +459,8 @@ function DossierBody({
                     <span className="text-xs text-white/60">No pitch video submitted</span>
                   )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
             {videoError ? (
               <p className="mt-2 text-xs text-danger" role="status">
                 {videoError}

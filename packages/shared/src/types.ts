@@ -15,6 +15,7 @@ export interface CandidateProfile {
   headline: string | null;
   industry: Industry | null;
   university_name: string;
+  major_specialization: string | null;
   degree_level: DegreeLevel;
   graduation_year: number;
   experience_years: number;
@@ -29,12 +30,29 @@ export interface CandidateProfile {
   updated_at: string;
 }
 
+export interface VideoSessionQuestion {
+  /** 1-based question index inside the 4-question assessment. */
+  index: 1 | 2 | 3 | 4;
+  /** Certificate-derived assessment question shown to the candidate. */
+  question_text: string;
+  /** Allocated seconds for this question. Sums to the session total (120). */
+  allocated_seconds: number;
+  /** Exact second offset inside the single recorded video where answering started. */
+  start_offset_seconds: number;
+  /** Exact second offset inside the single recorded video where answering finished. */
+  end_offset_seconds: number;
+}
+
 export interface CandidateMedia {
   candidate_id: string;
   certificate_r2_key: string | null;
   video_r2_key: string | null;
   video_duration_seconds: number | null;
   ocr_extracted_text: string | null;
+  /** Generated 4-question assessment with recorded chapter timestamps. */
+  video_session_questions: VideoSessionQuestion[] | null;
+  video_total_duration_seconds: number | null;
+  questions_generated_at: string | null;
   submitted_at: string | null;
 }
 
@@ -115,6 +133,8 @@ export interface EmployerCandidateCard {
   is_featured: boolean;
   video_r2_key: string | null;
   video_duration_seconds: number | null;
+  /** Certificate-generated 4-question assessment chapters. */
+  video_session_questions: VideoSessionQuestion[] | null;
   is_unlocked: boolean;
   /** Contact/document fields are null while locked. */
   full_name: string | null;

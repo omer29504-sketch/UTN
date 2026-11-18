@@ -40,6 +40,7 @@ export const RATE_LIMITS = {
   authProvision: { name: "auth-provision", limit: 10, windowSeconds: 60 },
   /** Tesseract is CPU-heavy: six reads per candidate every five minutes. */
   ocr: { name: "verification-ocr", limit: 6, windowSeconds: 300 },
+  generateQuestions: { name: "verification-generate-questions", limit: 6, windowSeconds: 300 },
   finalize: { name: "verification-finalize", limit: 8, windowSeconds: 300 },
   presign: { name: "storage-presign", limit: 60, windowSeconds: 60 },
   unlock: { name: "employer-unlock", limit: 30, windowSeconds: 60 },

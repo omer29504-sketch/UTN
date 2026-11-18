@@ -60,6 +60,23 @@ export const MIN_PITCH_SECONDS = 60;
 /** Hard cap: recording stops automatically. */
 export const MAX_PITCH_SECONDS = 120;
 
+// ── 4-question certificate-driven video assessment ───────────────────────────
+/** Total duration of the guided 4-question assessment, in seconds. */
+export const VIDEO_SESSION_TOTAL_SECONDS = 120;
+/** Number of assessment questions generated from the certificate. */
+export const VIDEO_SESSION_QUESTION_COUNT = 4;
+/** Default allocation per question (sums to the session total). */
+export const VIDEO_SESSION_QUESTION_SECONDS = 30;
+/** Ordered category labels for the 4 generated questions. */
+export const VIDEO_SESSION_QUESTION_CATEGORIES = [
+  "Core Academic Foundation",
+  "Technical / Domain Problem-Solving",
+  "Applied Project or Analytical Thinking",
+  "Career Readiness & Employer Value",
+] as const;
+export type VideoSessionQuestionCategory =
+  (typeof VIDEO_SESSION_QUESTION_CATEGORIES)[number];
+
 export const PITCH_VIDEO_SPEC = {
   width: 1280,
   height: 720,

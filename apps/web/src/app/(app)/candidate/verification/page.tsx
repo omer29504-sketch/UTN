@@ -257,7 +257,7 @@ export default async function CandidateVerificationPage() {
             </Alert>
           ) : null}
 
-          <VerificationStudio />
+          <VerificationStudio profile={profile} initialQuestions={media?.video_session_questions ?? null} />
 
           {status === "rejected" ? (
             <div className="flex items-center gap-2 text-xs text-ink-muted">

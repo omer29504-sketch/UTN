@@ -166,6 +166,84 @@ export function maskCandidateName(candidateId: string, prefix = "Verified Candid
   return `${prefix} #${String(hash % 10_000).padStart(4, "0")}`;
 }
 
+// ── 4-question assessment helpers ────────────────────────────────────────────
+
+/**
+ * Returns the index (0-based) of the question the candidate is currently
+ * answering for the given playback time, or -1 when outside any chapter.
+ */
+export function findActiveQuestionIndex(
+  questions: readonly { start_offset_seconds: number; end_offset_seconds: number }[],
+  currentTime: number,
+): number {
+  if (!questions || questions.length === 0) return -1;
+  for (let i = 0; i < questions.length; i += 1) {
+    const q = questions[i]!;
+    if (currentTime >= q.start_offset_seconds && currentTime < q.end_offset_seconds) {
+      return i;
+    }
+  }
+  // Past the last chapter: highlight the last question.
+  const last = questions[questions.length - 1]!;
+  if (currentTime >= last.end_offset_seconds) return questions.length - 1;
+  return -1;
+}
+
+/** 0 → 1 progress within a single question chapter. */
+export function getQuestionProgress(
+  question: { start_offset_seconds: number; allocated_seconds: number },
+  currentTime: number,
+): number {
+  const elapsed = currentTime - question.start_offset_seconds;
+  const total = Math.max(1, question.allocated_seconds);
+  return Math.min(1, Math.max(0, elapsed / total));
+}
+
+/**
+ * Strips personal identifiers and non-academic tokens from OCR output before
+ * it reaches any external model. Returns a de-duplicated list of lowercase
+ * keywords, capped at 40.
+ */
+export function sanitizeAcademicKeywords(input: unknown): string[] {
+  const raw = Array.isArray(input)
+    ? input
+    : typeof input === "string"
+      ? input.split(/[^A-Za-z0-9]+/)
+      : [];
+  const blocked = new Set([
+    "the",
+    "and",
+    "for",
+    "with",
+    "this",
+    "that",
+    "from",
+    "university",
+    "certificate",
+    "diploma",
+    "degree",
+    "transcript",
+    "student",
+    "name",
+  ]);
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const token of raw) {
+    const clean = String(token).trim().toLowerCase();
+    if (!clean) continue;
+    // Drop anything that looks like an ID, email, URL, or numeric token.
+    if (/[0-9@:/]/.test(clean)) continue;
+    if (clean.length < 3 || clean.length > 40) continue;
+    if (!/^[a-z][a-z-]*$/.test(clean)) continue;
+    if (blocked.has(clean)) continue;
+    if (seen.has(clean)) continue;
+    seen.add(clean);
+    out.push(clean);
+    if (out.length >= 40) break;
+  }
+  return out;
+}
+
 export function formatBytes(bytes: number): string {
   if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
   const units = ["B", "KB", "MB", "GB"] as const;

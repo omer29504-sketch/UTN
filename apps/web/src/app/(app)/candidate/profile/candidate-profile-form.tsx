@@ -24,6 +24,7 @@ type FormValues = {
   headline: string;
   industry: Industry | "";
   universityName: string;
+  majorSpecialization: string;
   degreeLevel: DegreeLevel;
   graduationYear: string;
   experienceYears: string;
@@ -38,6 +39,7 @@ function initialValues(profile: CandidateProfile | null, defaultName: string | n
     headline: profile?.headline ?? "",
     industry: (profile?.industry as Industry | null) ?? "",
     universityName: profile?.university_name ?? "",
+    majorSpecialization: profile?.major_specialization ?? "",
     degreeLevel: (profile?.degree_level as DegreeLevel | undefined) ?? "Bachelor's Degree",
     graduationYear: String(profile?.graduation_year ?? new Date().getFullYear()),
     experienceYears: String(profile?.experience_years ?? 0),
@@ -76,6 +78,7 @@ export function CandidateProfileForm({
       headline: values.headline || undefined,
       industry: values.industry || undefined,
       universityName: values.universityName,
+      majorSpecialization: values.majorSpecialization,
       degreeLevel: values.degreeLevel,
       graduationYear: values.graduationYear,
       experienceYears: values.experienceYears,
@@ -103,6 +106,7 @@ export function CandidateProfileForm({
         headline: parsed.data.headline ?? null,
         industry: parsed.data.industry ?? null,
         university_name: parsed.data.universityName,
+        major_specialization: parsed.data.majorSpecialization,
         degree_level: parsed.data.degreeLevel,
         graduation_year: parsed.data.graduationYear,
         experience_years: parsed.data.experienceYears,
@@ -158,6 +162,22 @@ export function CandidateProfileForm({
           />
         </Field>
       </div>
+
+      <Field
+        label="Major / specialization"
+        htmlFor="majorSpecialization"
+        error={errors.majorSpecialization}
+        hint="Used to generate your 4 assessment questions. Be specific (e.g. Software Engineering)."
+        required
+      >
+        <Input
+          id="majorSpecialization"
+          value={values.majorSpecialization}
+          onChange={(event) => update("majorSpecialization", event.target.value)}
+          placeholder="Software Engineering"
+          aria-invalid={Boolean(errors.majorSpecialization)}
+        />
+      </Field>
 
       <Field
         label="Headline"

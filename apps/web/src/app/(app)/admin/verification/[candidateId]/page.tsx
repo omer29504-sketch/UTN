@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader } from "@/components/ui/card";
 import { TopographicHeroBg } from "@/components/ui/TopographicHeroBg";
 import { VerificationBadge } from "@/components/verification-badge";
+import { QuestionChapterPlayer } from "@/components/verification/question-chapter-player";
 import { AdminDecisionPanel } from "../admin-decision-panel";
 import { RegistrarVerificationPanel } from "./registrar-verification-panel";
 
@@ -302,11 +303,11 @@ export default async function AdminReviewDetailPage({
             />
             <div className="mt-4">
               {videoUrl ? (
-                <video
+                <QuestionChapterPlayer
                   src={videoUrl}
-                  controls
-                  playsInline
-                  className="aspect-video w-full rounded-xl border border-studio-obsidian bg-studio-obsidian"
+                  questions={media?.video_session_questions ?? null}
+                  durationSeconds={media?.video_duration_seconds ?? null}
+                  title={`Assessment video for ${profile.full_name}`}
                 />
               ) : (
                 <Alert tone="warning" title="No playable pitch">

@@ -43,6 +43,13 @@ export const env = {
   get stripePublishableKey() {
     return publicStripePublishableKey;
   },
+  /** Optional LLM providers for certificate-driven assessment question generation. */
+  get groqApiKey() {
+    return read("GROQ_API_KEY");
+  },
+  get geminiApiKey() {
+    return read("GEMINI_API_KEY");
+  },
   /** Optional distributed rate-limit backend (Upstash Redis REST API). */
   get upstashRedisRestUrl() {
     return read("UPSTASH_REDIS_REST_URL");

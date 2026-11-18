@@ -11,6 +11,9 @@ import {
   PITCH_UPLOAD_MIME_TYPES,
   ROLES,
   STORAGE_BUCKET_NAMES,
+  VIDEO_SESSION_QUESTION_COUNT,
+  VIDEO_SESSION_TOTAL_SECONDS,
+  VIDEO_SESSION_QUESTION_SECONDS,
 } from "./constants";
 import { getEmailDomain, isBlockedConsumerDomain } from "./helpers";
 
@@ -48,6 +51,92 @@ export const videoDurationSchema = z.coerce
   .min(MIN_PITCH_SECONDS, `Your pitch must be at least ${MIN_PITCH_SECONDS} seconds.`)
   .max(MAX_PITCH_SECONDS, `Your pitch cannot exceed ${MAX_PITCH_SECONDS} seconds.`);
 
+// ── 4-question certificate-driven video assessment ────────────────────────────
+export const videoSessionQuestionSchema = z
+  .object({
+    index: z.union([
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+      z.literal(4),
+    ]),
+    question_text: z.string().trim().min(8, "Question text is required.").max(500),
+    allocated_seconds: z
+      .number()
+      .int()
+      .min(1)
+      .max(VIDEO_SESSION_TOTAL_SECONDS),
+    start_offset_seconds: z.number().min(0).max(VIDEO_SESSION_TOTAL_SECONDS),
+    end_offset_seconds: z.number().min(0).max(VIDEO_SESSION_TOTAL_SECONDS),
+  })
+  .superRefine((value, ctx) => {
+    if (value.end_offset_seconds <= value.start_offset_seconds) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["end_offset_seconds"],
+        message: "End offset must be after the start offset.",
+      });
+    }
+  });
+
+export const videoSessionQuestionsSchema = z
+  .array(videoSessionQuestionSchema)
+  .length(VIDEO_SESSION_QUESTION_COUNT, `Exactly ${VIDEO_SESSION_QUESTION_COUNT} questions are required.`)
+  .superRefine((questions, ctx) => {
+    questions.forEach((q, i) => {
+      if (q.index !== i + 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [i, "index"],
+          message: `Question ${i + 1} must have index ${i + 1}.`,
+        });
+      }
+    });
+
+    const allocatedTotal = questions.reduce((sum, q) => sum + q.allocated_seconds, 0);
+    if (allocatedTotal !== VIDEO_SESSION_TOTAL_SECONDS) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Allocated seconds must sum to ${VIDEO_SESSION_TOTAL_SECONDS} (got ${allocatedTotal}).`,
+      });
+    }
+
+    // Chapters must be contiguous and ordered.
+    for (let i = 0; i < questions.length; i += 1) {
+      const q = questions[i]!;
+      if (i === 0 && q.start_offset_seconds !== 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [i, "start_offset_seconds"],
+          message: "The first question must start at offset 0.",
+        });
+      }
+      if (i > 0 && questions[i - 1]!.end_offset_seconds !== q.start_offset_seconds) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [i, "start_offset_seconds"],
+          message: "Question chapters must be contiguous.",
+        });
+      }
+      if (q.end_offset_seconds - q.start_offset_seconds > q.allocated_seconds + 2) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [i, "end_offset_seconds"],
+          message: "The recorded chapter exceeds its allocated time.",
+        });
+      }
+    }
+
+    const last = questions[questions.length - 1]!;
+    if (last.end_offset_seconds > VIDEO_SESSION_TOTAL_SECONDS) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [questions.length - 1, "end_offset_seconds"],
+        message: `End offset cannot exceed ${VIDEO_SESSION_TOTAL_SECONDS} seconds.`,
+      });
+    }
+  });
+
 export const phoneSchema = z
   .string()
   .trim()
@@ -66,6 +155,11 @@ export const candidateProfileSchema = z.object({
   headline: z.string().trim().max(140).optional(),
   industry: z.enum(INDUSTRIES).optional(),
   universityName: z.string().trim().min(2, "Enter your university.").max(160),
+  majorSpecialization: z
+    .string()
+    .trim()
+    .min(2, "Enter your major or specialization.")
+    .max(120),
   degreeLevel: z.enum(DEGREE_LEVELS),
   graduationYear: z.coerce
     .number()
@@ -128,12 +222,22 @@ export const candidateVerificationSubmissionSchema = z.object({
     contentType: z.enum(PITCH_UPLOAD_MIME_TYPES),
     sizeBytes: z.coerce.number().int().positive().max(MAX_UPLOAD_BYTES["pitch-videos"]),
   }),
+  videoSessionQuestions: videoSessionQuestionsSchema,
   certificateVerificationRef: certificateVerificationRefSchema,
   registrarConsentGiven: registrarConsentGivenSchema,
   registrarConsentAt: z
     .string()
     .datetime({ offset: true, message: "Consent timestamp must be a valid ISO date." })
     .optional(),
+});
+
+export const questionGenerationRequestSchema = z.object({
+  /** Optional client-provided keywords; the server also mines its own OCR text. */
+  keywords: z
+    .array(z.string().trim().min(1).max(40))
+    .max(40)
+    .optional()
+    .default([]),
 });
 
 export const candidateSearchFiltersSchema = z.object({
