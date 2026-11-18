@@ -35,10 +35,13 @@ async function persistOcrText(
   admin: AdminClient,
   userId: string,
   text: string | null,
+  certificateR2Key?: string | null,
 ): Promise<void> {
+  const payload: Record<string, unknown> = { candidate_id: userId, ocr_extracted_text: text };
+  if (certificateR2Key) payload.certificate_r2_key = certificateR2Key;
   const { error } = await admin
     .from("candidate_media")
-    .upsert({ candidate_id: userId, ocr_extracted_text: text }, { onConflict: "candidate_id" });
+    .upsert(payload, { onConflict: "candidate_id" });
 
   if (error) throw error;
 }
@@ -161,7 +164,7 @@ export async function POST(request: Request) {
     // OCR only works on raster images. PDFs stay available for manual admin
     // review; we never imply that an unreadable document was checked.
     if (detected === "application/pdf") {
-      await persistOcrText(admin, userId, null);
+      await persistOcrText(admin, userId, null, requestedKey);
 
       return NextResponse.json({
         status: "skipped",
@@ -171,7 +174,7 @@ export async function POST(request: Request) {
       });
     }
 
-    await persistOcrText(admin, userId, null);
+    await persistOcrText(admin, userId, null, requestedKey);
 
     // Dynamic import keeps the WASM worker out of the Next build graph. The
     // package is declared in serverExternalPackages.
@@ -198,7 +201,7 @@ export async function POST(request: Request) {
       });
     }
 
-    await persistOcrText(admin, userId, text);
+    await persistOcrText(admin, userId, text, requestedKey);
 
     return NextResponse.json({
       status: "completed",
