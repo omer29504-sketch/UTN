@@ -2,7 +2,7 @@
 
 **Report date:** 2026-11-18
 **Repository:** `/home/bannda/Desktop/University Talent Network (UTN)`
-**Commit:** `059f1b5` (main, pushed)
+**Commit:** `985a04c` (main, pushed)
 **Client:** responsive Next.js web app (the Expo client was removed)
 **Backend:** Supabase Cloud project `jecdhhihbtaocbfzlljt`
 **Local URL:** `http://localhost:3000` (LAN `http://192.168.70.72:3000`)
