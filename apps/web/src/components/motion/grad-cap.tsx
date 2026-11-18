@@ -16,10 +16,10 @@ export function GradCap({ className }: { className?: string }) {
         focusable="false"
       >
         {/* Mortarboard */}
-        <path d="M60 20 110 44 60 68 10 44Z" fill="#FFFCF7" />
-        <path d="M60 20 110 44 60 68Z" fill="#E6F6EF" />
+        <path d="M60 20 110 44 60 68 10 44Z" fill="#F2ECDF" />
+        <path d="M60 20 110 44 60 68Z" fill="#D8EDE4" />
         {/* Cap base */}
-        <path d="M30 55v13c0 9.5 13.4 17 30 17s30-7.5 30-17V55L60 68Z" fill="#C9EDE0" />
+        <path d="M30 55v13c0 9.5 13.4 17 30 17s30-7.5 30-17V55L60 68Z" fill="#A9E2D0" />
         <path d="M60 68 90 55v13c0 9.5-13.4 17-30 17Z" fill="#9FE3CE" />
         {/* Center button */}
         <circle cx="60" cy="44" r="3.6" fill="#0E9F6E" />

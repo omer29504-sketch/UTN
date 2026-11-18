@@ -2,66 +2,82 @@ import type { Config } from "tailwindcss";
 import { designTokens } from "@utn/shared/design-tokens";
 
 /**
- * Web "Jewel Atelier" palette.
+ * Web "Midnight Emerald" palette.
  *
- * A warm alabaster canvas, midnight-ink type, champagne hairlines, and four
- * jewel accents — emerald, sapphire, amethyst, and teal — that carry the
- * aurora signature into every surface. The canonical palette in
- * `@utn/shared/design-tokens` is consumed by the shared packages; the web
- * surface keeps its own explicit colour map here so a token change cannot
- * silently recolour the product. Gradients and the aurora live in
- * `globals.css` as custom properties.
+ * The whole product sits on a deep emerald-ink canvas: dark glass cards,
+ * champagne-gold hairlines, warm ivory type, and jewel accents that read like
+ * light passing through cut stone. There is no white surface anywhere except
+ * the warm ivory "paper" reserved for document previews.
+ *
+ * The canonical palette in `@utn/shared/design-tokens` is consumed by the
+ * shared packages; the web surface keeps its own explicit colour map here so a
+ * token change cannot silently recolour the product. Gradients and the aurora
+ * live in `globals.css` as custom properties.
+ *
+ * Text-safe variants exist because a hue cannot be both a bright accent on a
+ * near-black canvas and a fill behind white text. `*-ink`/`*-hover` tokens are
+ * tuned for small type; `*-deep` tokens are tuned for solid fills.
  */
 const colors = {
   brand: {
-    navy: "#070F24",
-    "navy-soft": "#0E1B3D",
-    "navy-line": "#1D2C55",
+    // Deep emerald ink. Also the dark ink used on gold and emerald CTAs.
+    navy: "#04100C",
+    "navy-soft": "#081A14",
+    "navy-line": "#173B31",
   },
   surface: {
-    canvas: "#F7F3EB",
-    card: "#FFFCF7",
-    muted: "#F0E8DA",
-    elevated: "#FFFFFF",
+    canvas: "#06120F",
+    card: "#0A1C17",
+    muted: "#0C231C",
+    elevated: "#0F2A22",
+    // The only light surface left: warm ivory stock for document previews.
+    paper: "#F2ECDF",
   },
   accent: {
-    emerald: "#0E9F6E",
-    "emerald-hover": "#0A7652",
-    "emerald-soft": "#E6F6EF",
+    emerald: "#10B981",
+    // Bright enough for small emerald copy on the dark canvas and soft chips.
+    "emerald-hover": "#34D399",
+    // Solid fill behind white text (4.5:1+).
+    "emerald-deep": "#0B7A57",
+    "emerald-soft": "#0B2A21",
     gold: "#C8A45D",
-    // Deep enough to clear 4.5:1 as small text on ivory, still unmistakably gold.
-    "gold-hover": "#8A6626",
-    "gold-soft": "#F8F0DE",
+    // Champagne, tuned for small gold copy on dark surfaces.
+    "gold-hover": "#E9CF96",
+    "gold-soft": "#2A2110",
     sapphire: "#3B5BFF",
-    "sapphire-ink": "#2E4BE0",
-    "sapphire-soft": "#EAEEFF",
+    "sapphire-ink": "#8FA3FF",
+    "sapphire-soft": "#101A3D",
     amethyst: "#8B5CF6",
-    "amethyst-ink": "#6D3BD1",
-    "amethyst-soft": "#F3EDFF",
+    "amethyst-ink": "#C4B5FD",
+    "amethyst-soft": "#1E1433",
     teal: "#0FB5BA",
-    "teal-soft": "#E4F7F8",
+    "teal-soft": "#0B2A2B",
     rose: "#E2557B",
-    "rose-soft": "#FCEBF0",
+    "rose-soft": "#2E131B",
   },
   verified: {
     emerald: "#0E9F6E",
-    "emerald-soft": "#E6F6EF",
+    "emerald-soft": "#0B2A21",
   },
   studio: {
-    obsidian: "#070B16",
-    "obsidian-soft": "#0E1424",
-    "obsidian-line": "#1E2740",
+    obsidian: "#030A08",
+    "obsidian-soft": "#071310",
+    "obsidian-line": "#122A24",
   },
   ink: {
-    primary: "#151B2E",
-    muted: "#5D6478",
-    inverse: "#FBF8F1",
+    // Warm ivory, never pure white.
+    primary: "#EDE6D6",
+    muted: "#9DB2A8",
+    inverse: "#04100C",
   },
-  line: "#E5DBC9",
-  // Deep enough that validation and error copy clears 4.5:1 on rose-soft.
-  danger: "#C22B3C",
-  // Deep amber so warning copy clears 4.5:1 on the amber-soft chip (#FBF0DA).
-  warning: "#8A5A0B",
+  line: "#1B3A30",
+  // Bright error red that clears 4.5:1 as small text on rose-soft.
+  danger: "#F87171",
+  // Deep fill for destructive buttons carrying white text.
+  "danger-deep": "#B91C1C",
+  // Amber that clears 4.5:1 as small text on warning-soft.
+  warning: "#FBBF24",
+  "warning-soft": "#2A1F0B",
 };
 
 const config: Config = {
@@ -75,16 +91,16 @@ const config: Config = {
         display: ["var(--font-plus-jakarta)", "var(--font-inter)", "sans-serif"],
       },
       boxShadow: {
-        card: "0 1px 2px rgba(7, 15, 36, 0.04), 0 18px 44px -26px rgba(7, 15, 36, 0.26)",
-        floating: "0 28px 80px -28px rgba(7, 15, 36, 0.48)",
-        luxe: "0 1px 2px rgba(7, 15, 36, 0.04), 0 30px 78px -38px rgba(7, 15, 36, 0.34)",
-        "luxe-lg": "0 40px 110px -46px rgba(7, 15, 36, 0.58)",
+        card: "0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 44px -26px rgba(0, 0, 0, 0.7)",
+        floating: "0 28px 80px -28px rgba(0, 0, 0, 0.82)",
+        luxe: "0 1px 2px rgba(0, 0, 0, 0.38), 0 30px 78px -38px rgba(0, 0, 0, 0.78)",
+        "luxe-lg": "0 40px 110px -46px rgba(0, 0, 0, 0.9)",
         "emerald-glow":
-          "0 0 0 1px rgba(14, 159, 110, 0.22), 0 20px 56px -22px rgba(14, 159, 110, 0.55)",
+          "0 0 0 1px rgba(16, 185, 129, 0.28), 0 20px 56px -22px rgba(16, 185, 129, 0.55)",
         "sapphire-glow":
-          "0 0 0 1px rgba(59, 91, 255, 0.2), 0 20px 56px -22px rgba(59, 91, 255, 0.5)",
-        "gold-hairline": "inset 0 0 0 1px rgba(200, 164, 93, 0.38)",
-        "jewel-inner": "inset 0 1px 0 rgba(255, 255, 255, 0.65)",
+          "0 0 0 1px rgba(59, 91, 255, 0.26), 0 20px 56px -22px rgba(59, 91, 255, 0.5)",
+        "gold-hairline": "inset 0 0 0 1px rgba(233, 207, 150, 0.34)",
+        "jewel-inner": "inset 0 1px 0 rgba(255, 255, 255, 0.06)",
       },
       keyframes: {
         marquee: {
@@ -209,12 +225,16 @@ const config: Config = {
       },
       backgroundImage: {
         "hero-grid":
-          "linear-gradient(to right, rgba(226, 232, 240, 0.65) 1px, transparent 1px), linear-gradient(to bottom, rgba(226, 232, 240, 0.65) 1px, transparent 1px)",
-        "jewel-emerald": "linear-gradient(135deg, #0E9F6E 0%, #0FB5BA 55%, #3B5BFF 100%)",
+          "linear-gradient(to right, rgba(157, 178, 168, 0.09) 1px, transparent 1px), linear-gradient(to bottom, rgba(157, 178, 168, 0.09) 1px, transparent 1px)",
+        // Deepened so white button copy clears 4.5:1 across the whole gradient.
+        "jewel-emerald": "linear-gradient(135deg, #0B7A57 0%, #0A757A 55%, #2C46D8 100%)",
         "jewel-gold": "linear-gradient(135deg, #E9CF96 0%, #C8A45D 52%, #A9853F 100%)",
-        "jewel-ink": "linear-gradient(140deg, #070F24 0%, #0E1B3D 58%, #152A5E 100%)",
+        "jewel-ink": "linear-gradient(140deg, #030C09 0%, #071812 52%, #0B2A22 100%)",
         "jewel-halo":
-          "radial-gradient(60% 80% at 20% 10%, rgba(14,159,110,0.16), transparent 65%), radial-gradient(55% 70% at 80% 0%, rgba(59,91,255,0.14), transparent 68%), radial-gradient(45% 60% at 55% 100%, rgba(139,92,246,0.12), transparent 70%)",
+          "radial-gradient(60% 80% at 20% 10%, rgba(16,185,129,0.22), transparent 65%), radial-gradient(55% 70% at 80% 0%, rgba(59,91,255,0.2), transparent 68%), radial-gradient(45% 60% at 55% 100%, rgba(139,92,246,0.18), transparent 70%)",
+      },
+      ringOffsetColor: {
+        DEFAULT: "#06120F",
       },
     },
   },

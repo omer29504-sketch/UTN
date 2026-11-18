@@ -32,7 +32,7 @@ export default function EmployerConfidentialityPage() {
       </Link>
 
       <header className="border-white/12 mt-6 rounded-3xl border bg-jewel-ink p-6 text-white shadow-card sm:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-verified-emerald/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-verified-emerald">
+        <span className="inline-flex items-center gap-2 rounded-full bg-verified-emerald/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-accent-emerald-hover">
           <ShieldCheck className="size-3.5" aria-hidden />
           Version {EMPLOYER_CONFIDENTIALITY_CLAUSE.version}
         </span>
@@ -48,16 +48,16 @@ export default function EmployerConfidentialityPage() {
       <article className="mt-8 space-y-8 rounded-2xl border border-line bg-surface-card p-6 shadow-card sm:p-8">
         {EMPLOYER_CONFIDENTIALITY_CLAUSE.sections.map((section) => (
           <section key={section.heading} className="space-y-2">
-            <h2 className="font-display text-lg font-bold text-brand-navy">{section.heading}</h2>
+            <h2 className="font-display text-lg font-bold text-ink-primary">{section.heading}</h2>
             <p className="text-sm leading-7 text-ink-muted">{section.body}</p>
           </section>
         ))}
 
         <div className="rounded-xl border border-verified-emerald/30 bg-verified-emerald/5 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent-emerald-hover">
             Acknowledgment required
           </p>
-          <p className="mt-2 text-sm leading-6 text-brand-navy">
+          <p className="mt-2 text-sm leading-6 text-ink-primary">
             {EMPLOYER_CONFIDENTIALITY_CHECKBOX_LABEL}
           </p>
         </div>

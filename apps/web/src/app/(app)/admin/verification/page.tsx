@@ -104,7 +104,7 @@ export default async function AdminVerificationQueuePage() {
           <span className="grid size-14 animate-float-slow place-items-center rounded-2xl bg-verified-emerald-soft text-verified-emerald motion-reduce:animate-none">
             <Inbox className="size-7" aria-hidden />
           </span>
-          <h2 className="mt-4 font-display text-xl font-bold text-brand-navy">Queue is clear</h2>
+          <h2 className="mt-4 font-display text-xl font-bold text-ink-primary">Queue is clear</h2>
           <p className="mt-1 max-w-sm text-sm text-ink-muted">
             New candidate submissions will appear here automatically once both media files are
             uploaded and finalized.
@@ -137,7 +137,7 @@ export default async function AdminVerificationQueuePage() {
 
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-display text-base font-bold text-brand-navy">
+                        <p className="font-display text-base font-bold text-ink-primary">
                           {candidate.full_name}
                         </p>
                         <Badge tone="warning">Pending</Badge>
@@ -157,7 +157,7 @@ export default async function AdminVerificationQueuePage() {
                         Certificate
                       </span>
                       {candidate.registrar_consent_given ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-verified-emerald-soft px-2.5 py-1.5 text-[11px] font-medium text-emerald-700">
+                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-verified-emerald-soft px-2.5 py-1.5 text-[11px] font-medium text-accent-emerald-hover">
                           <ShieldCheck className="size-3.5" aria-hidden />
                           Registrar consent
                         </span>

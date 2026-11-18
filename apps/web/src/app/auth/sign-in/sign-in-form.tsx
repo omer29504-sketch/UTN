@@ -76,7 +76,7 @@ export function SignInForm() {
   return (
     <div>
       <p className="eyebrow text-champagne-ink">Welcome back</p>
-      <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
+      <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-ink-primary">
         Sign in to your account
       </h1>
       <p className="mt-2 text-sm text-ink-muted">
@@ -121,7 +121,7 @@ export function SignInForm() {
             <button
               type="button"
               onClick={() => setShowPassword((current) => !current)}
-              className="absolute inset-y-0 right-0 grid w-11 place-items-center text-ink-muted transition hover:text-brand-navy"
+              className="absolute inset-y-0 right-0 grid w-11 place-items-center text-ink-muted transition hover:text-ink-primary"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -150,7 +150,7 @@ export function SignInForm() {
       </p>
 
       <div className="mt-8 rounded-xl border border-line bg-surface-card p-3.5 text-xs text-ink-muted">
-        <p className="font-semibold text-brand-navy">Local demo accounts</p>
+        <p className="font-semibold text-ink-primary">Local demo accounts</p>
         <p className="mt-1">
           Candidate <span className="font-mono">amara.okafor@gmail.com</span> · Employer{" "}
           <span className="font-mono">hiring@northwindlabs.com</span> · Admin{" "}

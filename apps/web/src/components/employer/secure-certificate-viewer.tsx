@@ -522,7 +522,7 @@ export function SecureCertificateViewer({
             <ShieldCheck className="size-4" aria-hidden />
           </span>
           <div>
-            <p className="font-display text-sm font-bold text-brand-navy">
+            <p className="font-display text-sm font-bold text-ink-primary">
               {EMPLOYER_CONFIDENTIALITY_CLAUSE.title}
             </p>
             <p className="mt-0.5 text-xs text-ink-muted">
@@ -540,7 +540,7 @@ export function SecureCertificateViewer({
         >
           {EMPLOYER_CONFIDENTIALITY_CLAUSE.sections.map((section) => (
             <div key={section.heading}>
-              <p className="font-semibold text-brand-navy">{section.heading}</p>
+              <p className="font-semibold text-ink-primary">{section.heading}</p>
               <p className="mt-1 text-ink-muted">{section.body}</p>
             </div>
           ))}
@@ -554,7 +554,7 @@ export function SecureCertificateViewer({
           </Link>
         </div>
 
-        <label className="flex items-start gap-2 text-xs leading-5 text-brand-navy">
+        <label className="flex items-start gap-2 text-xs leading-5 text-ink-primary">
           <input
             type="checkbox"
             checked={tosChecked}
@@ -565,7 +565,7 @@ export function SecureCertificateViewer({
         </label>
 
         {tosError ? (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-danger">{tosError}</p>
+          <p className="rounded-lg bg-accent-rose-soft px-3 py-2 text-xs text-danger">{tosError}</p>
         ) : null}
 
         <button
@@ -597,11 +597,11 @@ export function SecureCertificateViewer({
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-xl bg-verified-emerald-soft text-emerald-700">
+          <span className="grid size-8 place-items-center rounded-xl bg-verified-emerald-soft text-accent-emerald-hover">
             <Lock className="size-4" aria-hidden />
           </span>
           <div>
-            <p className="font-display text-sm font-bold text-brand-navy">
+            <p className="font-display text-sm font-bold text-ink-primary">
               Confidential certificate
             </p>
             <p className="text-[11px] text-ink-muted">
@@ -613,7 +613,7 @@ export function SecureCertificateViewer({
           <button
             type="button"
             onClick={closeViewer}
-            className="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-brand-navy hover:bg-surface-muted"
+            className="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-ink-primary hover:bg-surface-muted"
           >
             Close viewer
           </button>
@@ -660,7 +660,7 @@ export function SecureCertificateViewer({
 
           {status === "error" ? (
             <div className="fixed inset-0 z-30 grid place-items-center bg-studio-obsidian p-6">
-              <p className="max-w-sm text-center text-xs leading-5 text-red-300">
+              <p className="max-w-sm text-center text-xs leading-5 text-danger">
                 {error ?? "Could not display this certificate."}
               </p>
             </div>
@@ -682,7 +682,7 @@ export function SecureCertificateViewer({
       {toast ? (
         <div
           role="alert"
-          className="flex items-start gap-2 rounded-xl border border-danger/30 bg-red-50 px-3 py-2 text-xs font-semibold leading-5 text-danger"
+          className="flex items-start gap-2 rounded-xl border border-danger/30 bg-accent-rose-soft px-3 py-2 text-xs font-semibold leading-5 text-danger"
         >
           <Printer className="mt-0.5 size-4 shrink-0" aria-hidden />
           <span>{toast}</span>
@@ -812,7 +812,7 @@ function AckModal({
         <button
           type="button"
           onClick={onAcknowledge}
-          className="w-full rounded-xl bg-verified-emerald px-4 py-3 text-sm font-bold text-brand-navy transition hover:bg-emerald-400"
+          className="w-full rounded-xl bg-verified-emerald px-4 py-3 text-sm font-bold text-brand-navy transition hover:bg-accent-emerald"
         >
           {CERTIFICATE_REACK_BUTTON_LABEL}
         </button>

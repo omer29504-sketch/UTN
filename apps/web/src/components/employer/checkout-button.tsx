@@ -45,7 +45,8 @@ export function CheckoutButton({ kind, packId, label, highlight }: Props) {
       <Button
         onClick={() => void start()}
         loading={loading}
-        className={`gap-2 ${highlight ? "bg-accent-emerald" : ""}`}
+        variant={highlight ? "emerald" : "primary"}
+        className="gap-2"
       >
         <CreditCard className="size-4" aria-hidden />
         {label}

@@ -75,7 +75,7 @@ export default async function CandidateMessagesPage() {
                     <MessageSquare className="size-5" aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-display text-base font-bold text-brand-navy">
+                    <p className="truncate font-display text-base font-bold text-ink-primary">
                       {row.companies?.company_name ?? "Employer"}
                     </p>
                     <p className="text-xs text-ink-muted">

@@ -66,7 +66,7 @@ export default async function LandingPage() {
       <Navbar />
 
       <main id="main">
-        {/* Hero — engraved security stock fading into the alabaster workspace. */}
+        {/* Hero — engraved security stock fading into the emerald-ink workspace. */}
         <section className="relative isolate overflow-hidden bg-brand-navy pb-44 pt-32 text-white sm:pb-52 sm:pt-40">
           <AuroraRibbons tone="navy" fadeTo="canvas" withTopography intensity="hero" />
 

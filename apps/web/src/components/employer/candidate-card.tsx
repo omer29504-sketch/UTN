@@ -156,7 +156,7 @@ export function CandidateCard({ candidate, companyId, employer }: Props) {
               )}
             </button>
           )}
-          {videoError ? <p className="px-3 py-2 text-xs text-red-300">{videoError}</p> : null}
+          {videoError ? <p className="px-3 py-2 text-xs text-danger">{videoError}</p> : null}
         </div>
       ) : (
         <div className="flex aspect-video items-center justify-center rounded-xl border border-line bg-surface-canvas text-xs text-ink-muted">

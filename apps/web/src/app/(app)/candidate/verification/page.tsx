@@ -52,13 +52,13 @@ function LockedSubmission({
       <Card
         className={
           verified
-            ? "border-verified-emerald/30 bg-gradient-to-br from-white to-verified-emerald-soft/40"
-            : "border-warning/20 bg-gradient-to-br from-white to-amber-50"
+            ? "border-verified-emerald/30 bg-gradient-to-br from-surface-card to-verified-emerald-soft/40"
+            : "border-warning/20 bg-gradient-to-br from-surface-card to-warning-soft"
         }
       >
         <div className="flex items-start gap-4">
           <span
-            className={`grid size-12 shrink-0 place-items-center rounded-2xl text-white ${
+            className={`grid size-12 shrink-0 place-items-center rounded-2xl text-brand-navy ${
               verified ? "bg-verified-emerald" : "bg-warning"
             }`}
           >
@@ -72,7 +72,7 @@ function LockedSubmission({
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-muted">
               Verification status
             </p>
-            <h1 className="mt-1 font-display text-2xl font-extrabold text-brand-navy">
+            <h1 className="mt-1 font-display text-2xl font-extrabold text-ink-primary">
               {verified ? "Your degree is verified" : "Your submission is under review"}
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-muted">
@@ -87,12 +87,12 @@ function LockedSubmission({
           {steps.map((step) => (
             <div
               key={step.label}
-              className="flex items-center gap-2 rounded-xl border border-line bg-white/70 px-3 py-2.5"
+              className="flex items-center gap-2 rounded-xl border border-line bg-surface-card/70 px-3 py-2.5"
             >
               <span
                 className={`grid size-6 shrink-0 place-items-center rounded-full ${
                   step.done
-                    ? "bg-verified-emerald text-white"
+                    ? "bg-accent-emerald-deep text-white"
                     : "bg-surface-muted text-ink-muted ring-1 ring-line"
                 }`}
               >
@@ -102,7 +102,7 @@ function LockedSubmission({
                   <Clock3 className="size-3.5" aria-hidden />
                 )}
               </span>
-              <span className="text-[11px] font-medium leading-4 text-brand-navy">
+              <span className="text-[11px] font-medium leading-4 text-ink-primary">
                 {step.label}
               </span>
             </div>
@@ -125,7 +125,7 @@ function LockedSubmission({
                 className="flex items-center justify-between gap-3 border-b border-line pb-2 last:border-0 last:pb-0"
               >
                 <dt className="text-xs text-ink-muted">{label}</dt>
-                <dd className="text-right text-xs font-semibold text-brand-navy">{value}</dd>
+                <dd className="text-right text-xs font-semibold text-ink-primary">{value}</dd>
               </div>
             ))}
           </dl>
@@ -136,12 +136,12 @@ function LockedSubmission({
           <div className="mt-4 space-y-2">
             <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-canvas p-3">
               <FileCheck2 className="size-4 text-accent-emerald-hover" aria-hidden />
-              <span className="flex-1 text-xs font-medium text-brand-navy">Degree certificate</span>
+              <span className="flex-1 text-xs font-medium text-ink-primary">Degree certificate</span>
               <Badge tone="emerald">Stored</Badge>
             </div>
             <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-canvas p-3">
               <Camera className="size-4 text-accent-emerald-hover" aria-hidden />
-              <span className="flex-1 text-xs font-medium text-brand-navy">
+              <span className="flex-1 text-xs font-medium text-ink-primary">
                 Live pitch · {formatPitchDuration(media?.video_duration_seconds ?? 0)}
               </span>
               <Badge tone="emerald">Stored</Badge>
@@ -201,11 +201,11 @@ export default async function CandidateVerificationPage() {
 
   if (!profile) {
     return (
-      <Card className="border-accent-emerald/20 bg-gradient-to-br from-white to-accent-emerald-soft/40">
+      <Card className="border-accent-emerald/20 bg-gradient-to-br from-surface-card to-accent-emerald-soft/40">
         <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover">
           <ScanFace className="size-6" aria-hidden />
         </span>
-        <h1 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
+        <h1 className="mt-4 font-display text-2xl font-extrabold text-ink-primary">
           Complete your profile first
         </h1>
         <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">
@@ -284,7 +284,7 @@ export default async function CandidateVerificationPage() {
                   className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${
                     review.decision === "verified"
                       ? "bg-verified-emerald-soft text-verified-emerald"
-                      : "bg-red-50 text-danger"
+                      : "bg-accent-rose-soft text-danger"
                   }`}
                 >
                   {review.decision === "verified" ? (
@@ -295,7 +295,7 @@ export default async function CandidateVerificationPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-sm font-semibold capitalize text-brand-navy">
+                    <p className="text-sm font-semibold capitalize text-ink-primary">
                       {review.decision === "verified" ? "Approved" : "Changes requested"}
                     </p>
                     <span className="text-[11px] text-ink-muted">

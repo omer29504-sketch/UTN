@@ -539,11 +539,11 @@ export function VerificationStudio() {
     return (
       <Card className="animate-slide-in border-verified-emerald/30 bg-verified-emerald-soft/40">
         <div className="flex items-start gap-4">
-          <span className="grid size-12 shrink-0 animate-check-pop place-items-center rounded-2xl bg-verified-emerald text-white">
+          <span className="grid size-12 shrink-0 animate-check-pop place-items-center rounded-2xl bg-accent-emerald-deep text-white">
             <CheckCircle2 className="size-6" aria-hidden />
           </span>
           <div>
-            <h2 className="font-display text-2xl font-extrabold text-brand-navy">
+            <h2 className="font-display text-2xl font-extrabold text-ink-primary">
               Submitted for review
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">
@@ -592,7 +592,7 @@ export function VerificationStudio() {
                   <UploadCloud className="size-5" aria-hidden />
                 )}
               </span>
-              <span className="text-sm font-semibold text-brand-navy">
+              <span className="text-sm font-semibold text-ink-primary">
                 {certificate.status === "uploaded"
                   ? certificate.fileName
                   : certificate.status === "uploading"
@@ -696,7 +696,7 @@ export function VerificationStudio() {
             {ocr.status === "completed" && ocr.text ? (
               <div className="mt-2 rounded-xl border border-verified-emerald/25 bg-verified-emerald-soft/50 p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-emerald-800">Text extracted</p>
+                  <p className="text-xs font-semibold text-accent-emerald-hover">Text extracted</p>
                   {ocr.confidence !== null ? (
                     <Badge tone="emerald">{ocr.confidence}% confidence</Badge>
                   ) : null}
@@ -902,7 +902,7 @@ export function VerificationStudio() {
           </div>
 
           <div className="mt-4 rounded-xl border border-line bg-surface-canvas p-3">
-            <p className="flex items-center gap-1.5 text-xs font-semibold text-brand-navy">
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-ink-primary">
               <FileText className="size-3.5 text-accent-emerald-hover" aria-hidden />
               What to cover
             </p>
@@ -913,7 +913,7 @@ export function VerificationStudio() {
                     {formatPitchDuration(item.startSeconds)}
                   </span>
                   <span>
-                    <span className="font-semibold text-brand-navy">{item.title}:</span>{" "}
+                    <span className="font-semibold text-ink-primary">{item.title}:</span>{" "}
                     {item.prompt}
                   </span>
                 </li>
@@ -945,7 +945,7 @@ export function VerificationStudio() {
             )}
           </span>
           <div>
-            <p className="text-sm font-semibold text-brand-navy">
+            <p className="text-sm font-semibold text-ink-primary">
               {canFinalize ? "Everything is ready" : "Submission gates"}
             </p>
             <p className="mt-0.5 text-xs text-ink-muted">

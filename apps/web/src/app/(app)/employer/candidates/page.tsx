@@ -74,7 +74,7 @@ export default async function EmployerCandidatesPage({
         <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15">
           <Building2 className="size-6" aria-hidden />
         </span>
-        <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
+        <h2 className="mt-4 font-display text-2xl font-extrabold text-ink-primary">
           Set up your company first
         </h2>
         <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">
@@ -261,7 +261,7 @@ export default async function EmployerCandidatesPage({
               <div className="flex items-end">
                 <label
                   htmlFor="filter-featured"
-                  className="flex items-center gap-2 text-sm font-semibold text-brand-navy"
+                  className="flex items-center gap-2 text-sm font-semibold text-ink-primary"
                 >
                   <input
                     id="filter-featured"
@@ -281,7 +281,7 @@ export default async function EmployerCandidatesPage({
                 </Button>
                 <Link
                   href="/employer/candidates"
-                  className="inline-flex items-center rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
+                  className="inline-flex items-center rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink-primary hover:bg-surface-muted"
                 >
                   Reset
                 </Link>
@@ -327,7 +327,7 @@ export default async function EmployerCandidatesPage({
           <span className="grid size-14 animate-float-slow place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover motion-reduce:animate-none">
             <Search className="size-6" aria-hidden />
           </span>
-          <p className="text-sm font-semibold text-brand-navy">
+          <p className="text-sm font-semibold text-ink-primary">
             No candidates match these filters yet.
           </p>
           <p className="text-xs text-ink-muted">
@@ -358,7 +358,7 @@ export default async function EmployerCandidatesPage({
                 ),
                 page: String(page - 1),
               }).toString()}`}
-              className="rounded-xl border border-line px-4 py-2 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
+              className="rounded-xl border border-line px-4 py-2 text-sm font-semibold text-ink-primary hover:bg-surface-muted"
             >
               Previous
             </Link>
@@ -374,7 +374,7 @@ export default async function EmployerCandidatesPage({
                 ),
                 page: String(page + 1),
               }).toString()}`}
-              className="rounded-xl border border-line px-4 py-2 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
+              className="rounded-xl border border-line px-4 py-2 text-sm font-semibold text-ink-primary hover:bg-surface-muted"
             >
               Next
             </Link>
@@ -401,8 +401,8 @@ function FilterPill({
       className={cn(
         "inline-flex items-center rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors duration-300",
         active
-          ? "border-accent-emerald/30 bg-accent-emerald-soft text-brand-navy ring-1 ring-inset ring-accent-emerald/15"
-          : "border-line/90 bg-white/70 text-ink-muted backdrop-blur-sm hover:border-accent-gold/40 hover:text-brand-navy",
+          ? "border-accent-emerald/30 bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15"
+          : "border-line/90 bg-surface-card/70 text-ink-muted backdrop-blur-sm hover:border-accent-gold/40 hover:text-ink-primary",
       )}
     >
       {children}

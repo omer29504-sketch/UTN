@@ -135,7 +135,7 @@ export function CompanyForm({
           className="mt-0.5 size-4 rounded border-line text-accent-emerald-hover focus:ring-accent-emerald"
         />
         <span>
-          <span className="block text-sm font-semibold text-brand-navy">
+          <span className="block text-sm font-semibold text-ink-primary">
             Show our logo on the landing page
           </span>
           <span className="mt-0.5 block text-xs leading-5 text-ink-muted">

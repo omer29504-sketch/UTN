@@ -132,7 +132,7 @@ export function ChatThread({ companyId, candidateId, currentUserId, title }: Pro
           )}
           <div ref={bottomRef} />
         </div>
-        {error ? <p className="mt-2 text-xs text-red-600">{error}</p> : null}
+        {error ? <p className="mt-2 text-xs text-danger">{error}</p> : null}
         <div className="mt-3 flex items-end gap-2">
           <Textarea
             value={body}

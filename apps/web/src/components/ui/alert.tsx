@@ -14,7 +14,7 @@ const styles: Record<Tone, { wrapper: string; icon: typeof Info }> = {
     icon: CheckCircle2,
   },
   error: { wrapper: "border-danger/25 bg-accent-rose-soft/80 text-danger", icon: AlertCircle },
-  warning: { wrapper: "border-warning/25 bg-[#FBF0DA]/80 text-warning", icon: AlertCircle },
+  warning: { wrapper: "border-warning/25 bg-warning-soft/80 text-warning", icon: AlertCircle },
 };
 
 export function Alert({

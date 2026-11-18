@@ -123,7 +123,7 @@ async function CandidateOverview({
         <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15">
           <Sparkles className="size-6" aria-hidden />
         </span>
-        <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
+        <h2 className="mt-4 font-display text-2xl font-extrabold text-ink-primary">
           Finish your candidate profile
         </h2>
         <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">
@@ -283,14 +283,14 @@ async function CandidateOverview({
               <span
                 className={`grid size-8 shrink-0 place-items-center rounded-full text-xs font-bold ${
                   item.done
-                    ? "animate-check-pop bg-verified-emerald text-white"
+                    ? "animate-check-pop bg-accent-emerald-deep text-white"
                     : "bg-surface-card text-ink-muted ring-1 ring-line"
                 }`}
               >
                 {item.done ? <BadgeCheck className="size-4" aria-hidden /> : index + 1}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-brand-navy">{item.label}</p>
+                <p className="text-sm font-semibold text-ink-primary">{item.label}</p>
                 <p className="truncate text-xs text-ink-muted">{item.hint}</p>
               </div>
               <Badge tone={item.done ? "emerald" : "neutral"}>
@@ -325,7 +325,7 @@ async function EmployerOverview({ userId }: { userId: string }) {
         <span className="grid size-12 place-items-center rounded-2xl bg-accent-emerald-soft text-accent-emerald-hover ring-1 ring-inset ring-accent-emerald/15">
           <Building2 className="size-6" aria-hidden />
         </span>
-        <h2 className="mt-4 font-display text-2xl font-extrabold text-brand-navy">
+        <h2 className="mt-4 font-display text-2xl font-extrabold text-ink-primary">
           Set up your company
         </h2>
         <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">
@@ -409,7 +409,7 @@ async function EmployerOverview({ userId }: { userId: string }) {
           </Link>
           <Link
             href="/employer/billing"
-            className="inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-brand-navy hover:bg-surface-muted"
+            className="inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink-primary hover:bg-surface-muted"
           >
             <CreditCard className="size-4" aria-hidden />
             Buy credits
@@ -492,7 +492,7 @@ async function AdminOverview() {
                 style={{ animationDelay: `${index * 60}ms` }}
               >
                 <div>
-                  <p className="text-sm font-semibold capitalize text-brand-navy">
+                  <p className="text-sm font-semibold capitalize text-ink-primary">
                     {review.decision}
                   </p>
                   <p className="text-xs text-ink-muted">{review.reviewer_email}</p>

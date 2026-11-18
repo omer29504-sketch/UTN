@@ -9,7 +9,7 @@
 is the only client (the Expo app was removed; see §9). The Supabase backend is live and
 connected. Cloudflare R2 and Stripe are still configuration placeholders, so media
 upload/playback and payments are the only major flows that cannot run end to end yet.
-The platform now ships the "Jewel Atelier" design system across every surface, branded
+The platform now ships the "Midnight Emerald" design system across every surface, branded
 404/error states, and a passing three-workspace smoke test with Lighthouse accessibility
 100 (see §12).
 
@@ -571,27 +571,32 @@ Notable validations:
 and the card radius. The web product deliberately overrides the colours in
 `apps/web/tailwind.config.ts`, so a shared token change cannot silently recolour the app.
 
-Palette — **Jewel Atelier**:
+Palette — **Midnight Emerald** (dark-only; no white surfaces):
 
-- Midnight ink `#070F24` / `#0E1B3D`
-- Warm pearl canvas `#F7F3EB` / card `#FFFCF7` / muted `#F0E8DA`
-- Emerald `#0E9F6E` (hover-safe `#0A7652`)
-- Sapphire `#3B5BFF` (badge ink `#2E4BE0`)
-- Amethyst `#8B5CF6` (badge ink `#6D3BD1`)
-- Teal `#0FB5BA`, rose `#E2557B`
-- Gold `#C8A45D` (hover-safe `#8A6626`) for eyebrows, hairlines, and Priority Pro
-- Champagne line `#E5DBC9`; text-safe `danger #C22B3C`, `warning #8A5A0B`
+- Emerald ink `#04100C` / soft `#081A14` / line `#173B31`
+- Canvas `#06120F` / card `#0A1C17` / muted `#0C231C` / elevated `#0F2A22`
+- Ivory "paper" `#F2ECDF` — the only light surface, used for document previews
+- Emerald `#10B981` (text-safe `#34D399`, solid fill `#0B7A57`)
+- Sapphire `#3B5BFF` (badge ink `#8FA3FF`, soft `#101A3D`)
+- Amethyst `#8B5CF6` (badge ink `#C4B5FD`, soft `#1E1433`)
+- Teal `#0FB5BA`, rose `#E2557B` (soft `#2E131B`)
+- Gold `#C8A45D` (text-safe champagne `#E9CF96`) for eyebrows, hairlines, Priority Pro
+- Hairline `#1B3A30`; text-safe `danger #F87171` / `danger-deep #B91C1C`,
+  `warning #FBBF24` / `warning-soft #2A1F0B`
+- Warm ivory type `#EDE6D6`, sage secondary `#9DB2A8`, inverse `#04100C`
 
 Typography: **Plus Jakarta Sans** for headings, **Inter** for body, both loaded through
 `next/font`, so they render without a network request to Google.
 
-**Aurora / jewel silk ribbons.** Dark surfaces carry a pure-CSS light field: five heavily
-blurred gradient ribbons (emerald, sapphire, teal, amethyst, faint gold) drifting over the
-navy sky, thin SVG silk threads, the engraved contour print, security grain, and a
-vignette. It lives in `apps/web/src/app/globals.css` (`.aurora-*`) and
+**Aurora / midnight silk.** Every surface carries a pure-CSS light field: seven heavily
+blurred gradient ribbons (emerald, indigo, cyan, jade, amethyst, gold, pearl) drifting over
+the emerald-ink sky, a slow conic sheen turning beneath them, eight SVG silk filaments, a
+warm pearl horizon, the engraved contour print, security grain, and a deep vignette. It
+lives in `apps/web/src/app/globals.css` (`.aurora-*`) and
 `apps/web/src/components/ui/AuroraRibbons.tsx`. There is no image request and no client
-JavaScript; the global `prefers-reduced-motion` rule freezes the drift, and small screens
-drop the heaviest ribbon. Light workspace pages get a masked `.aurora-wash` instead.
+JavaScript; the global `prefers-reduced-motion` rule freezes the drift, sheen, and horizon,
+and small screens drop the four smallest ribbons. Workspace pages get a masked
+`.aurora-wash` instead, so the signature never competes with the data.
 
 ---
 

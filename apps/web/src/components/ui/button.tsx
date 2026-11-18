@@ -10,7 +10,7 @@ const variants: Record<Variant, string> = {
   secondary:
     "border border-line bg-surface-card/90 text-ink-primary shadow-sm hover:-translate-y-px hover:border-accent-gold/50 hover:bg-surface-card hover:shadow-card disabled:opacity-50",
   ghost: "text-ink-muted hover:bg-surface-muted/80 hover:text-ink-primary disabled:opacity-50",
-  danger: "bg-danger text-white shadow-sm hover:bg-red-700 disabled:bg-danger/40",
+  danger: "bg-danger-deep text-white shadow-sm hover:bg-red-800 disabled:bg-danger/40",
   emerald:
     "sheen bg-jewel-emerald bg-[length:200%_200%] text-white shadow-emerald-glow hover:-translate-y-px hover:animate-gradient-pan disabled:opacity-40 disabled:shadow-none",
   gold: "sheen bg-jewel-gold bg-[length:200%_200%] text-brand-navy shadow-gold-hairline hover:-translate-y-px hover:animate-gradient-pan",

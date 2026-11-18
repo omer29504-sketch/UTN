@@ -72,14 +72,14 @@ export default async function CandidateProfilePage() {
 
       <PriorityProCard isFeatured={Boolean(candidate?.is_featured)} />
 
-      <Card className="border-accent-emerald/20 bg-gradient-to-br from-white to-accent-emerald-soft/40">
+      <Card className="border-accent-emerald/20 bg-gradient-to-br from-surface-card to-accent-emerald-soft/40">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-start gap-3">
             <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent-emerald-soft text-accent-emerald-hover">
               <ScanFace className="size-5" aria-hidden />
             </span>
             <div>
-              <h2 className="font-display text-lg font-bold text-brand-navy">
+              <h2 className="font-display text-lg font-bold text-ink-primary">
                 Next: verify your degree
               </h2>
               <p className="mt-1 max-w-xl text-sm leading-6 text-ink-muted">
