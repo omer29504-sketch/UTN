@@ -25,6 +25,8 @@ type FormValues = {
   industry: Industry | "";
   universityName: string;
   majorSpecialization: string;
+  academicGrade: string;
+  intakeReadinessLevel: "foundational" | "intermediate" | "advanced" | "";
   degreeLevel: DegreeLevel;
   graduationYear: string;
   experienceYears: string;
@@ -40,6 +42,8 @@ function initialValues(profile: CandidateProfile | null, defaultName: string | n
     industry: (profile?.industry as Industry | null) ?? "",
     universityName: profile?.university_name ?? "",
     majorSpecialization: profile?.major_specialization ?? "",
+    academicGrade: profile?.academic_grade ?? "",
+    intakeReadinessLevel: (profile?.intake_readiness_level as "foundational" | "intermediate" | "advanced" | null) ?? "",
     degreeLevel: (profile?.degree_level as DegreeLevel | undefined) ?? "Bachelor's Degree",
     graduationYear: String(profile?.graduation_year ?? new Date().getFullYear()),
     experienceYears: String(profile?.experience_years ?? 0),
@@ -79,6 +83,8 @@ export function CandidateProfileForm({
       industry: values.industry || undefined,
       universityName: values.universityName,
       majorSpecialization: values.majorSpecialization,
+      academicGrade: values.academicGrade,
+      intakeReadinessLevel: values.intakeReadinessLevel || undefined,
       degreeLevel: values.degreeLevel,
       graduationYear: values.graduationYear,
       experienceYears: values.experienceYears,
@@ -107,6 +113,8 @@ export function CandidateProfileForm({
         industry: parsed.data.industry ?? null,
         university_name: parsed.data.universityName,
         major_specialization: parsed.data.majorSpecialization,
+        academic_grade: parsed.data.academicGrade || null,
+        intake_readiness_level: parsed.data.intakeReadinessLevel || null,
         degree_level: parsed.data.degreeLevel,
         graduation_year: parsed.data.graduationYear,
         experience_years: parsed.data.experienceYears,
@@ -177,6 +185,29 @@ export function CandidateProfileForm({
           placeholder="Software Engineering"
           aria-invalid={Boolean(errors.majorSpecialization)}
         />
+      </Field>
+
+      <Field label="Academic grade / honors (optional)" htmlFor="academicGrade" hint="GPA, honors classification, or distinction (e.g. First Class, 3.8 GPA).">
+        <Input
+          id="academicGrade"
+          value={values.academicGrade}
+          onChange={(event) => update("academicGrade", event.target.value)}
+          placeholder="First Class Honours"
+        />
+      </Field>
+
+      <Field label="Intake readiness level" htmlFor="intakeReadinessLevel" hint="Self-assessed baseline before certificate upload.">
+        <select
+          id="intakeReadinessLevel"
+          value={values.intakeReadinessLevel}
+          onChange={(event) => update("intakeReadinessLevel", event.target.value as "foundational" | "intermediate" | "advanced" | "")}
+          className="w-full rounded-xl border border-line bg-surface-card px-3 py-2 text-sm text-ink-primary"
+        >
+          <option value="">Not assessed yet</option>
+          <option value="foundational">Foundational</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
       </Field>
 
       <Field

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import {
   questionGenerationRequestSchema,
@@ -33,11 +34,12 @@ interview assessment questions. Return ONLY a JSON object with this exact shape:
   ]
 }
 
-Category requirements:
-- Q1 (index 1): Core Academic Foundation — probe the candidate's grasp of the fundamentals of their degree.
-- Q2 (index 2): Technical / Domain Problem-Solving — a concrete scenario or problem in their specialization.
-- Q3 (index 3): Applied Project or Analytical Thinking — a real-world application, project, or analysis.
-- Q4 (index 4): Career Readiness & Value to an Employer — why hire them, first-90-days value.
+Category requirements (UTN Core — one competency dimension per question, in order):
+- Q1 (index 1): Core Theoretical Mastery — probe the candidate's grasp of the fundamentals of their degree.
+- Q2 (index 2): Applied Scenario & Edge-Case Judgment — a concrete scenario or problem in their specialization.
+- Q3 (index 3): Analytical Trade-Offs — a real-world application, project, or analysis with trade-offs.
+- Q4 (index 4): Real-World Execution — why hire them, first-90-days value.
+Calibrate difficulty to the candidate's intake readiness level and academic grade.
 
 Rules:
 - Each question must be answerable aloud in about 30 seconds.
@@ -290,6 +292,8 @@ export async function POST(request: Request) {
   const university = String(profile.university_name);
   const industry = (profile.industry as string | null)?.trim() || "";
   const description = (profile.headline as string | null)?.trim() || "";
+  const academicGrade = (profile.academic_grade as string | null)?.trim() || "";
+  const readinessLevel = (profile.intake_readiness_level as string | null)?.trim() || "intermediate";
   if (!major) {
     return apiError(
       422,
@@ -325,6 +329,13 @@ export async function POST(request: Request) {
     }
   }
 
+  // Fetch prior cycle question hashes so renewal never repeats them.
+  const { data: priorHistory } = await admin
+    .from("utn_core_question_history")
+    .select("question_text")
+    .eq("candidate_id", userId);
+  const priorQuestions = (priorHistory ?? []).map((r: { question_text: string }) => r.question_text);
+
   // Questions are derived from the specialization + the candidate's own description,
   // not from the certificate (which may be a template/scan). OCR text is ignored.
   const clientKeywords = sanitizeAcademicKeywords(parsed.data.keywords ?? []);
@@ -339,8 +350,12 @@ export async function POST(request: Request) {
 Major/specialization: ${major}
 University: ${university}
 Industry: ${industry || "(not specified)"}
+Academic grade / honors: ${academicGrade || "(not provided)"}
+Intake readiness level: ${readinessLevel}
 Candidate description/headline: ${description || "(not provided)"}
 Sanitized academic keywords: ${keywords.join(", ") || "(none)"}
+Prior questions from previous cycles (MUST NOT repeat or paraphrase): ${priorQuestions.length ? priorQuestions.join(" | ") : "(none)"}
+Competency dimensions (one per question, in order): Core Theoretical Mastery, Applied Scenario & Edge-Case Judgment, Analytical Trade-Offs, Real-World Execution
 
 Generate the 4 assessment questions now. Base the questions on the specialization and the candidate's description, not on any certificate text.`;
 
@@ -392,6 +407,27 @@ Generate the 4 assessment questions now. Base the questions on the specializatio
   if (upsertError) {
     console.error("[generate-questions] persist failed", upsertError);
     return apiError(500, "persist_failed", "Could not save the generated questions.");
+  }
+
+  // Persist to UTN Core question history (non-repeating across cycles).
+  const dimensions = [
+    "Core Theoretical Mastery",
+    "Applied Scenario & Edge-Case Judgment",
+    "Analytical Trade-Offs",
+    "Real-World Execution",
+  ];
+  const cycle = Number(profile.renewal_cycle_count ?? 1);
+  try {
+    const rows = validated.data.map((q, i) => ({
+      candidate_id: userId,
+      renewal_cycle: cycle,
+      question_hash: createHash("sha256").update(q.question_text.trim().toLowerCase()).digest("hex"),
+      question_text: q.question_text,
+      competency_dimension: dimensions[i] ?? dimensions[0],
+    }));
+    await admin.from("utn_core_question_history").insert(rows);
+  } catch (e) {
+    console.error("[generate-questions] history insert failed", e);
   }
 
   return NextResponse.json({

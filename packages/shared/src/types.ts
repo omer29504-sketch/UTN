@@ -16,6 +16,12 @@ export interface CandidateProfile {
   industry: Industry | null;
   university_name: string;
   major_specialization: string | null;
+  academic_grade: string | null;
+  intake_readiness_level: "foundational" | "intermediate" | "advanced" | null;
+  intake_quiz_answers: unknown;
+  profile_activated_at: string | null;
+  profile_expires_at: string | null;
+  renewal_cycle_count: number;
   degree_level: DegreeLevel;
   graduation_year: number;
   experience_years: number;
@@ -145,6 +151,7 @@ export interface EmployerCandidateCard {
   certificate_r2_key: string | null;
   /** Optional PDF CV, masked until the candidate is unlocked. */
   cv_r2_key: string | null;
+  profile_expires_at: string | null;
   /** True until the employer spends a credit to unlock the real certificate. */
   certificate_locked: boolean;
   total_count: number;

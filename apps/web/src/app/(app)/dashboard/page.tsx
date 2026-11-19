@@ -142,6 +142,11 @@ async function CandidateOverview({
   const status = profile.verification_status as "unverified" | "pending" | "verified" | "rejected";
   const displayName = profile.full_name ?? fullName ?? "there";
 
+  const expiresAt = profile.profile_expires_at ? new Date(profile.profile_expires_at) : null;
+  const now = new Date();
+  const isExpired = Boolean(expiresAt && expiresAt <= now);
+  const daysRemaining = expiresAt ? Math.max(0, Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))) : null;
+
   const checklist = [
     {
       label: "Profile details",
@@ -262,6 +267,26 @@ async function CandidateOverview({
       {status === "rejected" && profile.rejection_reason ? (
         <Alert tone="error" title="Changes requested">
           {profile.rejection_reason}
+        </Alert>
+      ) : null}
+
+      {isExpired ? (
+        <Alert tone="warning" title="Your 6-Month Active Window Has Ended — Renew Your Profile">
+          Your verified profile is no longer visible to employers or the peer community. Your account
+          and verified degree record are preserved. Refresh your profile details and CV, re-run the
+          intake calibration, and complete a new 4-question UTN Core video session to reactivate.
+          <div className="mt-3">
+            <Link href="/candidate/profile" className="inline-flex items-center gap-2 rounded-xl bg-jewel-ink px-4 py-2 text-sm font-semibold text-white">
+              Renew profile
+            </Link>
+          </div>
+        </Alert>
+      ) : null}
+
+      {daysRemaining !== null && !isExpired && status === "verified" ? (
+        <Alert tone="info" title="Profile Active Window">
+          {daysRemaining} day{daysRemaining === 1 ? "" : "s"} remaining in your 6-month active cycle
+          (expires {expiresAt?.toLocaleDateString()}).
         </Alert>
       ) : null}
 

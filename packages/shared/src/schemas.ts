@@ -160,6 +160,8 @@ export const candidateProfileSchema = z.object({
     .trim()
     .min(2, "Enter your major or specialization.")
     .max(120),
+  academicGrade: z.string().trim().max(40).optional(),
+  intakeReadinessLevel: z.enum(["foundational", "intermediate", "advanced"]).optional(),
   degreeLevel: z.enum(DEGREE_LEVELS),
   graduationYear: z.coerce
     .number()
