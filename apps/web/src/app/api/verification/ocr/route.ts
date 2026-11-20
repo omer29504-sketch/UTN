@@ -135,6 +135,8 @@ export async function POST(request: Request) {
         return apiError(400, "certificate_missing", "The certificate upload did not complete.");
       }
       if (looksLikePdf(head.contentType, key)) {
+        // Persist the key even for PDFs so question generation can find it.
+        await persistOcrText(admin, userId, null, requestedKey);
         return NextResponse.json({
           status: "skipped",
           reason: "pdf",

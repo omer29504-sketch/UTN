@@ -326,11 +326,17 @@ export function VerificationStudio({
       return;
     }
     try {
-      const probe = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: PITCH_VIDEO_SPEC.width }, height: { ideal: PITCH_VIDEO_SPEC.height }, frameRate: { ideal: PITCH_VIDEO_SPEC.frameRate }, facingMode: "user" },
+        audio: true,
+      });
       const devices = await navigator.mediaDevices.enumerateDevices();
       const camera = devices.find((d) => d.kind === "videoinput")?.label;
       const microphone = devices.find((d) => d.kind === "audioinput")?.label;
-      probe.getTracks().forEach((t) => t.stop());
+      // Keep the stream alive so the live preview renders immediately.
+      streamRef.current = mediaStream;
+      setStream(mediaStream);
+      setCameraActive(true);
       setReadiness({ status: "ready", camera: camera || "Camera ready", microphone: microphone || "Microphone ready", message: null });
     } catch (error) {
       const denied = error instanceof DOMException && error.name === "NotAllowedError";
@@ -363,12 +369,15 @@ export function VerificationStudio({
       return;
     }
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: PITCH_VIDEO_SPEC.width }, height: { ideal: PITCH_VIDEO_SPEC.height }, frameRate: { ideal: PITCH_VIDEO_SPEC.frameRate }, facingMode: "user" },
-        audio: true,
-      });
-      streamRef.current = mediaStream;
-      setStream(mediaStream);
+      let mediaStream = streamRef.current;
+      if (!mediaStream || !mediaStream.active) {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: PITCH_VIDEO_SPEC.width }, height: { ideal: PITCH_VIDEO_SPEC.height }, frameRate: { ideal: PITCH_VIDEO_SPEC.frameRate }, facingMode: "user" },
+          audio: true,
+        });
+        streamRef.current = mediaStream;
+        setStream(mediaStream);
+      }
       setCameraActive(true);
       recordedTotalRef.current = 0;
       setChapters([]);
