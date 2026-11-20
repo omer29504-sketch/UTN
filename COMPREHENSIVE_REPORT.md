@@ -36,7 +36,11 @@
 26. [Scripts](#26-scripts)
 27. [Verification and Known Limitations](#27-verification-and-known-limitations)
 28. [Demo Accounts and Test Data](#28-demo-accounts-and-test-data)
-29. [Recent Development History (Git)](#29-recent-development-history-git)
+29. [UTN Core — Level-Calibrated 4-Question Assessment Engine](#29-utn-core--level-calibrated-4-question-assessment-engine)
+30. [Verified Peer Community Feed](#30-verified-peer-community-feed)
+31. [6-Month Profile Expiration & Renewal Cycle](#31-6-month-profile-expiration--renewal-cycle)
+32. [How the Platform Runs Today](#32-how-the-platform-runs-today)
+33. [Recent Development History (Git)](#33-recent-development-history-git)
 
 ---
 
@@ -334,6 +338,7 @@ Shared and storage packages export TypeScript source directly; Next transpiles t
 | `0007_certificate_video_questions.sql` | `major_specialization`, `video_session_questions` (JSONB), `video_total_duration_seconds`, `questions_generated_at`; validator function; guard/sync/promotion refresh; RPC update with new columns |
 | `0008_certificate_locked_flag.sql` | `certificate_locked` boolean in employer discovery RPC |
 | `0009_cv_upload.sql` | `cv_r2_key` column; guard validation; RPC exposes `cv_r2_key` (masked until unlock) |
+| `0010_utn_core_community_and_expiration.sql` | Profile readiness/grades/expiration columns; `utn_core_question_history` table; `candidate_peer_views` table; `is_profile_active` RPC; `get_or_record_peer_clip_access` RPC; employer RPC filters expired profiles; expiration trigger on approval |
 
 ---
 
@@ -727,10 +732,140 @@ R2 API token with Object Read & Write. CORS on all buckets for direct browser up
 
 ---
 
-## 28. Recent Development History (Git)
+## 29. UTN Core — Level-Calibrated 4-Question Assessment Engine
+
+### 29.1 Overview
+The assessment engine was rebranded and upgraded to **UTN Core**, a level-calibrated, non-repeating question generator. Each candidate receives 4 questions calibrated to their intake readiness level and academic grade, drawn from 4 competency dimensions.
+
+### 29.2 Intake level calibration
+During profile creation, the candidate selects an intake readiness level:
+- **Foundational** — basic conceptual understanding
+- **Intermediate** — applied knowledge with some experience
+- **Advanced** — deep expertise and leadership
+
+Stored in `candidate_profiles.intake_readiness_level`. Also captures `academic_grade` (GPA/honors) and optional `intake_quiz_answers`.
+
+### 29.3 Multi-signal UTN Core synthesis
+After the candidate enters university details + grades and uploads their degree certificate, UTN Core generates 4 questions using:
+1. `intake_readiness_level` — calibrates difficulty
+2. `academic_grade` / honors standing
+3. OCR-extracted degree title & specialization (from certificate)
+4. A cryptographic random seed + 4 distinct competency dimensions: `[Core Theoretical Mastery, Applied Scenario & Edge-Case Judgment, Analytical Trade-Offs, Real-World Execution]`
+5. All `question_hash` records from prior cycles — so renewal generates 4 completely fresh, unpredictable questions (never repeats)
+
+### 29.4 Non-repeating question history
+- Table: `utn_core_question_history (id, candidate_id, renewal_cycle, question_hash, question_text, competency_dimension, created_at)`
+- Unique index on `(candidate_id, question_hash)` — a returning candidate never receives a question from previous cycles
+- Index on `question_hash` — across candidates in the same major, questions remain distinct
+- Questions are SHA-256 hashed (normalized text) and stored per cycle
+
+### 29.5 Generation pipeline
+- **Endpoint:** `POST /api/candidate/generate-questions`
+- **Provider:** Groq `openai/gpt-oss-20b` (priority) → Gemini `gemini-3.5-flash-lite` → deterministic discipline-keyed fallback
+- **Questions derived from specialization + graduate description**, NOT from certificate OCR text
+- **Idempotent:** once questions exist, returns stored (prevents cherry-picking). Regeneration allowed only after admin rejection.
+- **Persistence:** all 4 questions saved to `utn_core_question_history` and attached to the candidate's 120-second UTN Core video session
+
+---
+
+## 30. Verified Peer Community Feed
+
+### 30.1 Overview
+Approved, active graduates can view up to **2 peer candidate clips per day**, one question each. Identity is strictly masked.
+
+### 30.2 Daily allowance
+- Display: "X of 2 Peer Insights Remaining Today"
+- Max 2 distinct peer candidates per calendar day (`viewed_date = current_date`)
+- 1 question chapter (max 60 seconds) per viewed peer
+
+### 30.3 Identity masking
+- Never exposes: full name, university registration ID, certificate file, CV, or contact details
+- Exposes only: masked display label (First Name + Last Initial), degree major, and the single question prompt + clip window
+
+### 30.4 Clip playback
+- Clicking "Watch Peer Answer (1 Question)" calls `get_or_record_peer_clip_access` RPC
+- Plays only that single question segment (auto-pausing with "Peer Clip Complete — 1 Question Limit" overlay when `currentTime >= clipEndSeconds` or 60 seconds elapse)
+- Seeking outside `[clipStart, clipEnd]` is blocked
+- Once 2 peers viewed today, remaining cards lock until tomorrow's reset
+
+### 30.5 Access control
+- Only verified, active candidates (`profile_status = 'approved' AND profile_expires_at > now()`) can access the feed
+- Target must also be verified and active
+- Self-viewing is blocked
+
+### 30.6 Pages and components
+- `/candidate/community` — peer feed with daily allowance indicator
+- `/candidate/community/[peerId]` — single peer clip player
+- `PeerClipPlayer` component — client-side clip playback with boundary enforcement
+- `POST /api/candidate/peer-clip` — records view, returns clip boundaries + presigned video URL
+
+---
+
+## 31. 6-Month Profile Expiration & Renewal Cycle
+
+### 31.1 Overview
+Verified candidate profiles have a 6-month active window. After expiration, the profile is hidden from employer discovery and peer community feeds, but the account and verified degree record are preserved.
+
+### 31.2 Activation
+- On admin approval, `profile_activated_at` is set to `now()` and `profile_expires_at` = `profile_activated_at + 6 months`
+- `renewal_cycle_count` increments on each approval
+- Trigger: `on_profile_verified_set_expiration` (before update on candidate_profiles)
+
+### 31.3 Expiration effects
+- Employer discovery RPC filters: `profile_expires_at is null or profile_expires_at > now()`
+- Peer community feed: only active peers shown
+- `is_profile_active()` helper: `verification_status = 'verified' AND profile_expires_at > now()`
+
+### 31.4 Renewal flow
+- Dashboard shows "Profile Active Window" badge with days remaining
+- When expired: renewal banner — "Your 6-Month Active Window Has Ended — Renew Your Profile"
+- Candidate refreshes profile details/CV, re-runs intake calibration, completes a new 4-question UTN Core video session
+- Admin re-approves → new 6-month window starts, renewal cycle increments
+- All prior question hashes are excluded from the new cycle's questions
+
+---
+
+## 32. How the Platform Runs Today
+
+### 32.1 Infrastructure
+- **Supabase:** Hosted project `jecdhhihbtaocbfzlljt` (Postgres, Auth, Realtime, RLS)
+- **R2:** Cloudflare R2 with 3 buckets (private-credentials, pitch-videos, company-logos)
+- **Stripe:** Test mode (checkout + webhooks)
+- **LLM:** Groq `openai/gpt-oss-20b` (primary), Gemini `gemini-3.5-flash-lite` (fallback), deterministic fallback (last resort)
+- **Server:** Next.js 15 on `:3000` (Node runtime)
+
+### 32.2 Migrations applied
+All 9 migrations applied to hosted DB: 0001–0005, 0007–0010
+
+### 32.3 Key URLs
+- Sign in: http://localhost:3000/auth/sign-in
+- Candidate profile: http://localhost:3000/candidate/profile
+- Verification: http://localhost:3000/candidate/verification
+- Community: http://localhost:3000/candidate/community
+- Dashboard: http://localhost:3000/dashboard
+- Admin review: http://localhost:3000/admin/verification
+- Employer talent pool: http://localhost:3000/employer/candidates
+
+### 32.4 Demo accounts
+- `grad1..5@utndemo.dev` / `GradDemo2026!` (candidates)
+- `you@example.com` (admin)
+- `ocampo29504@gmail.com` (employer)
+- `omer29504@gmail.com` (candidate, verified)
+
+### 32.5 Verification status
+- `pnpm --filter @utn/shared typecheck` ✅
+- `pnpm --filter @utn/web typecheck` ✅
+- `pnpm --filter @utn/web build` ✅
+- Lighthouse accessibility 100 on key pages
+
+---
+
+## 33. Recent Development History (Git)
 
 | Commit | Description |
 |--------|-------------|
+| `df122d8` | feat: UTN Core 4-question engine, peer community feed, 6-month profile expiration & renewal |
+| `e0bbef3` | docs: add comprehensive platform report |
 | `84ce632` | fix: persist certificate_r2_key during OCR so question generation can find it |
 | `38d023f` | feat: generate assessment questions from specialization + graduate description, not certificate OCR |
 | `e3a6f4c` | feat: separate optional PDF CV upload + Groq AI question generation |
