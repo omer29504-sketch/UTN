@@ -729,17 +729,17 @@ export function VerificationStudio({
 
           <div className="mt-5">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">Assessment questions</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">UTN Core assessment</p>
               {questionsStatus === "generating" ? <Loader2 className="size-4 animate-spin text-accent-emerald-hover" aria-hidden /> : null}
             </div>
             {questionsStatus === "idle" ? (
               <p className="mt-2 rounded-xl border border-line bg-surface-canvas p-3 text-xs leading-5 text-ink-muted">
-                Upload your certificate to generate 4 tailored assessment questions.
+                Upload your certificate to generate your 4 UTN Core questions. They will appear one by one inside the video session.
               </p>
             ) : null}
             {questionsStatus === "generating" ? (
               <div className="mt-2 rounded-xl border border-accent-emerald/20 bg-accent-emerald-soft p-3 text-xs font-medium text-accent-emerald-hover" role="status" aria-live="polite">
-                Generating your 4 assessment questions from your certificate…
+                Generating your 4 UTN Core questions…
               </div>
             ) : null}
             {questionsStatus === "error" ? (
@@ -749,13 +749,11 @@ export function VerificationStudio({
               </div>
             ) : null}
             {questionsStatus === "ready" && questions ? (
-              <ol className="mt-2 space-y-1.5">
-                {questions.map((q) => (
-                  <li key={q.index} className="rounded-xl border border-line bg-surface-canvas p-2.5 text-[11px] leading-5 text-ink-muted">
-                    <span className="font-bold text-accent-emerald-hover">Q{q.index}.</span> {q.question_text}
-                  </li>
-                ))}
-              </ol>
+              <div className="mt-2 rounded-xl border border-verified-emerald/25 bg-verified-emerald-soft/50 p-3">
+                <p className="text-xs font-semibold text-emerald-800">
+                  4 UTN Core questions ready — they will appear one by one inside the video session.
+                </p>
+              </div>
             ) : null}
           </div>
         </Card>
@@ -878,10 +876,10 @@ export function VerificationStudio({
             {sessionPhase === "ready" ? (
               <div className="space-y-3">
                 <p className="text-sm font-semibold text-brand-navy" role="status" aria-live="polite">
-                  Question {activeQuestion + 1} of 4 — {questions?.[activeQuestion]?.question_text}
+                  Your UTN Core session is ready. Questions will appear one by one inside the video.
                 </p>
                 <p className="text-xs text-ink-muted">
-                  Clicking start begins a {INTRO}s countdown, then {DISPLAY}s to read the question, then {ANSWER}s to answer.
+                  Clicking start begins a {INTRO}s countdown, then each question appears for {DISPLAY}s before {ANSWER}s to answer.
                 </p>
                 <Button onClick={() => startQuestion(activeQuestion)} disabled={questionsStatus !== "ready"}>
                   <Play className="size-4" aria-hidden />
@@ -911,9 +909,8 @@ export function VerificationStudio({
             {sessionPhase === "between" ? (
               <div className="space-y-3" role="status" aria-live="polite">
                 <p className="text-sm font-semibold text-brand-navy">Question {activeQuestion} of 4 complete. Ready for the next.</p>
-                <p className="text-xs text-ink-muted">{questions?.[activeQuestion]?.question_text}</p>
                 <p className="text-xs text-ink-muted">
-                  Clicking start shows the question for {DISPLAY}s, then {ANSWER}s to answer.
+                  The next question will appear inside the video. Clicking start shows it for {DISPLAY}s, then {ANSWER}s to answer.
                 </p>
                 <Button onClick={() => startQuestion(activeQuestion)}>
                   <ChevronRight className="size-4" aria-hidden />
