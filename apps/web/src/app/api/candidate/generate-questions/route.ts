@@ -16,8 +16,11 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const TOTAL_SECONDS = 120;
-const PER_QUESTION_SECONDS = 30;
+const TOTAL_SECONDS = 133;
+const INTRO_SECONDS = 5;
+const DISPLAY_SECONDS = 7;
+const ANSWER_SECONDS = 25;
+const PER_QUESTION_SECONDS = DISPLAY_SECONDS + ANSWER_SECONDS; // 32
 
 const SYSTEM_PROMPT = `You are an academic assessment designer for a verified talent platform.
 
@@ -74,12 +77,16 @@ function extractJson(text: string): unknown {
 }
 
 function buildChapters(questionTexts: string[]): VideoSessionQuestion[] {
+  // Q1 includes the 5s intro countdown; Q2-Q4 are display+answer only.
+  const starts = [0, INTRO_SECONDS + PER_QUESTION_SECONDS, INTRO_SECONDS + 2 * PER_QUESTION_SECONDS, INTRO_SECONDS + 3 * PER_QUESTION_SECONDS] as const;
+  const ends = [INTRO_SECONDS + PER_QUESTION_SECONDS, INTRO_SECONDS + 2 * PER_QUESTION_SECONDS, INTRO_SECONDS + 3 * PER_QUESTION_SECONDS, INTRO_SECONDS + 4 * PER_QUESTION_SECONDS] as const;
+  const allocated = [INTRO_SECONDS + PER_QUESTION_SECONDS, PER_QUESTION_SECONDS, PER_QUESTION_SECONDS, PER_QUESTION_SECONDS] as const;
   return questionTexts.map((text, i) => ({
     index: (i + 1) as 1 | 2 | 3 | 4,
     question_text: text,
-    allocated_seconds: PER_QUESTION_SECONDS,
-    start_offset_seconds: i * PER_QUESTION_SECONDS,
-    end_offset_seconds: (i + 1) * PER_QUESTION_SECONDS,
+    allocated_seconds: allocated[i]!,
+    start_offset_seconds: starts[i]!,
+    end_offset_seconds: ends[i]!,
   }));
 }
 

@@ -27,6 +27,9 @@ import {
   PREFERRED_RECORDING_MIME_TYPES,
   VIDEO_SESSION_QUESTION_SECONDS,
   VIDEO_SESSION_TOTAL_SECONDS,
+  VIDEO_SESSION_DISPLAY_SECONDS,
+  VIDEO_SESSION_ANSWER_SECONDS,
+  VIDEO_SESSION_INTRO_SECONDS,
   formatBytes,
   formatPitchDuration,
   pickSupportedRecordingMime,
@@ -89,6 +92,9 @@ type Chapter = { index: 1 | 2 | 3 | 4; start: number; end: number };
 
 const ACCEPTED_CERTIFICATE_TYPES = ["application/pdf", "image/jpeg", "image/png"] as const;
 const PER_QUESTION = VIDEO_SESSION_QUESTION_SECONDS;
+const INTRO = VIDEO_SESSION_INTRO_SECONDS;
+const DISPLAY = VIDEO_SESSION_DISPLAY_SECONDS;
+const ANSWER = VIDEO_SESSION_ANSWER_SECONDS;
 const TOTAL_BUDGET = VIDEO_SESSION_TOTAL_SECONDS;
 
 function normalizeMime(value: string): string {
@@ -145,6 +151,7 @@ export function VerificationStudio({
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [recording, setRecording] = useState(false);
   const [sessionPhase, setSessionPhase] = useState<"idle" | "ready" | "active" | "between" | "complete">("idle");
+  const [questionPhase, setQuestionPhase] = useState<"intro" | "display" | "answer">("intro");
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [questionElapsed, setQuestionElapsed] = useState(0);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -434,11 +441,27 @@ export function VerificationStudio({
     setSessionPhase("active");
     setRecording(true);
 
+    // Phase boundaries within this question.
+    const introEnd = i === 0 ? INTRO : 0;
+    const displayEnd = introEnd + DISPLAY;
+    const answerEnd = displayEnd + ANSWER;
+    const totalQ = answerEnd;
+
+    if (i === 0) setQuestionPhase("intro");
+    else setQuestionPhase("display");
+
     intervalRef.current = window.setInterval(() => {
-      const seconds = Math.min(PER_QUESTION, Math.max(0, Math.floor((Date.now() - questionStartedAtRef.current) / 1000)));
+      const seconds = Math.max(0, Math.floor((Date.now() - questionStartedAtRef.current) / 1000));
       setQuestionElapsed(seconds);
       recordedTotalRef.current = questionStartRef.current + seconds;
-      if (seconds >= PER_QUESTION) {
+
+      if (seconds < introEnd) {
+        setQuestionPhase("intro");
+      } else if (seconds < displayEnd) {
+        setQuestionPhase("display");
+      } else if (seconds < answerEnd) {
+        setQuestionPhase("answer");
+      } else {
         finishQuestion(i);
       }
     }, 200);
@@ -446,7 +469,7 @@ export function VerificationStudio({
 
   function finishQuestion(i: number) {
     stopQuestionTimer();
-    const elapsed = Math.min(PER_QUESTION, Math.max(1, Math.floor((Date.now() - questionStartedAtRef.current) / 1000)));
+    const elapsed = Math.max(1, Math.floor((Date.now() - questionStartedAtRef.current) / 1000));
     recordedTotalRef.current = questionStartRef.current + elapsed;
     const endOffset = Math.min(TOTAL_BUDGET, recordedTotalRef.current);
     const startOffset = questionStartRef.current;
@@ -800,17 +823,35 @@ export function VerificationStudio({
                   <div className="pointer-events-none absolute inset-6 rounded-2xl border border-white/[0.08]" aria-hidden />
                   {recording && sessionPhase === "active" ? (
                     <div className="absolute inset-x-4 top-4 rounded-xl border border-white/10 bg-black/40 p-3 backdrop-blur-md" role="status" aria-live="polite">
-                      <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/60">Question {activeQuestion + 1} of 4 · {PER_QUESTION}s</p>
-                      <p className="mt-1 text-[11px] leading-4 text-white/90">{questions?.[activeQuestion]?.question_text}</p>
+                      {questionPhase === "intro" ? (
+                        <>
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/60">Get ready · Question {activeQuestion + 1} of 4</p>
+                          <p className="mt-1 text-2xl font-bold text-white text-center">{INTRO - questionElapsed}s</p>
+                        </>
+                      ) : questionPhase === "display" ? (
+                        <>
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/60">Question {activeQuestion + 1} of 4 · Read ({DISPLAY - (questionElapsed - (activeQuestion === 0 ? INTRO : 0))}s)</p>
+                          <p className="mt-1 text-[11px] leading-4 text-white/90">{questions?.[activeQuestion]?.question_text}</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/60">Question {activeQuestion + 1} of 4 · Answer now</p>
+                          <p className="mt-1 text-[11px] leading-4 text-white/90">{questions?.[activeQuestion]?.question_text}</p>
+                        </>
+                      )}
                     </div>
                   ) : null}
                   {recording ? (
                     <div className="absolute inset-x-4 bottom-4">
                       <div className="h-1.5 overflow-hidden rounded-full bg-white/15">
-                        <div className="h-full rounded-full bg-verified-emerald transition-[width] duration-200" style={{ width: `${Math.round((questionElapsed / PER_QUESTION) * 100)}%` }} />
+                        <div className="h-full rounded-full bg-verified-emerald transition-[width] duration-200" style={{ width: `${Math.round((questionElapsed / (activeQuestion === 0 ? INTRO + DISPLAY + ANSWER : DISPLAY + ANSWER)) * 100)}%` }} />
                       </div>
                       <p className="mt-1.5 text-center text-[10px] font-medium text-white/55">
-                        {PER_QUESTION - questionElapsed}s left on this question
+                        {questionPhase === "intro"
+                          ? `${INTRO - questionElapsed}s until question appears`
+                          : questionPhase === "display"
+                            ? `${DISPLAY - (questionElapsed - (activeQuestion === 0 ? INTRO : 0))}s to read`
+                            : `${(activeQuestion === 0 ? INTRO + DISPLAY + ANSWER : DISPLAY + ANSWER) - questionElapsed}s left on this question`}
                       </p>
                     </div>
                   ) : null}
@@ -839,6 +880,9 @@ export function VerificationStudio({
                 <p className="text-sm font-semibold text-brand-navy" role="status" aria-live="polite">
                   Question {activeQuestion + 1} of 4 — {questions?.[activeQuestion]?.question_text}
                 </p>
+                <p className="text-xs text-ink-muted">
+                  Clicking start begins a {INTRO}s countdown, then {DISPLAY}s to read the question, then {ANSWER}s to answer.
+                </p>
                 <Button onClick={() => startQuestion(activeQuestion)} disabled={questionsStatus !== "ready"}>
                   <Play className="size-4" aria-hidden />
                   Start Question {activeQuestion + 1}
@@ -848,11 +892,19 @@ export function VerificationStudio({
 
             {sessionPhase === "active" ? (
               <div className="flex flex-wrap items-center gap-2">
-                <Button variant="danger" onClick={() => finishQuestion(activeQuestion)} disabled={questionElapsed < 5}>
-                  <Square className="size-4" aria-hidden />
-                  Done with Q{activeQuestion + 1}
-                </Button>
-                <span className="text-xs text-ink-muted">Or wait for the {PER_QUESTION}s timer to finish.</span>
+                {questionPhase === "answer" ? (
+                  <>
+                    <Button variant="danger" onClick={() => finishQuestion(activeQuestion)}>
+                      <Square className="size-4" aria-hidden />
+                      Done with Q{activeQuestion + 1}
+                    </Button>
+                    <span className="text-xs text-ink-muted">Or wait for the timer to finish.</span>
+                  </>
+                ) : (
+                  <span className="text-xs text-ink-muted">
+                    {questionPhase === "intro" ? "Get ready..." : "Read the question above..."}
+                  </span>
+                )}
               </div>
             ) : null}
 
@@ -860,6 +912,9 @@ export function VerificationStudio({
               <div className="space-y-3" role="status" aria-live="polite">
                 <p className="text-sm font-semibold text-brand-navy">Question {activeQuestion} of 4 complete. Ready for the next.</p>
                 <p className="text-xs text-ink-muted">{questions?.[activeQuestion]?.question_text}</p>
+                <p className="text-xs text-ink-muted">
+                  Clicking start shows the question for {DISPLAY}s, then {ANSWER}s to answer.
+                </p>
                 <Button onClick={() => startQuestion(activeQuestion)}>
                   <ChevronRight className="size-4" aria-hidden />
                   Start Timing — Question {activeQuestion + 1}
